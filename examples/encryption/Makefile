@@ -43,6 +43,21 @@ example.private.der: example.private.pem
 clean: clean-example.private.der
 clean-example.private.der:
 	rm -f example.private.der example.public.der
+run: run-decrypt.cpp
+# CXXFLAGS is reserved to the command line
+__CXXFLAGS = -ggdb -std=c++1z
+_CXXFLAGS = $(__CXXFLAGS) $(CXXFLAGS)
+run-decrypt.cpp: example.private.der id-encrypted-base64.txt
+	$(CXX) -o decrypt.exe $(_CXXFLAGS) decrypt.cpp -lcryptopp -lpthread
+	./decrypt.exe example.private.der id-encrypted-base64.txt
+	: DONE - demonstrated how to decrypt an identifier from C++
+	: exhibit the null bytes, YES newline && ./decrypt.exe example.private.der id-encrypted-base64.txt 2>/dev/null | cat -ve
+	test "./decrypt.exe: OK, recovered $(EXAMPLE_DECRYPTED)" == "`./decrypt.exe example.private.der id-encrypted-base64.txt | tr -d '\0'`"
+
+clean: clean-decrypt.cpp
+clean-decrypt.cpp:
+	rm -f decrypt.exe
+
 run: ; @echo OK
 
 default: all
