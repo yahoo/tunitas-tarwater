@@ -1,0 +1,103 @@
+---+ OpenSSL Arguments
+
+openssl subcommands from pkeyutil(1ssl)
+
+pkeyutl - Public key algorithm cryptographic operation utility.
+
+-decrypt              Obvious.
+-inkey FILE           Obvious.
+-pkeyopt OPT:VALUE    Public key options specified as opt:value.
+                      The OPT:VALUE can take on a wide range of values.
+                      Only the one used in in decrypt.sh is described.
+
+rsa_padding_mode:oaep
+
+rsa_padding_mode      (wait for it) RSA Padding Mode
+oaep                  OAEP mode
+                      Optimal Asymmetric Encryption Padding (OAEP)
+                      is a padding scheme against chosen plaintet attacks
+
+https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding
+https://en.wikipedia.org/wiki/All-or-nothing_transform
+
+
+Wow.
+
+Bytes  File
+  8    n/a                       A 64-bit integer, unsigned.
+ 16    id-decrypted-hex.txt      A 64-bit hexidecimal encoding.
+344    id-encrypted-base64.txt   the cryptoblob, with RSA OAEP.
+
+Enbiggenment: ~22x
+
+
+
+---+ Java Problems
+
+The diagnostic:
+
+$ make
+...etc...
+Exception in thread "main" java.lang.UnsupportedClassVersionError: Playground has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
+
+
+---++ The Packages
+
+apache-commons-codec-1.10-5.fc27.noarch
+apache-commons-codec-javadoc-1.10-5.fc27.noarch
+java-11-openjdk-11.0.ea.22-1.fc27.x86_64
+java-11-openjdk-devel-11.0.ea.22-1.fc27.x86_64
+java-11-openjdk-headless-11.0.ea.22-1.fc27.x86_64
+java-1.8.0-openjdk-headless-1.8.0.181-7.b13.fc27.x86_64
+
+---++ The Alternates
+
+Check the alternates system
+
+$ ls -ld /usr/bin/java /usr/bin/javac
+lrwxrwxrwx. 1 root root 22 Sep  7 16:01 /usr/bin/java -> /etc/alternatives/java
+lrwxrwxrwx. 1 root root 23 Sep  7 16:46 /usr/bin/javac -> /etc/alternatives/javac
+
+$ ls -l /etc/alternatives/java*
+lrwxrwxrwx. 1 root root 72 Sep  7 16:01 /etc/alternatives/java -> /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.181-7.b13.fc27.x86_64/jre/bin/java
+lrwxrwxrwx. 1 root root 76 Sep  7 16:01 /etc/alternatives/java.1.gz -> /usr/share/man/man1/java-java-1.8.0-openjdk-1.8.0.181-7.b13.fc27.x86_64.1.gz
+lrwxrwxrwx. 1 root root 63 Sep  7 16:46 /etc/alternatives/javac -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64/bin/javac
+lrwxrwxrwx. 1 root root 71 Sep  7 16:46 /etc/alternatives/javac.1.gz -> /usr/share/man/man1/javac-java-11-openjdk-11.0.ea.22-1.fc27.x86_64.1.gz
+lrwxrwxrwx. 1 root root 65 Sep  7 16:46 /etc/alternatives/javadoc -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64/bin/javadoc
+lrwxrwxrwx. 1 root root 73 Sep  7 16:46 /etc/alternatives/javadoc.1.gz -> /usr/share/man/man1/javadoc-java-11-openjdk-11.0.ea.22-1.fc27.x86_64.1.gz
+lrwxrwxrwx. 1 root root 63 Sep  7 16:46 /etc/alternatives/javap -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64/bin/javap
+lrwxrwxrwx. 1 root root 71 Sep  7 16:46 /etc/alternatives/javap.1.gz -> /usr/share/man/man1/javap-java-11-openjdk-11.0.ea.22-1.fc27.x86_64.1.gz
+lrwxrwxrwx. 1 root root 53 Sep  7 16:46 /etc/alternatives/java_sdk -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64
+lrwxrwxrwx. 1 root root 53 Sep  7 16:46 /etc/alternatives/java_sdk_11 -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64
+lrwxrwxrwx. 1 root root 53 Sep  7 16:46 /etc/alternatives/java_sdk_11_openjdk -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64
+lrwxrwxrwx. 1 root root 53 Sep  7 16:46 /etc/alternatives/java_sdk_openjdk -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64
+
+
+Therefore: java and javac are different
+
+---++ The Remedy
+
+$ sudo update-alternatives --config java
+
+There are 2 programs which provide 'java'.
+
+  Selection    Command
+-----------------------------------------------
+*+ 1           java-1.8.0-openjdk.x86_64 (/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.181-7.b13.fc27.x86_64/jre/bin/java)
+   2           java-11-openjdk.x86_64 (/usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64/bin/java)
+
+Enter to keep the current selection[+], or type selection number: 2
+
+$ ls -l /etc/alternatives/java*
+lrwxrwxrwx. 1 root root 62 Sep  7 17:12 /etc/alternatives/java -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64/bin/java
+lrwxrwxrwx. 1 root root 70 Sep  7 17:12 /etc/alternatives/java.1.gz -> /usr/share/man/man1/java-java-11-openjdk-11.0.ea.22-1.fc27.x86_64.1.gz
+lrwxrwxrwx. 1 root root 63 Sep  7 16:46 /etc/alternatives/javac -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64/bin/javac
+lrwxrwxrwx. 1 root root 71 Sep  7 16:46 /etc/alternatives/javac.1.gz -> /usr/share/man/man1/javac-java-11-openjdk-11.0.ea.22-1.fc27.x86_64.1.gz
+lrwxrwxrwx. 1 root root 65 Sep  7 16:46 /etc/alternatives/javadoc -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64/bin/javadoc
+lrwxrwxrwx. 1 root root 73 Sep  7 16:46 /etc/alternatives/javadoc.1.gz -> /usr/share/man/man1/javadoc-java-11-openjdk-11.0.ea.22-1.fc27.x86_64.1.gz
+lrwxrwxrwx. 1 root root 63 Sep  7 16:46 /etc/alternatives/javap -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64/bin/javap
+lrwxrwxrwx. 1 root root 71 Sep  7 16:46 /etc/alternatives/javap.1.gz -> /usr/share/man/man1/javap-java-11-openjdk-11.0.ea.22-1.fc27.x86_64.1.gz
+lrwxrwxrwx. 1 root root 53 Sep  7 16:46 /etc/alternatives/java_sdk -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64
+lrwxrwxrwx. 1 root root 53 Sep  7 16:46 /etc/alternatives/java_sdk_11 -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64
+lrwxrwxrwx. 1 root root 53 Sep  7 16:46 /etc/alternatives/java_sdk_11_openjdk -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64
+lrwxrwxrwx. 1 root root 53 Sep  7 16:46 /etc/alternatives/java_sdk_openjdk -> /usr/lib/jvm/java-11-openjdk-11.0.ea.22-1.fc27.x86_64

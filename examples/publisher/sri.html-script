@@ -1,0 +1,4 @@
+<!-- https://github.com/digi-trust/dt-cdn/wiki/Integration-Guide -->
+<script src="https://cdn.digitru.st/prod/1.5.11/digitrust.min.js"
+        integrity="sha384-S5jjJ64r+FYig3t467WsMLTWPUUc4XFVsfXTTAcNIk8Cy399B9ZvbybV4wg7vRCN"
+        crossorigin="anonymous"></script>

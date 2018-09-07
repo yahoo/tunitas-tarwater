@@ -1,0 +1,9 @@
+<!--- https://github.com/digi-trust/dt-cdn/wiki/Integration-Guide --->
+<script src="https://cdn.digitru.st/prod/1/digitrust.min.js"></script>
+<script type="text/javascript">
+  DigiTrust.initialize({
+      member: "nQjyizbdyF",
+      site: "FL6whbX1IW",
+      redirects: true
+    });
+</script>
