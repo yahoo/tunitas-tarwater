@@ -1,0 +1,21 @@
+# This is a GNU -*- Makefile -*- fragment which is managed by automake
+
+# WATCHOUT - AM_LDFLAGS is not automatically added to the final link line anywhere (oddly enough...)
+#            and also that LDFLAGS is reserved to the command line.
+# if --with-nonstd-libhttpserver=yes (or similar) then we must link appropriately with -L, -Wl,-rpath=
+bin_unit_LDFLAGS = -lrigging-bench-module $(CHECK_LDFLAGS_SET)
+bin_unit_LDADD = lib/libtunitas-tarwater.la
+bin_unit_MODULES = $(call TF_SOURCEStoMODULES, $(bin_unit_SOURCES))
+bin_unit_SOURCES = \
+  obj/src/tests/unit/main.cpp \
+  obj/src/tests/unit/namespace.cpp \
+  obj/src/tests/unit/tarwater.Fixture.cpp \
+  obj/src/tests/unit/want.Fixture.cpp \
+  $(end)
+$(scold_cxxdir)/src/tests/unit/dependencies.mk:
+	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(bin_unit_SOURCES))
+	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(bin_unit_SOURCES))
+	test -e $@
+include $(scold_cxxdir)/src/tests/unit/dependencies.mk
+clean-dependencies::
+	rm -f $(scold_cxxdir)/src/tests/unit/dependencies.mk

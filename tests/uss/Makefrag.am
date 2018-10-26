@@ -1,0 +1,7 @@
+tests_uss_XFAIL_TESTS = \
+  tests/uss/run.01.test \
+  $(end)
+tests_uss_TESTS = \
+  $(tests_uss_XFAIL_TESTS) \
+  tests/uss/usage.test \
+  $(end)

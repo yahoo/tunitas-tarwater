@@ -1,0 +1,60 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.app.options.Args
+namespace tunitas::tarwater::uss {
+  inline auto const NAME = "uss";
+  using app::options::Args;
+  auto main(Args) -> int;
+}
+#endiv
+#divert <cpp>
+auto main(int c, char *v[]) -> int {
+  namespace uss = tunitas::tarwater::uss;
+  return uss::main(uss::Args{(unsigned)c, v});
+}
+#import httpserver.Webserver
+#import httpserver.Create_Webserver
+#import tunitas.tarwater.uss.Configuration
+#import tunitas.tarwater.uss.constants
+#import tunitas.tarwater.uss.endpoint.Sync
+#import tunitas.tarwater.uss.options.Specification
+#import tunitas.tarwater.uss.options.Parser
+#import tunitas.app.exception.Generic
+#import getpid
+#import std.move
+#import std.cerr
+#import sys.exits.constants
+auto tunitas::tarwater::uss::main(Args args) -> int try {
+  try {
+    Configuration cfg;
+    options::Specification spec;
+    options::Parser pa{cfg, spec};
+    auto result = pa.parse(std::move(args));
+    if (!ok(result)) {
+      std::cerr << NAME << ": error, the command line contains errors\n"; // [[FIXTHIS]] return an error indication in the outcome " << error_code(result).message() << '\n';
+      return sys::exits::CONFIG;
+    }
+    httpserver::Webserver ws{[]() {
+        httpserver::Create_Webserver specification;
+        using namespace constants::server;
+        specification.debug().use_ipv6().port(PORT).start_method(METHOD).max_threads(THREADS);
+        return std::move(specification);
+      }()};
+    endpoint::Sync sync;
+    ws.register_resource("/sync", &sync, true);   // "our" standard name
+    ws.register_resource("/userid", &sync, true); // "their" standard name
+    // There is no 'quit' method.  The service runs forever
+    if (cfg.emit_pid) {
+      std::cout << getpid() << std::flush;
+    }
+    ws.start(cfg.foreground);
+    return sys::exits::OK;
+  } catch (tunitas::app::exception::Generic const &g) {
+    g.stream() << g << '\n';
+    return g.code();
+  }
+} catch (std::exception const &e) {
+  std::cerr << NAME << ": fatal error " << e.what() << '\n';
+  return sys::exits::SOFTWARE;
+}
+#endiv

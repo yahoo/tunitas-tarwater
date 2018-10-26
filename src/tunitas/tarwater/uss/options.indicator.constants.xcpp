@@ -1,0 +1,10 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import options.indicator.constants
+#import tunitas.tarwater.uss.options.indicator
+namespace tunitas::tarwater::uss::options::indicator {
+  // wherein namespace cascades from ::options::indicator
+  inline constexpr auto FOREGROUND_MODE = Code::CODE_254;
+  inline constexpr auto BACKGROUND_MODE = Code::CODE_253;
+}
+#endiv

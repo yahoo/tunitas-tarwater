@@ -1,0 +1,51 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater {
+  //
+  // The version string, as a throwable exception.
+  // Throwing the version exception is always a success signal because the user
+  // requested it via the --version option.  The class has no other utility.
+  //
+  // Usage:
+  //
+  //   throw Version{};
+  //
+  class [[nodiscard]] Version;
+}
+#endiv
+#divert <hpp>
+#import tunitas.app.exception.Version
+#import tunitas.app.exception.Messaging
+#import std.exception
+#import std.string
+class tunitas::tarwater::Version : public app::exception::Version, public app::exception::Messaging, public std::exception {
+  struct ancestors {
+    using Version = app::exception::Version;
+    using Messaging = app::exception::Messaging;
+    using Exception = std::exception;
+  };
+public:
+  inline explicit Version(std::string NAME);
+  auto what() const noexcept -> char const * final;
+protected:
+  static auto format(std::string const &NAME) -> std::string;
+};
+#endiv
+#divert <ipp>
+tunitas::tarwater::Version::Version(std::string NAME)
+  : ancestors::Version{}
+  , ancestors::Messaging{format(NAME)}
+{ }
+#endiv
+#divert <cpp>
+auto tunitas::tarwater::Version::what() const noexcept -> char const * {
+  return ancestors::Messaging::what();
+}
+#import std.ostringstream
+auto tunitas::tarwater::Version::format(std::string const &NAME) -> std::string {
+  std::ostringstream buf;
+  auto const vstring = "v1.0.0"; // [[FIXTHIS]] get this out of config.h and autotools::autoconf::Config<CONFIG>::version_string()
+  buf << NAME << ": version " << vstring << '\n';
+  return buf.str();
+}
+#endiv

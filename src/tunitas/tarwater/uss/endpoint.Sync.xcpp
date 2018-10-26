@@ -1,0 +1,28 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.uss.endpoint
+namespace tunitas::tarwater::uss::endpoint {
+  //
+  // The code behind the /sync endpoint
+  //
+  // Usage:
+  //
+  //   uss::endpoint::Sync sync;
+  //   ws.register_resource("/sync", &sync, true);
+  //   ws.register_resource("/userid", &sync, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Sync;
+}
+#endiv
+#divert <hpp>
+class tunitas::tarwater::uss::endpoint::Sync : public httpserver::Resource<Sync> {
+public:
+  auto render(Request const &, [[out]] Response **fill) -> void;
+};
+#endiv
+#divert <cpp>
+auto tunitas::tarwater::uss::endpoint::Sync::render(Request const &, Response **fill) -> void {
+#warning WRITETHIS auto tunitas::tarwater::uss::endpoint::Sync::render(http::Request const &, http::Response **) -> void
+}
+#endiv

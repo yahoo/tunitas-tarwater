@@ -1,0 +1,46 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::uss::options {
+  //
+  // The options specification
+  //
+  // Usage:
+  //
+  //   Specification spec;
+  //   options::Parser parser{cfg, spec}
+  //
+  class Specification;
+}
+#endiv
+#divert <hpp>
+#import tunitas.app.options.Specification
+class tunitas::tarwater::uss::options::Specification : public tunitas::app::options::Specification {
+  using ancestor = tunitas::app::options::Specification;
+public:
+  Specification();
+};
+#endiv
+#divert <cpp>
+#import options.argument.constants
+namespace oa = options::argument;
+#import options.indicator.constants
+namespace oi = options::indicator;
+tunitas::tarwater::uss::options::Specification::Specification()
+  //
+  // options::indicator::MISSING requires ':' because
+  // <quote>
+  //   If the first character (following any optional '+' or '-' described 
+  //   above) of optstring is a colon (':'), then getopt() likewise
+  //   does not print an error message. In addition, it returns ':' instead
+  //   of '?' to indicate a missing option argument.
+  // </quote>
+  //
+  //          /------------------ this [read carefully getopt(3)]
+  //          |
+  //          v
+  : ancestor{":hV",
+             {{"usage", oa::NO, oi::USAGE_SUBCOMMAND},
+              {"help", oa::NO, oi::USAGE_SUBCOMMAND},
+              {"version", oa::NO, oi::VERSION_SUBCOMMAND}}}
+{ }
+#endiv

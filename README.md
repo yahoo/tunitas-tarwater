@@ -2,6 +2,9 @@
 
 An Open Source implementation of the DigiTrust identity plenum, in C++2a.
 
+## User Sync Service
+
+   * Following the [User Sync Service](https://github.com/digi-trust/dt-cdn/wiki/User-Sync-Service-%28Draft%29) draft specification
 # License
 
 The [Apache 2.0](https://git.ouroath.com/tunitas/tarwater/blob/master/LICENSE).

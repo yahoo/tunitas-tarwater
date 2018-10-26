@@ -1,0 +1,9 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import options.indicator
+namespace options::indicator { } // [[FIXTHIS]] module-options-0.12.6 has the misspelling
+namespace tunitas::tarwater::uss::options::indicator {
+  // Cascade the namespaces so when we add our own values, the base package values are already visible.
+  using namespace ::options::indicator;
+}
+#endiv

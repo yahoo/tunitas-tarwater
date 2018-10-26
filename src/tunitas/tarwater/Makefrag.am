@@ -1,0 +1,16 @@
+# This is a GNU -*- Makefile -*- fragment which is managed by automake
+
+lib_libtunitas_tarwater_la_LDFLAGS = 
+lib_libtunitas_tarwater_la_LIBADD  = -ltunitas
+lib_libtunitas_tarwater_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libtunitas_tarwater_la_SOURCES))
+lib_libtunitas_tarwater_la_SOURCES = \
+  obj/src/tunitas/tarwater/namespace.cpp \
+  obj/src/tunitas/tarwater/Version.cpp \
+  $(end)
+$(scold_cxxdir)/src/tunitas/tarwater/dependencies.mk:
+	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libtunitas_tarwater_la_SOURCES))
+	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(lib_libtunitas_tarwater_la_SOURCES))
+	test -e $@
+include $(scold_cxxdir)/src/tunitas/tarwater/dependencies.mk
+clean-dependencies::
+	rm -f $(scold_cxxdir)/src/tunitas/tarwater/dependencies.mk

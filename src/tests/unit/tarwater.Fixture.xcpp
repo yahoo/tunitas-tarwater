@@ -1,0 +1,52 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::tarwater { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::tarwater::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_Version_constructor() -> void;
+  auto test_Version_what() -> void;
+  auto test_Version_throwing() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import tunitas.tarwater.Version
+auto tests::unit::tarwater::Fixture::test_Version_constructor() -> void {
+  ::tunitas::tarwater::Version subject{"a.out"};
+  CPPUNIT_ASSERT(true);
+}
+#import std.cerr
+auto tests::unit::tarwater::Fixture::test_Version_what() -> void {
+  ::tunitas::tarwater::Version subject{"a.out"};
+  std::cerr << subject << '\n';
+  CPPUNIT_ASSERT(true);
+}
+auto tests::unit::tarwater::Fixture::test_Version_throwing() -> void {
+  try {
+    throw ::tunitas::tarwater::Version{"a.out"};
+  } catch (::tunitas::app::exception::Generic const &g) {
+    g.stream() << g << '\n';
+    CPPUNIT_ASSERT(sys::exits::OK == g.code());
+  }
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::tarwater::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("tarwater");
+  {
+    Stream ver("Version");
+    ver << call("constructor", &Fixture::test_Version_constructor)
+        << call("what", &Fixture::test_Version_what)
+        << call("throwing", &Fixture::test_Version_throwing)
+      ;
+    series << add(ver.release());
+  }
+  return series.release();
+}
+#endiv
