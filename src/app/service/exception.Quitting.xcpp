@@ -1,0 +1,50 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace app::service::exception {
+  //
+  // That particular quitting exception
+  //
+  // Usage:
+  //
+  //   throw Quitting{std::cerr, sys::exits::FAIL}
+  //   throw Quitting{sys::exits::CONFIG};
+  //
+  class [[nodiscard]] Quitting;
+}
+#endiv
+#divert <hpp>
+#import tunitas.app.exception.Quitting
+#import tunitas.app.exception.Messaging
+#import std.exception
+#import std.string
+class app::service::exception::Quitting : public tunitas::app::exception::Quitting, tunitas::app::exception::Messaging, public std::exception {
+  struct ancestors {
+    using Quitting = tunitas::app::exception::Quitting;
+    using Messaging = tunitas::app::exception::Messaging;
+    using Exception = std::exception;
+  };
+public:
+  inline Quitting(std::string const &NAME, std::ostream &, sys::exits::Code);
+  inline Quitting(std::string const &NAME, sys::exits::Code);
+  auto what() const noexcept -> char const * final;
+};
+#endiv
+#divert <ipp>
+namespace app::service::exception {
+  Quitting::Quitting(std::string const &NAME, std::ostream &o, sys::exits::Code c)
+    : ancestors::Quitting{o, c}
+    , ancestors::Messaging{NAME + ": quitting"}
+  { }
+  Quitting::Quitting(std::string const &NAME, sys::exits::Code c)
+    : ancestors::Quitting{c}
+    , ancestors::Messaging{NAME + ": quitting"}
+  { }
+}
+#endiv
+#divert <cpp>
+namespace app::service::exception {
+  auto Quitting::what() const noexcept -> char const * {
+    return ancestors::Messaging::what();
+  }
+}
+#endiv

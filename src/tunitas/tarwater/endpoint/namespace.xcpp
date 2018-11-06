@@ -1,0 +1,11 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.server.service
+#import tunitas.server.constants
+namespace tunitas::tarwater::endpoint {
+  // acquire the names httpserver::Resource, Request, Response;
+  using namespace tunitas::server::service;
+  // namespace http, namespace mime
+  using namespace tunitas::server::constants;
+}
+#endiv

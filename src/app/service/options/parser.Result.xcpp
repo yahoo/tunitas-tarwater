@@ -1,0 +1,77 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace app::service::options::parser {
+  //
+  // The parser's result
+  //
+  // Usage:
+  //
+  //   Parser parser{...}
+  //   Result parsed = parser(...);
+  //   if (ok(parsed)) {
+  //     auto const &wordlist = value(parsed);
+  //     auto wordlist        = value(std::move(parsed));
+  //   } else {
+  //      std::cerr << "Could not parse (because of reasons)\n";
+  //      throw Quitting{CONFIG};
+  //   }
+  //
+  class [[nodiscard]] Result;
+}
+#endiv
+#divert <hpp>
+#import tunitas.app.words.Strings
+#import tunitas.required.Iterator_Producing
+#import std.tuple
+class app::service::options::parser::Result : public std::tuple<bool, tunitas::app::words::Strings> {
+  using ancestor = std::tuple<bool, tunitas::app::words::Strings>;
+public:
+  using Value = tunitas::app::words::Strings;
+  inline Result();
+  inline explicit Result(bool);
+  inline explicit Result(Value);
+  inline Result(bool, Value);
+  template<tunitas::required::Iterator_Producing<Value::value_type> ITERATOR> Result(bool, ITERATOR start, ITERATOR finish);
+};
+namespace app::service::options::parser {
+  inline auto ok(Result const &) -> bool;
+  // these are casts, like std::forward and std::move
+  inline auto value(Result const &) -> Result::Value const &;
+  inline auto value(Result &) -> Result::Value &;
+  inline auto value(Result &&) -> Result::Value &&;
+}
+#endiv
+#divert <ipp>
+namespace app::service::options {
+  auto parser::ok(Result const &r) -> bool {
+    return std::get<0>(r);
+  }
+  auto parser::value(Result const &r) -> Result::Value const & {
+    return std::get<1>(r);
+  }
+  auto parser::value(Result &r) -> Result::Value & {
+    return std::get<1>(r);
+  }
+  auto parser::value(Result &&r) -> Result::Value && {
+    return std::get<1>(std::forward<Result>(r));
+  }
+}
+#import std.move
+namespace app::service::options::parser {
+  Result::Result()
+    : ancestor{true, Value{}}
+  { }
+  Result::Result(bool success)
+    : ancestor{success, Value{}}
+  { }
+  Result::Result(Value value)
+    : ancestor{true, std::move(value)}
+  { }
+  Result::Result(bool success, Value value)
+    : ancestor{success, std::move(value)}
+  { }
+  template<tunitas::required::Iterator_Producing<Result::Value::value_type> ITERATOR> Result::Result(bool success, ITERATOR start, ITERATOR finish)
+    : ancestor{success, Value{start, finish}}
+  { }
+}
+#endiv

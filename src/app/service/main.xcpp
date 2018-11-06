@@ -1,0 +1,46 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.app.options.Args
+namespace app::service {
+  inline auto const NAME = "uss";
+  using tunitas::app::options::Args;
+  auto main(Args) -> int;
+}
+#endiv
+#divert <cpp>
+auto main(int c, char *v[]) -> int {
+  return app::service::main(app::service::Args{(unsigned)c, v});
+}
+#import app.service.Configuration
+#import app.service.exception.Quitting
+#import app.service.options.Specification
+#import app.service.options.Parser
+#import app.service.run
+#import tunitas.app.exception.Generic
+#import std.move
+#import std.cerr
+#import sys.exits.constants
+auto app::service::main(Args args) -> int try {
+  Configuration cfg{Program{args.front()}};
+  options::Specification spec;
+  options::Parser pa{cfg, spec};
+  auto parsed = pa.parse(std::move(args));
+  if (!ok(parsed)) {
+    error(cfg) << ": error, the command line contains errors\n"; // [[FIXTHIS]] return an error indication in the outcome " << error_code(parsed).message() << '\n';
+    throw exception::Quitting{NAME, sys::exits::FAIL};
+  }
+  if (cfg.dry_run_mode) {
+    verbose(cfg) << "nothing to do in dry-run mode\n";
+  } else {
+    // This will never return
+    run(cfg);
+  }
+  return sys::exits::OK;
+} catch (tunitas::app::exception::Generic const &g) {
+  g.stream() << g << '\n';
+  return g.code();
+} catch (std::exception const &e) {
+  std::cerr << NAME << ": fatal, an unexpected error - " << e.what() << '\n';
+  return sys::exits::SOFTWARE;
+}
+#endiv

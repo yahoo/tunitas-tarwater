@@ -1,0 +1,60 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace app::service::options {
+  //
+  // The options specification
+  //
+  // Usage:
+  //
+  //   Specification spec;
+  //   options::Parser parser{cfg, spec}
+  //
+  class Specification;
+}
+#endiv
+#divert <hpp>
+#import tunitas.app.options.Specification
+class app::service::options::Specification : public tunitas::app::options::Specification {
+  using ancestor = tunitas::app::options::Specification;
+public:
+  Specification();
+};
+#endiv
+#divert <cpp>
+#import options.argument.constants
+namespace oa = options::argument;
+#import app.service.options.indicator.constants
+namespace oi = app::service::options::indicator;
+app::service::options::Specification::Specification()
+  //
+  // options::indicator::MISSING requires ':' because
+  // <quote>
+  //   If the first character (following any optional '+' or '-' described 
+  //   above) of optstring is a colon (':'), then getopt() likewise
+  //   does not print an error message. In addition, it returns ':' instead
+  //   of '?' to indicate a missing option argument.
+  // </quote>
+  //
+  //          /------------------ this [read carefully getopt(3)]
+  //          |
+  //          v
+  : ancestor{":hVdvqwybfPp:",
+             {{"usage", oa::NO, oi::USAGE_SUBCOMMAND},
+              {"help", oa::NO, oi::USAGE_SUBCOMMAND},
+              {"version", oa::NO, oi::VERSION_SUBCOMMAND},
+	      {"debug", oa::NO, oi::DEBUG_MODE},
+	      {"verbose", oa::NO, oi::VERBOSE_MODE},
+	      {"quiet", oa::NO, oi::QUIET_MODE},
+	      {"warning", oa::NO, oi::WARNING_MODE},
+	      {"warnings", oa::NO, oi::WARNING_MODE},
+	      {"dryrun", oa::NO, oi::DRYRUN_MODE},
+	      {"dry-run", oa::NO, oi::DRYRUN_MODE},
+	      {"fg", oa::NO, oi::FOREGROUND_MODE},
+	      {"foreground", oa::NO, oi::FOREGROUND_MODE},
+	      {"bg", oa::NO, oi::BACKGROUND_MODE},
+	      {"background", oa::NO, oi::BACKGROUND_MODE},
+	      {"pid", oa::NO, oi::EMIT_PID},
+	      {"emit-pid", oa::NO, oi::EMIT_PID},
+	      {"port", oa::REQUIRED, oi::SERVICE_PORT}}}
+{ }
+#endiv

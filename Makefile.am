@@ -27,7 +27,8 @@ INSTALLATION_AREAS = \
   @std_tunitas_prefix@ \
   $(end)
 
-bin_PROGRAMS = bin/uss
+bin_PROGRAMS = 
+sbin_PROGRAMS = sbin/tarwater-service
 lib_LTLIBRARIES = 
 noinst_LTLIBRARIES = \
   lib/libtunitas-tarwater.la \
@@ -37,38 +38,39 @@ check_PROGRAMS = bin/unit
 check_LTLIBRARIES = 
 
 $(bin_PROGRAMS) : $(lib_LTLIBRARIES)
+$(sbin_PROGRAMS) : $(lib_LTLIBRARIES)
 $(lib_LTLIBRARIES) : $(noinst_LTLIBRARIES)
 $(check_PROGRAMS) : $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
 $(check_PROGRAMS) : $(check_LTLIBRARIES)
 
 include src/tunitas/tarwater/Makefrag.am
-include src/tunitas/tarwater/uss/Makefrag.am
+include src/app/service/Makefrag.am
 include src/want/Makefrag.am
 include src/tests/unit/Makefrag.am
 
 MODULES = \
   $(lib_libtunitas_tarwater_la_MODULES) \
   $(lib_lib_la_MODULES) \
-  $(bin_uss_MODULES) \
+  $(sbin_tarwater_service_MODULES) \
   $(bin_unit_MODULES) \
   $(end)
 $(if $(MODULES),$(__ok),$(error NO MODULES))
 OBJECTS = \
-  $(bin_uss_OBJECTS) \
+  $(sbin_tarwater_service_OBJECTS) \
   $(end)
 $(if $(OBJECTS),$(__ok),$(error NO OBJECTS))
 
 $(OBJECTS) : $(MODULES)
 
 include tests/unit/Makefrag.am
-include tests/uss/Makefrag.am
+include tests/service/Makefrag.am
 TESTS = \
   $(tests_unit_TESTS) \
-  $(tests_uss_TESTS) \
+  $(tests_service_TESTS) \
   $(end)
 XFAIL_TESTS = \
   $(tests_unit_XFAIL_TESTS) \
-  $(tests_uss_XFAIL_TESTS) \
+  $(tests_service_XFAIL_TESTS) \
   $(end)
 
 __DC_SEARCHPATH = $(SEARCHPATH_EXTERNAL_MODULES)

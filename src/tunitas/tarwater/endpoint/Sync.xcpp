@@ -1,0 +1,47 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::endpoint {
+  //
+  // The code behind the /sync endpoint
+  //
+  // Usage:
+  //
+  //   uss::endpoint::Sync sync;
+  //   ws.register_resource("/sync", &sync, true);
+  //   ws.register_resource("/userid", &sync, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Sync;
+}
+#endiv
+#divert <hpp>
+class tunitas::tarwater::endpoint::Sync : public Resource<Sync> {
+public:
+  auto render_GET(Request const &, [[out]] Response *&) -> void;
+public: // though we wish it was private and even more so we wish that it did not exist
+  auto render_GET(Request const &r, [[out]] Response **f) -> void { render_GET(r, *f); }
+};
+#endiv
+#divert <cpp>
+#import tunitas.server.constants
+#import tunitas.server.responses
+#import tunitas.server.filters
+#import std.exception
+auto tunitas::tarwater::endpoint::Sync::render_GET(Request const &request, Response *&fill) -> void
+  try {
+    // enforce something?
+    //   filters::enforce_no_query_parameters(request, fill);
+    if (nullptr == fill) {
+      auto const &content_body = R"text(over there)text";
+      auto const code = http::R302_FOUND;
+      auto const &content_type = mime::TEXT_PLAIN;
+      httpserver::response::Builder bob{content_body, code, content_type};
+      fill = new Response{bob};
+    }
+  } catch (std::exception const &e) {
+    server::responses::internal_server_error(fill, e.what());
+  } catch (...) {
+    server::responses::internal_server_error(fill);
+  }
+
+#endiv

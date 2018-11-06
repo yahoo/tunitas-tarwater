@@ -1,0 +1,39 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import app.service.Configuration
+namespace app::service {
+  auto run(Configuration const &) -> void;
+}
+#endiv
+#divert <cpp>
+#import app.service.constants
+#import app.service.defaults
+#import getpid
+#import httpserver.Create_Webserver
+#import httpserver.Webserver
+#import std.cout
+#import std.move
+#import tunitas.tarwater.endpoint.Sync
+auto app::service::run(Configuration const &cfg) -> void {
+  httpserver::Webserver ws{[&cfg]() {
+    httpserver::Create_Webserver specification;
+    using namespace constants::server;
+    specification.debug();
+    specification.use_ipv6().start_method(METHOD).max_threads(THREADS);
+    specification.port(cfg.service_port.value_or(defaults::SERVICE_PORT));
+    return std::move(specification);
+  }()};
+  if (cfg.emit_pid) {
+    std::cout << getpid() << std::flush;
+  }
+  // [[FIXTHIS]] daemonize
+  // [[FIXTHIS]] drop privileges
+  using namespace tunitas::tarwater;
+  auto const FAMILY_SENSE = false;
+  endpoint::Sync sync;
+  ws.register_resource("/sync", &sync, FAMILY_SENSE);   // "our" standard name
+  ws.register_resource("/userid", &sync, FAMILY_SENSE); // "their" standard name
+  // There is no 'quit' method.  The service runs forever
+  ws.start(cfg.foreground.value_or(defaults::FOREGROUND));
+}
+#endiv

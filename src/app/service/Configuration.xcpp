@@ -1,0 +1,26 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace app::service {
+  //
+  // The User Sync Service (USS) Configuration
+  // captures the user-configurable settings of the service
+  //
+  // Usage:
+  //
+  //   Configuration cfg{};
+  //
+  class Configuration;
+}
+#endiv
+#divert <hpp>
+#import tunitas.app.Configuration
+#import std.optional
+class app::service::Configuration : public tunitas::app::Configuration {
+  using ancestor = tunitas::app::Configuration;
+public:
+  using ancestor::Configuration;
+  std::optional<bool> foreground;
+  std::optional<bool> emit_pid;
+  std::optional<std::uint16_t> service_port;
+};
+#endiv
