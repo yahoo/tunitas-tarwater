@@ -1,0 +1,33 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import std.uint64_t
+namespace tunitas::tarwater::identifier {
+  //
+  // https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  //
+  // <paraphrase>
+  //
+  //   ID Values
+  //   When produced in the browser the id field is generated with approximately
+  //   the following code using a WebCrypto API for random data.
+  //  
+  //     var buffer = new Uint8Array(8);
+  //     crypto.getRandomValues(buffer);
+  //     return arrayBufferToBase64String(buffer);
+  //  
+  //   Other possible representations include
+  //   
+  //     Type	Value
+  //     byte array	[-113, 33, 1, -39, 65, -46, -116, -70]
+  //     64 bit signed integer	-5004393905660026481
+  //     64 bit hex encoded integer	ba8cd241d901218f
+  //   
+  //   All of these may used as internal representations for data storage.
+  //   However for all purposes of data exchange or other communication
+  //   such as RTB bid requests, the canonical (string) representation should be used
+  //
+  // </paraphrase>
+  //
+  enum Integer : std::uint64_t;
+}
+#endiv

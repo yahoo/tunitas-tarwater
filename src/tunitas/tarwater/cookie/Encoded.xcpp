@@ -1,0 +1,22 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.cookie.String
+namespace tunitas::tarwater::cookie {
+  //
+  // An encoded cookie is an URLSAFE string.
+  // Prefer the nomenclature 'cookie::Encoded' over 'cookie::String<URLSAFE>'
+  //
+  // Specification:
+  //   https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  //   Operations:
+  //     encode ---> encodeURIComponent(btoa(JSON.stringify(object)))
+  //     decode ---> JSON.parse(atob(decodeURIComponent(value)))
+  //
+  // Usage:
+  //
+  //    cookie::Object obj{...somehow...};
+  //    cookie::Encoded enc = encode(object);
+  //
+  using Encoded = String<URLSAFE>;
+}
+#endiv

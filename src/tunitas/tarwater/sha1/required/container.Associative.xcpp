@@ -1,0 +1,37 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.sha1.required.container.Contiguous
+#import tunitas.tarwater.sha1.required.container.Sequence
+namespace tunitas::tarwater::sha1::required::container {
+  //
+  // An associative container is a sequence that is not continguous
+  //
+  // https://en.cppreference.com/w/cpp/container
+  // https://en.wikipedia.org/wiki/Associative_containers
+  //
+  template<typename CONTAINER> concept bool Associative = Sequence<CONTAINER> && ! Contiguous<CONTAINER>;
+}
+#endiv
+#divert <cpp>
+// This is test code, of course.
+#import std.array
+#import std.map
+#import std.set
+#import std.string
+#import std.string_view
+#import std.vector
+namespace tunitas::tarwater::sha1::required::container {
+  // Because of the dope vector effect
+  static_assert(!Associative<std::array<char, 99>>);
+  static_assert(!Associative<std::vector<char>>);
+  // Because there is indirect data "outside" of the vector
+  static_assert(Associative<std::vector<char const *>>);
+  static_assert(Associative<std::vector<std::string>>);
+  // Because of the dope vector effect
+  static_assert(!Associative<std::string>);
+  static_assert(!Associative<std::string_view>);
+  // Because they are associative
+  static_assert(Associative<std::set<std::string>>);
+  static_assert(Associative<std::map<int, std::string>>);
+}
+#endiv

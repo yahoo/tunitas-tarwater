@@ -1,0 +1,54 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.Outcome
+#import tunitas.tarwater.identifier.Integer
+#import tunitas.tarwater.identifier.Encoded
+namespace tunitas::tarwater::identifier {
+  //
+  // Decode the DigiTrust identifier (string)
+  // An base64 -> integer.
+  //
+  // Failure is not exceptional because the string values come from the Big Bad Internet.
+  // Returns an outcome; but exceptions for the truly surprising (exceptional) problems.
+  //
+  // See Encoding within
+  // https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  //
+  // Usage:
+  // 
+  //   auto str = identifier::Encoded{"VJ+TjrjhnvU="};
+  //   auto decoded = decode(str);
+  //   if (ok(decoded)) {
+  //      Integer id = value(decoded);
+  //      ... use id...
+  //   } else {
+  //       std::error_code ec = error_code(decoded);
+  //       std::cerr << ec.message() << '\n';
+  //   }
+  //
+  inline auto decode(Encoded const &) -> Outcome<Integer>;
+}
+#endiv
+#divert <ipp>
+#import std.error_code
+#import std.underlying_type
+#import tunitas.base64.Decoder
+#import tunitas.base64.Exception
+#import tunitas.tarwater.error.Code
+auto tunitas::tarwater::identifier::decode(Encoded const &input) -> Outcome<Integer> {
+  using Result = Outcome<Integer>;
+  using namespace ::tunitas::base64;
+  try {
+    Decoder dec{input};
+    auto candidate = dec.get<std::underlying_type<Integer>::type>();
+    if (!dec.eof()) {
+      // extra junk at the end
+      return Result{std::error_code{error::Code::BAD_BASE64_ENCODING}};
+    }
+    return Result{Integer(candidate)};
+  } catch (Exception const &) {
+    // e.g. underflow, or such
+    return Result{std::error_code{error::Code::BAD_BASE64_ENCODING}};
+  }
+}
+#endiv

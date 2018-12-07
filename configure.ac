@@ -41,6 +41,7 @@ TF_WITH_SUBSYSTEM([tunitas-basics], [], [The Tunitas Basics])
 
 # and mention in $(DEVELOPMENT_AREAS) in Makefile.am
 TF_WITH_MODULE([httpserver])
+TF_WITH_MODULE([json])
 TF_WITH_MODULE([nonstd])
 TF_WITH_MODULE([options])
 TF_WITH_MODULE([posix])
@@ -66,6 +67,7 @@ AC_PROG_CXX
 AM_PROG_CC_C_O
 TF_PROG_DC
 TF_CHECK_CPPUNIT
+TF_CHECK_JSONCPP
 
 m4_include([ac/with-nonstd-libhttpserver.m4])
 WITH_NONSTD_LIBHTTPSERVER
@@ -75,5 +77,6 @@ dnl https://www.gnu.org/software/gnulib/manual/html_node/Searching-for-Libraries
 AC_CHECK_LIB([httpserver], [main]) 
 AC_CHECK_LIB([microhttpd], [main]) 
 AC_CHECK_LIB([gnutls], [main]) 
+AC_CHECK_LIB([jsoncpp], [main]) 
 
 TF_FINALIZE

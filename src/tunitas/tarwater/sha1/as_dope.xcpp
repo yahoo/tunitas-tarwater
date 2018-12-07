@@ -1,0 +1,43 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import std.size_t
+#import tunitas.tarwater.sha1.workbench.As_Dope
+#import tunitas.tarwater.sha1.required.As_Dopable
+#import tunitas.tarwater.sha1.required.dope.Element
+#import tunitas.tarwater.sha1.traits.Dope
+namespace tunitas::tarwater::sha1 {
+  //
+  // Format a dope-vector data type for the workbench.
+  //
+  // Precondition:
+  //   The lifetime of the value must be longer than the returned formatter object.
+  //   The Workbench::operator<< for the vector's element type must be well-defined.
+  //
+  // Usage:
+  //
+  //   Workbench wb;
+  //   auto const *pointer = ...something...
+  //   auto const size = ...howbig?...
+  //   wb << as_dope(size, pointer);
+  //
+  template<required::As_Dopable DOPE> inline auto as_dope(DOPE const &) -> workbench::As_Dope<typename traits::Dope<DOPE>::Value>;
+  template<required::dope::Element ELEMENT> inline auto as_dope(std::size_t size, ELEMENT const *) -> workbench::As_Dope<ELEMENT>;
+  template<required::dope::Element ELEMENT, std::size_t N> inline auto as_dope(ELEMENT const (&)[N]) -> workbench::As_Dope<ELEMENT>;
+}
+#endiv
+#divert <ipp>
+namespace tunitas::tarwater {
+  template<sha1::required::As_Dopable DOPE> auto sha1::as_dope(DOPE const &vector) -> workbench::As_Dope<typename traits::Dope<DOPE>::Value> {
+    using Result = workbench::As_Dope<typename traits::Dope<DOPE>::Value>;
+    return Result{vector.size(), vector.data()};
+  }
+  template<sha1::required::dope::Element ELEMENT> auto sha1::as_dope(std::size_t size, ELEMENT const *data) -> workbench::As_Dope<ELEMENT> {
+    using Result = workbench::As_Dope<ELEMENT>;
+    return Result{size, data};
+  }
+  template<sha1::required::dope::Element ELEMENT, std::size_t N> auto sha1::as_dope(ELEMENT const (&data)[N]) -> workbench::As_Dope<ELEMENT> {
+    using Result = workbench::As_Dope<ELEMENT>;
+    return Result{N, &data[0]};
+  }
+}
+#endiv

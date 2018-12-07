@@ -1,0 +1,170 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::sha1 { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::sha1::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_function() -> void;
+  auto test_Workbench() -> void;
+  auto test_Bytes() -> void;
+  auto test_Hexstring() -> void;
+  auto test_to_string() -> void;
+  auto test_detail_hexchar() -> void;
+  auto test_detail_hexpair() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import tunitas.tarwater.sha1.function
+#import std.copy
+auto tests::unit::sha1::Fixture::test_function() -> void {
+  using namespace ::tunitas::tarwater::sha1;
+  auto const hashed = function("apple", "banana", "cherry");
+  auto const actual = hexstring(hashed);
+  auto const expected = []() -> Hexstring {
+			  char const specimen[] = "a163b2115d1ed751ee870b2fe8ba06fc43ce1b0b";
+			  Hexstring ret;
+			  static_assert(41 == sizeof (specimen));
+			  std::copy(&specimen[0], &specimen[40], ret.begin());
+			  return ret;
+			}();
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.sha1.Workbench
+auto tests::unit::sha1::Fixture::test_Workbench() -> void {
+  using namespace ::tunitas::tarwater::sha1;
+  Workbench wb;
+  wb << "apple" << "banana" << "cherry";
+  auto const actual = hexstring(wb);
+  auto const expected = []() -> Hexstring {
+			  char const specimen[] = "a163b2115d1ed751ee870b2fe8ba06fc43ce1b0b";
+			  Hexstring ret;
+			  static_assert(41 == sizeof (specimen));
+			  std::copy(&specimen[0], &specimen[40], ret.begin());
+			  return ret;
+			}();
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.sha1.Bytes
+auto tests::unit::sha1::Fixture::test_Bytes() -> void {
+  using namespace ::tunitas::tarwater::sha1;
+  Bytes b0;
+  CPPUNIT_ASSERT(20 == b0.size());
+  auto b1 = []() -> Bytes {
+	      char const specimen[] = "\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09";
+	      static_assert(21 == sizeof (specimen));
+	      Bytes ret;
+	      std::copy((std::byte const *) &specimen[0], (std::byte const *) &specimen[20], ret.begin());
+	      return ret;
+	    }();
+  CPPUNIT_ASSERT(20 == b1.size());
+}
+#import tunitas.tarwater.sha1.Hexstring
+auto tests::unit::sha1::Fixture::test_Hexstring() -> void {
+  using namespace ::tunitas::tarwater::sha1;
+  Hexstring h0;
+  CPPUNIT_ASSERT(40 == h0.size());
+  auto h1 = []() -> Hexstring {
+	      char const specimen[] = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+	      Hexstring ret;
+	      static_assert(41 == sizeof (specimen));
+	      std::copy(&specimen[0], &specimen[40], ret.begin());
+	      return ret;
+	    }();
+  CPPUNIT_ASSERT(40 == h1.size());
+}
+#import tunitas.tarwater.sha1.to_string
+auto tests::unit::sha1::Fixture::test_to_string() -> void {
+  using namespace ::tunitas::tarwater::sha1;
+  std::string const expected{"da39a3ee5e6b4b0d3255bfef95601890afd80709"};
+  {
+    auto subject = []() -> Bytes {
+		     char const specimen[] = "\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09";
+		     Bytes ret;
+		     std::copy((std::byte const *)&specimen[0], (std::byte const *)&specimen[20], ret.begin());
+		     return ret;
+		   }();
+    auto const actual = to_string(subject);
+    CPPUNIT_ASSERT_EQUAL(expected, actual);
+  } {
+    auto subject = []() -> Hexstring {
+		     char const specimen[] = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+		     Hexstring ret;
+		     std::copy(&specimen[0], &specimen[40], ret.begin());
+		     return ret;
+		   }();
+    auto const actual = to_string(subject);
+    CPPUNIT_ASSERT_EQUAL(expected, actual);
+  }
+}
+#import tunitas.tarwater.sha1.detail
+auto tests::unit::sha1::Fixture::test_detail_hexchar() -> void {
+  using namespace ::tunitas::tarwater::sha1::detail;
+  CPPUNIT_ASSERT('0' == hexchar(0));
+  CPPUNIT_ASSERT('1' == hexchar(1));
+  CPPUNIT_ASSERT('2' == hexchar(2));
+  CPPUNIT_ASSERT('3' == hexchar(3));
+  CPPUNIT_ASSERT('4' == hexchar(4));
+  CPPUNIT_ASSERT('5' == hexchar(5));
+  CPPUNIT_ASSERT('6' == hexchar(6));
+  CPPUNIT_ASSERT('7' == hexchar(7));
+  CPPUNIT_ASSERT('8' == hexchar(8));
+  CPPUNIT_ASSERT('9' == hexchar(9));
+  CPPUNIT_ASSERT('a' == hexchar(10));
+  CPPUNIT_ASSERT('b' == hexchar(11));
+  CPPUNIT_ASSERT('c' == hexchar(12));
+  CPPUNIT_ASSERT('d' == hexchar(13));
+  CPPUNIT_ASSERT('e' == hexchar(14));
+  CPPUNIT_ASSERT('f' == hexchar(15));
+}
+#import std.tuple
+#import std.cerr
+#import std.hex
+#import std.setfill
+#import std.setw
+auto tests::unit::sha1::Fixture::test_detail_hexpair() -> void {
+  using namespace ::tunitas::tarwater::sha1::detail;
+  for (auto hi{0u}, he{16u}; he != hi; ++hi) {
+    for (auto li{0u}, le{16u}; le != li; ++li) {
+      auto specimen = 16*hi + li;
+      auto [expected_hi, expected_lo] = std::tuple<unsigned char, unsigned char>{hi, li};
+      auto [actual_hi, actual_lo] = hexpair(specimen);
+      std::cerr << "DEBUG: expected=" << std::hex << std::setw(2) << std::setfill('0') << (unsigned)expected_hi
+		<< '.' << std::hex << std::setw(2) << std::setfill('0') << (unsigned)expected_lo
+		<< " actual=" << std::hex << std::setw(2) << std::setfill('0') << (unsigned)actual_hi
+		<< '.' << std::hex << std::setw(2) << std::setfill('0') << (unsigned)actual_lo << "\n";
+      CPPUNIT_ASSERT_EQUAL((unsigned)expected_hi, (unsigned)actual_hi);
+      CPPUNIT_ASSERT_EQUAL((unsigned)expected_lo, (unsigned)actual_lo);
+    }
+  }
+}
+#import tests.unit.sha1.Required
+#import tests.unit.sha1.Workbench
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::sha1::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("sha1");
+  series << call("function", &Fixture::test_function)
+	 << call("Workbench", &Fixture::test_Workbench)
+	 << call("Bytes", &Fixture::test_Bytes)
+	 << call("Hexstring", &Fixture::test_Hexstring)
+	 << call("to_string", &Fixture::test_to_string)
+    ;
+  {
+    Stream det("detail");
+    det << call("hexchar", &Fixture::test_detail_hexchar)
+        << call("hexpair", &Fixture::test_detail_hexpair)
+      ;
+    series << add(std::move(det.release()));
+  }
+  series << add(Required::suite())
+	 << add(Workbench::suite())
+    ;
+  return series.release();
+}
+#endiv

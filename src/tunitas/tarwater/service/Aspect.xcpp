@@ -1,0 +1,55 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::service {
+  //
+  // An tarwater-specific aspect of the service's resource.
+  // Descendants only
+  //
+  // Usage:
+  //
+  //   class endpoint::Something : Resource<Something>, service::Aspect {
+  //     struct ancestors {
+  //       using Webserver = Resource<Something>;
+  //       using DigiTrust = service::Aspect;
+  //     };
+  //   public:
+  //     inline explicit Sync(service::Core &);
+  //     ...
+  //   };
+  //
+  class Aspect;
+}
+#endiv
+#divert <hpp>
+#import tunitas.Outcome
+#import tunitas.tarwater.service.Core
+#import tunitas.tarwater.redirect.Identifier
+#import tunitas.tarwater.redirect.Specification
+class tunitas::tarwater::service::Aspect {
+protected:
+  virtual ~Aspect() = default;
+  inline Aspect(Core &);
+public:
+  auto get_redirect_specification(Request const &) -> Outcome<redirect::Specification>;
+  auto get_identifier(Request const &) -> Outcome<redirect::Identifier>;
+protected:
+  Core &core;
+};
+#endiv
+#divert <ipp>
+tunitas::tarwater::service::Aspect::Aspect(Core &core) : core{core} { }
+#endiv
+#divert <cpp>
+#import std.error_code
+#import tunitas.tarwater.error.Code
+auto tunitas::tarwater::service::Aspect::get_redirect_specification(Request const &request) -> Outcome<redirect::Specification> {
+  using Result = Outcome<redirect::Specification>;
+#warning WRITETHIS auto tunitas::tarwater::service::Aspect::get_redirect_specification(Request const &request) -> Outcome<redirect::Specification>
+  return Result{std::error_code{error::Code::BAD_REDIRECT_SPECIFICATION}};
+}
+auto tunitas::tarwater::service::Aspect::get_identifier(Request const &request) -> Outcome<redirect::Identifier> {
+  using Result = Outcome<redirect::Identifier>;
+#warning WRITETHIS auto tunitas::tarwater::service::Aspect::get_identifier(Request const &request) -> Outcome<redirect::Identifier>
+  return Result{std::error_code{error::Code::NOT_AN_IDENTIFIER}};
+}
+#endiv

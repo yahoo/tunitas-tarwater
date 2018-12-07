@@ -1,0 +1,33 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::tarwater::error {
+  enum class Code {
+    SUCCESS = 0,
+    NOT_A_NUMBER, //        e.g. in a conversion from a character representation,
+    NOT_AN_IDENTIFIER, //   e.g. in a conversion from a character representation; e.g. bad base64.
+    INVALID_TIME, //        i.e. before the epoch (negative) or after forever (whatever that means)
+    BAD_URLSAFE_ENCODING,
+    BAD_BASE64_ENCODING,
+    BAD_JSON_ENCODING,
+    BAD_REDIRECT_SPECIFICATION,
+  };
+}
+#import std.is_error_code_enum
+namespace std {
+  template<> struct is_error_code_enum<tunitas::tarwater::error::Code>;
+}
+#endiv
+#divert <hpp>
+#import std.true_type
+template<> struct std::is_error_code_enum<tunitas::tarwater::error::Code> : public std::true_type { };
+#import std.error_code
+namespace tunitas::tarwater::error {
+  inline auto make_error_code(Code) -> std::error_code;
+}
+#endiv
+#divert <ipp>
+#import tunitas.tarwater.error.category
+auto tunitas::tarwater::error::make_error_code(Code code) -> std::error_code {
+  return std::error_code{(int) code, category()};
+}
+#endiv

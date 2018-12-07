@@ -7,6 +7,7 @@ include @temerarious_flagship_datadir@/am/build.am
 
 DEVELOPMENT_AREAS = \
   @module_httpserver_prefix@ \
+  @module_json_prefix@ \
   @module_nonstd_prefix@ \
   @module_options_prefix@ \
   @module_posix_prefix@ \
@@ -37,9 +38,10 @@ noinst_LTLIBRARIES = \
 check_PROGRAMS = bin/unit
 check_LTLIBRARIES = 
 
-$(bin_PROGRAMS) : $(lib_LTLIBRARIES)
-$(sbin_PROGRAMS) : $(lib_LTLIBRARIES)
+$(bin_PROGRAMS) : $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
+$(sbin_PROGRAMS) : $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
 $(lib_LTLIBRARIES) : $(noinst_LTLIBRARIES)
+$(check_PROGRAMS) : $(bin_PROGRAMS) $(sbin_PROGRAMS)
 $(check_PROGRAMS) : $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
 $(check_PROGRAMS) : $(check_LTLIBRARIES)
 
@@ -50,13 +52,16 @@ include src/tests/unit/Makefrag.am
 
 MODULES = \
   $(lib_libtunitas_tarwater_la_MODULES) \
-  $(lib_lib_la_MODULES) \
+  $(lib_libwant_la_MODULES) \
   $(sbin_tarwater_service_MODULES) \
   $(bin_unit_MODULES) \
   $(end)
 $(if $(MODULES),$(__ok),$(error NO MODULES))
 OBJECTS = \
+  $(lib_libtunitas_tarwater_la_OBJECTS) \
+  $(lib_libwant_la_OBJECTS) \
   $(sbin_tarwater_service_OBJECTS) \
+  $(bin_unit_OBJECTS) \
   $(end)
 $(if $(OBJECTS),$(__ok),$(error NO OBJECTS))
 

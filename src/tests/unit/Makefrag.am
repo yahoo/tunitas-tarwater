@@ -9,13 +9,30 @@ bin_unit_MODULES = $(call TF_SOURCEStoMODULES, $(bin_unit_SOURCES))
 bin_unit_SOURCES = \
   obj/src/tests/unit/main.cpp \
   obj/src/tests/unit/namespace.cpp \
+  obj/src/tests/unit/cookie.Fixture.cpp \
+  obj/src/tests/unit/cookie.Encode.cpp \
+  obj/src/tests/unit/cookie.Decode.cpp \
+  obj/src/tests/unit/cookie.Object.cpp \
+  obj/src/tests/unit/endpoint.Fixture.cpp \
+  obj/src/tests/unit/error.Fixture.cpp \
+  obj/src/tests/unit/exception.Fixture.cpp \
+  obj/src/tests/unit/identifier.Fixture.cpp \
+  obj/src/tests/unit/member.Fixture.cpp \
+  obj/src/tests/unit/redirect.Fixture.cpp \
+  obj/src/tests/unit/service.Fixture.cpp \
+  obj/src/tests/unit/sha1.Fixture.cpp \
+  obj/src/tests/unit/sha1.Required.cpp \
+  obj/src/tests/unit/sha1.Workbench.cpp \
+  obj/src/tests/unit/substring.Fixture.cpp \
   obj/src/tests/unit/tarwater.Fixture.cpp \
+  obj/src/tests/unit/time.Fixture.cpp \
+  obj/src/tests/unit/url.Fixture.cpp \
   obj/src/tests/unit/want.Fixture.cpp \
   $(end)
-$(scold_cxxdir)/src/tests/unit/dependencies.mk:
+$(scold_cxxdir)/tests/unit/dependencies.mk:
 	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(bin_unit_SOURCES))
 	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(bin_unit_SOURCES))
 	test -e $@
-include $(scold_cxxdir)/src/tests/unit/dependencies.mk
+include $(scold_cxxdir)/tests/unit/dependencies.mk
 clean-dependencies::
-	rm -f $(scold_cxxdir)/src/tests/unit/dependencies.mk
+	rm -f $(scold_cxxdir)/tests/unit/dependencies.mk

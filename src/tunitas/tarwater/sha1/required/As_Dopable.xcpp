@@ -1,0 +1,12 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.sha1.required.container.Contiguous
+namespace tunitas::tarwater::sha1::required {
+  //
+  // The workbench uses this constraint to ensure that only continguous types are put into the As_Dopable<TYPE> protocol.
+  // A type is "as dopable" if it can fit into workbench::As_Dopable.
+  // The types that can do that are the "dope vector" which are contiguous containers.
+  //
+  template<typename CONTAINER> concept bool As_Dopable = container::Contiguous<CONTAINER>;
+}
+#endiv

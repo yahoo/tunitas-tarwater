@@ -1,0 +1,54 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.sha1.required.dope.Element
+#import tunitas.tarwater.sha1.traits.Dope
+#import std.size_t
+namespace tunitas::tarwater::sha1::required::container {
+  //
+  // A continguous container (within sha1::Workbench) is a "dope vector" (of bytes).
+  //
+  template<typename CONTAINER> concept bool Contiguous = requires(CONTAINER container) {
+    // Only use the "new school" type scheme.
+    typename traits::Dope<CONTAINER>::Data;
+    typename traits::Dope<CONTAINER>::Value;
+    typename traits::Dope<CONTAINER>::Size;
+    requires dope::Element<typename traits::Dope<CONTAINER>::Value>;
+    { container.data() } -> typename traits::Dope<CONTAINER>::Data;
+    { container.size() } -> typename traits::Dope<CONTAINER>::Size;
+  };
+}
+#endiv
+#divert <cpp>
+// This is test code
+#import std.array
+#import std.byte
+#import std.string
+#import std.string_view
+#import std.vector
+#import tunitas.tarwater.sha1.Bytes
+#import tunitas.tarwater.sha1.Hexstring
+#import tunitas.tarwater.sha1.workbench.As_Dope
+namespace tunitas::tarwater::sha1::required::container {
+  static_assert(Character<char>);
+  static_assert(1 == sizeof (traits::Dope<std::vector<char>>::Value));
+  static_assert(Contiguous<std::vector<char>>);
+  static_assert(Contiguous<std::string>);
+  //
+  static_assert(Character<char>);
+  static_assert(Character_Traits<std::char_traits<char>>);
+  static_assert(1 == sizeof (traits::Dope<std::string_view>::Value));
+  static_assert(0 != sizeof (traits::Dope<std::string_view>::Size));
+  static_assert(0 != sizeof (traits::Dope<std::string_view>::Data));
+  static_assert(dope::Element<traits::Dope<std::string_view>::Value>);
+  static_assert(Contiguous<std::string_view>);
+  //
+  static_assert(Contiguous<std::array<char, 3>>);
+  static_assert(Contiguous<std::array<char, 4>>);
+  static_assert(Contiguous<Bytes>);
+  static_assert(Contiguous<Hexstring>);
+  static_assert(Contiguous<workbench::As_Dope<char>>);
+  static_assert(Contiguous<workbench::As_Dope<unsigned char>>);
+  static_assert(Contiguous<workbench::As_Dope<signed char>>);
+  static_assert(Contiguous<workbench::As_Dope<std::byte>>);
+}
+#endiv

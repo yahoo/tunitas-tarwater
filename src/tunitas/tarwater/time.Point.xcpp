@@ -1,0 +1,73 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import std.chrono.time_point
+#import std.chrono.system_clock // [[FIXTHIS]] Steady Clock
+namespace tunitas::tarwater::time {
+  //
+  // The time system: Clock, Point, Duration
+  // and conversion from integers and strings.
+  //
+  using Clock = std::chrono::system_clock; // [[FIXTHIS]] why is this not steady clock?
+  using Point = Clock::time_point;
+  using Duration = Point::duration;
+}
+#endiv
+#divert <hpp>
+#import std.string
+#import std.int64_t // a.k.a. std::time_t
+#import tunitas.Outcome
+namespace tunitas::tarwater::time {
+  //
+  // Convert from a syntax, guarding against obvious out-of-bounds.
+  //
+  inline auto from_chars(std::string const &syntax) -> Outcome<Point>;
+  //
+  // Convert from an integer, guarding against obvious out-of-bounds.
+  //
+  inline auto from_integer(std::int64_t since_epoch) -> Outcome<Point>;
+  //
+  // Return the current time point
+  //
+  inline auto now() -> Point;
+  //
+  // Convert the current time point to a duration (and thence to a integer value)
+  //
+  inline auto since_epoch(Point) -> Duration;
+}
+#endiv
+#divert <ipp>
+#import std.error_code
+#import std.exception
+#import std.size_t
+#import std.stoi
+#import tunitas.tarwater.error.Code
+auto tunitas::tarwater::time::from_chars(std::string const &syntax) -> Outcome<Point> {
+  using Result = Outcome<Point>;
+  // Whereas std::stoi signals failure both via exception and also via its 2nd inout parameter
+  // we have to put a lot of machinery around it to make it safe and obvious what is occurring.
+  try {
+    std::size_t end{0};
+    auto candidate = std::stoi(syntax, &end);
+    if (end != syntax.size()) {
+      return Result{std::error_code{error::Code::NOT_A_NUMBER}};
+    }
+    return from_integer(candidate);
+  } catch (std::exception const &) {
+    return Result{std::error_code{error::Code::NOT_A_NUMBER}};
+  }
+}
+auto tunitas::tarwater::time::from_integer(std::int64_t since_epoch) -> Outcome<Point> {
+  using Result = Outcome<Point>;
+  if (since_epoch < 0) {
+    return Result{std::error_code{error::Code::INVALID_TIME}};
+  } else {
+    return Result{Clock::from_time_t(since_epoch)};
+  }
+}
+auto tunitas::tarwater::time::now() -> Point {
+  return Clock::now();
+}
+auto tunitas::tarwater::time::since_epoch(Point point) -> Duration {
+  return point.time_since_epoch();
+}
+#endiv

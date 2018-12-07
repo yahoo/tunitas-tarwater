@@ -1,0 +1,48 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::sha1 {
+  //
+  // The bytes of the SHA1.
+  // The SHA1 is a known and published size: 20 bytes, 40 nibbles, 160 bits.
+  //
+  // Usage:
+  //
+  //   Bytes b = sha1::function("...types...to...hash...over...");
+  //
+  class Bytes;
+}
+#endiv
+#divert <hpp>
+#import tunitas.tarwater.sha1.Hexstring
+namespace tunitas::tarwater::sha1 {
+  // These always copy
+  inline auto bytes(Bytes const &) -> Bytes;
+  inline auto hexstring(Bytes const &) -> Hexstring;
+}
+#import std.byte
+#import std.array
+class tunitas::tarwater::sha1::Bytes : public std::array<std::byte, 20> { };
+#endiv
+#divert <ipp>
+auto tunitas::tarwater::sha1::bytes(Bytes const &b) -> Bytes {
+  return Bytes{b};
+}
+#import tunitas.tarwater.sha1.Hexstring
+#import tunitas.tarwater.sha1.detail
+auto tunitas::tarwater::sha1::hexstring(Bytes const &bs) -> Hexstring {
+  Hexstring ret;
+  auto h{ret.begin()};
+  for (auto b : bs) {
+    auto [hi, lo] = detail::hexpair(b);
+    *h++ = hi;
+    *h++ = lo;
+  }
+  return ret;
+}
+#endiv
+#divert <cpp>
+#import cryptopp.SHA1
+namespace tunitas::tarwater::sha1 {
+  static_assert(Bytes().size() == cryptopp::SHA1::DIGESTSIZE);
+}
+#endiv

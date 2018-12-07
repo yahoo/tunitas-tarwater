@@ -1,0 +1,17 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.substring.Object
+namespace tunitas::tarwater::url {
+  //
+  // The encoded representation of an url is the urlsafe encoding of the string.
+  // See RFC 2396; and the documentariat within tunitas::urlsafe.
+  //
+  // Usage:
+  //
+  //   auto unsafe = url::Decoded{"http://example.org/some_page.html?id={id}&status={status}"};
+  //   url::Encoded safe = encode(unsafe);
+  //
+  enum URLSAFE { };
+  using Encoded = substring::Object<URLSAFE>;
+}
+#endiv

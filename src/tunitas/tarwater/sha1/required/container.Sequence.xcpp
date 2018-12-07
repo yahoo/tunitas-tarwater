@@ -1,0 +1,37 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.sha1.traits.Container
+#include <hpp/tunitas.tarwater.sha1.traits.Container>
+namespace tunitas::tarwater::sha1::required::container {
+  //
+  // A container is minimally something which can be iterated (through).
+  // An associative container, nearby, is a sequence that is not continguous
+  //
+  template<typename CONTAINER> concept bool Sequence = requires(CONTAINER container) {
+    // Only use "new school" types only
+    typename traits::Container<CONTAINER>::Iterator;
+    typename traits::Container<CONTAINER>::Value;
+    { container.begin() } -> typename traits::Container<CONTAINER>::Iterator;
+    { container.end() } -> typename traits::Container<CONTAINER>::Iterator;
+  };
+}
+#endiv
+#divert <cpp>
+// This is test code, of course.
+#import std.array
+#import std.map
+#import std.set
+#import std.string
+#import std.string_view
+#import std.vector
+namespace tunitas::tarwater::sha1::required::container {
+  static_assert(Sequence<std::array<char, 99>>);
+  static_assert(Sequence<std::vector<char>>);
+  static_assert(Sequence<std::vector<char const *>>);
+  static_assert(Sequence<std::vector<std::string>>);
+  static_assert(Sequence<std::set<std::string>>);
+  static_assert(Sequence<std::string>);
+  static_assert(Sequence<std::string_view>);
+  static_assert(Sequence<std::map<int, std::string>>);
+}
+#endiv

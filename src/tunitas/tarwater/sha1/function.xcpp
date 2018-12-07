@@ -1,0 +1,33 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.tarwater.sha1.Bytes
+#import tunitas.tarwater.sha1.Workbench
+namespace tunitas::tarwater::sha1 {
+  //
+  // Compute SHA1 on the textual representation of the inputs
+  //
+  // Usage:
+  //
+  //   sha1::Bytes b = sha1::function("apple", 1, "banana", 2.0);
+  //
+  template<typename... TYPES> inline auto function(TYPES const &...) -> Bytes;
+  namespace detail {
+    inline auto function(Workbench &) -> void;
+    template<typename TYPE, typename... REST> inline auto function(Workbench &, TYPE const &, REST const &...) -> void;
+  }
+}
+#endiv
+#divert <ipp>
+namespace tunitas::tarwater {
+  template<typename... TYPES> auto sha1::function(TYPES const &...values) -> Bytes {
+    Workbench wb;
+    detail::function(wb, values...);
+    return bytes(wb);
+  }
+  auto sha1::detail::function(Workbench &) -> void { }
+  template<typename TYPE, typename... REST> auto sha1::detail::function(Workbench &wb, TYPE const &first, REST const &...rest) -> void {
+    wb << first;
+    function(wb, rest...);
+  }
+}
+#endiv

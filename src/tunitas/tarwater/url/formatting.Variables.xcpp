@@ -1,0 +1,28 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import std.map
+#import std.pair
+namespace tunitas::tarwater::url::formatting {
+  //
+  // The variable bindings for format(...)
+  //
+  // The use of std::map is an implementation detail.
+  // This is substiantially overkill as there are only two known variables in DigiTrust USS,
+  // those being 'id' and 'status'.
+  //
+  // Usage:
+  //
+  //   auto variables = formatting::Variables{{"id","deadbeef"}, {"status", "error"}};
+  //   auto formatted = format(pattern, variables);
+  //
+  class Variables;
+}
+#endiv
+#divert <hpp>
+class tunitas::tarwater::url::formatting::Variables : public std::map<std::string, std::string> {
+  using ancestor = std::map<std::string, std::string>;
+public:
+  Variables() = default;
+  using ancestor::map;
+};
+#endiv

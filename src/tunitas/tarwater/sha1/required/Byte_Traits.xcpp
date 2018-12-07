@@ -1,0 +1,38 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::sha1::required {
+  //
+  // Characterizing the byte-like (octet) quantities (for the purpose of sha1::Workbench)
+  //
+  template<typename TRAITS> concept bool Byte_Traits = requires(TRAITS traits) {
+    // "old school"
+    // And completely different than Character_Traits
+    typename TRAITS::value_type;
+    typename TRAITS::pointer;
+    typename TRAITS::reference;
+    requires 1lu == sizeof (typename TRAITS::value_type);
+    // "new school as you NOT find with std::traits<CHAR>
+    typename TRAITS::const_pointer;
+    typename TRAITS::const_reference;
+    // "new new school as you will find with sha1::traits::Byte;
+    typename TRAITS::Value;
+    typename TRAITS::Pointer;
+    typename TRAITS::Reference;
+    typename TRAITS::Const_Pointer;
+    typename TRAITS::Const_Reference;
+  };
+}
+#endiv
+#divert <cpp>
+// This is, of course, test code.
+#import std.byte
+#import tunitas.tarwater.sha1.traits.Byte
+namespace tunitas::tarwater::sha1::required {
+  static_assert(Byte_Traits<traits::Byte<char>>);
+  static_assert(Byte_Traits<traits::Byte<unsigned char>>);
+  static_assert(Byte_Traits<traits::Byte<signed char>>);
+  static_assert(Byte_Traits<traits::Byte<std::byte>>);
+  static_assert(!Byte_Traits<traits::Byte<int signed>>);
+  static_assert(!Byte_Traits<traits::Byte<int unsigned>>);
+}
+#endiv

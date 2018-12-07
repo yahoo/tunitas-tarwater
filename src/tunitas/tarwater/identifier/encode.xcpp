@@ -1,0 +1,40 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.tarwater.identifier.Integer
+#import tunitas.tarwater.identifier.Encoded
+namespace tunitas::tarwater::identifier {
+  //
+  // Encode the DigiTrust identifier.
+  // An integer -> base64 string
+  //
+  // This should not throw exceptions, but can possibly throw an exception.
+  // Failures are truly exceptional.
+  // It does not return an Outcome because there is no reasonable way it can fail.
+  //
+  // See Encoding within
+  // https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  //
+  // Usage:
+  // 
+  //   auto id = Integer{0x123456789abcdef};
+  //   auto str = encode(id);
+  //
+  inline auto encode(Integer const &) -> Encoded;
+}
+#endiv
+#divert <ipp>
+#import tunitas.base64.Encoder
+#import tunitas.base64.Exception
+auto tunitas::tarwater::identifier::encode(Integer const &input) -> Encoded {
+  using namespace ::tunitas::base64;
+  try {
+    Encoder enc;
+    enc.put((std::underlying_type<Integer>::type) input);
+    return Encoded{enc.finalize()};
+  } catch (base64::Exception const &) {
+    // How can this happen?  A 64-bit quantity encodes in base64 without fuss.
+    // It (allegedly) can't happen, so we let the caller handle it.
+    throw;
+  }
+}
+#endiv

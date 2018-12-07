@@ -1,0 +1,72 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::time { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::time::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_types() -> void;
+  auto test_from_chars() -> void;
+  auto test_from_integer() -> void;
+  auto test_now() -> void;
+  auto test_since_epoch() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.string_literals
+#import tunitas.tarwater.time.Point
+using namespace std::string_literals;
+auto tests::unit::time::Fixture::test_types() -> void {
+  using namespace ::tunitas::tarwater::time;
+  Point there{Duration{100}};
+  Point here = Clock::now();
+  CPPUNIT_ASSERT(here != there);
+}
+auto tests::unit::time::Fixture::test_from_chars() -> void {
+  using namespace ::tunitas::tarwater::time;
+  auto f0 = from_chars("BOGUS");
+  CPPUNIT_ASSERT(!ok(f0));
+  auto f1 = from_chars("1541551531");
+  CPPUNIT_ASSERT(ok(f1));
+  CPPUNIT_ASSERT_EQUAL(1541551531, value(f1).time_since_epoch().count());
+}
+auto tests::unit::time::Fixture::test_from_integer() -> void {
+  using namespace ::tunitas::tarwater::time;
+  auto f0 = from_integer(0);
+  CPPUNIT_ASSERT(ok(f0));
+  auto fm1 = from_integer(-1);
+  CPPUNIT_ASSERT(!ok(fm1));
+  auto f1 = from_integer(1541551531);
+  CPPUNIT_ASSERT(ok(f1));
+  CPPUNIT_ASSERT_EQUAL(1541551531, value(f1).time_since_epoch().count());
+}
+auto tests::unit::time::Fixture::test_now() -> void {
+  using namespace ::tunitas::tarwater::time;
+  auto const then = Point{Duration{1541551681}};
+  auto const noww = now();
+  CPPUNIT_ASSERT(noww > then);
+}
+auto tests::unit::time::Fixture::test_since_epoch() -> void {
+  using namespace ::tunitas::tarwater::time;
+  auto const then = Point{Duration{1541551681}};
+  auto const dura = since_epoch(then);
+  CPPUNIT_ASSERT(dura.count() < now().time_since_epoch().count());
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::time::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("time");
+  series << call("types", &Fixture::test_types)
+	 << call("from_chars", &Fixture::test_from_chars)
+	 << call("from_integer", &Fixture::test_from_integer)
+	 << call("now", &Fixture::test_now)
+	 << call("since_epoch", &Fixture::test_since_epoch)
+    ;
+  return series.release();
+}
+#endiv

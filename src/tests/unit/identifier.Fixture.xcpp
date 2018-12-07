@@ -1,0 +1,91 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::identifier { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::identifier::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_Encoded() -> void;
+  auto test_Integer() -> void;
+  auto test_State() -> void;
+  auto test_encode() -> void;
+  auto test_decode() -> void;
+  auto test_to_string_Encoded() -> void;
+  auto test_to_string_Integer() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import tunitas.tarwater.identifier.Encoded
+auto tests::unit::identifier::Fixture::test_Encoded() -> void {
+  using namespace ::tunitas::tarwater::identifier;
+  auto id = Encoded{"VJ+TjrjhnvU="};
+  CPPUNIT_ASSERT(!id.empty());
+}
+#import tunitas.tarwater.identifier.Integer
+auto tests::unit::identifier::Fixture::test_Integer() -> void {
+  using namespace ::tunitas::tarwater::identifier;
+  auto id = Integer{0x0'9f54'8e93'e1b8'f59e};
+  CPPUNIT_ASSERT(0 != (std::uint64_t)id);
+}
+#import tunitas.tarwater.identifier.State
+auto tests::unit::identifier::Fixture::test_State() -> void {
+  using namespace ::tunitas::tarwater::identifier;
+  CPPUNIT_ASSERT(0 == (int) State::PRESENT);
+}
+#import tunitas.tarwater.identifier.encode
+auto tests::unit::identifier::Fixture::test_encode() -> void {
+  using namespace ::tunitas::tarwater::identifier;
+  auto const subject = Integer{0x0'9f54'8e93'e1b8'f59e};
+  auto const actual = encode(subject);
+  auto const expected = Encoded{"VJ+TjrjhnvU="};
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.identifier.decode
+auto tests::unit::identifier::Fixture::test_decode() -> void {
+  using namespace ::tunitas::tarwater::identifier;
+  auto const subject = Encoded{"VJ+TjrjhnvU="};
+  auto const decoded = decode(subject);
+  auto const actual = value(decoded);
+  auto const expected = Integer{0x0'9f54'8e93'e1b8'f59e};
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.identifier.to_string
+auto tests::unit::identifier::Fixture::test_to_string_Encoded() -> void {
+  using namespace ::tunitas::tarwater::identifier;
+  auto const subject = Encoded{"VJ+TjrjhnvU="};
+  auto const actual = to_string(subject);
+  auto const expected = std::string{"VJ+TjrjhnvU="};
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::identifier::Fixture::test_to_string_Integer() -> void {
+  using namespace ::tunitas::tarwater::identifier;
+  auto const subject = Integer{0x0'9f54'8e93'e1b8'f59e};
+  auto const actual = to_string(subject);
+  auto const expected = std::string{"VJ+TjrjhnvU="};
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::identifier::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("identifier");
+  series << call("Encoded", &Fixture::test_Encoded)
+	 << call("Integer", &Fixture::test_Integer)
+	 << call("State", &Fixture::test_State)
+	 << call("encode", &Fixture::test_encode)
+	 << call("decode", &Fixture::test_decode)
+    ;
+  {
+    Stream tos("to_string");
+    tos << call("Encoded", &Fixture::test_to_string_Encoded)
+	<< call("Integer", &Fixture::test_to_string_Integer)
+      ;
+    series << add(tos.release());
+  }
+  return series.release();
+}
+#endiv

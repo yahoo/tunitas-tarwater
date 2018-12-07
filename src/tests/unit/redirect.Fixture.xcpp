@@ -1,0 +1,119 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::redirect { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::redirect::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_Identifier_Integer() -> void;
+  auto test_Identifier_State() -> void;
+  auto test_identifier_burst() -> void;
+  auto test_identifier_Visitor() -> void;
+  auto test_Specification() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import tunitas.tarwater.identifier.Integer
+#import tunitas.tarwater.identifier.State
+#import tunitas.tarwater.redirect.Identifier
+#import tunitas.tarwater.redirect.identifier.Visitor
+namespace tests::unit::redirect {
+  // Cascade the namespace
+  using namespace ::tunitas::tarwater::redirect;
+  // Make the sibling available
+  namespace identifier {
+    using namespace ::tunitas::tarwater::identifier;
+    using tunitas::tarwater::identifier::State; // these don't belong here, but they are here for testing
+    using tunitas::tarwater::identifier::State; // ibidem.
+    using tunitas::tarwater::redirect::identifier::Visitor;
+  }
+}
+auto tests::unit::redirect::Fixture::test_Identifier_Integer() -> void {
+  auto i = redirect::Identifier{identifier::Integer{0x0'1234'5678'abcd'0123}};
+  auto v = redirect::identifier::Visitor{[](identifier::Integer) { return true; },
+					 [](identifier::State) { return false; }};
+  auto ok = std::visit(v, i);
+  CPPUNIT_ASSERT(ok);
+}
+auto tests::unit::redirect::Fixture::test_Identifier_State() -> void {
+  auto i = redirect::Identifier{identifier::State::ERROR};
+  auto v = redirect::identifier::Visitor{[](identifier::Integer) { return false; },
+					 [](identifier::State) { return true; }};
+  auto ok = std::visit(v, i);
+  CPPUNIT_ASSERT(ok);
+}
+#import tunitas.tarwater.redirect.burst
+auto tests::unit::redirect::Fixture::test_identifier_burst() -> void {
+  auto integer = identifier::Integer{0x0'1234'5678'abcd'0123};
+  auto id = redirect::Identifier{integer};
+  auto const [actual_integer, actual_state] = burst(id);
+  auto const [expected_integer, expected_state] = std::tuple<identifier::Integer, identifier::State>{integer, identifier::State::PRESENT};
+  CPPUNIT_ASSERT(expected_integer == actual_integer);
+  CPPUNIT_ASSERT(expected_state == actual_state);
+}
+#import tunitas.tarwater.redirect.identifier.Visitor
+auto tests::unit::redirect::Fixture::test_identifier_Visitor() -> void {
+  {
+    auto i = redirect::Identifier{identifier::Integer{0x0'1234'5678'abcd'0123}};
+    auto v = redirect::identifier::Visitor{[](identifier::Integer) { return true; },
+					   [](identifier::State) { return false; }};
+    auto ok = std::visit(v, i);
+    CPPUNIT_ASSERT(ok);
+  } {
+    auto i = redirect::Identifier{identifier::State::ERROR};
+    auto v = redirect::identifier::Visitor{[](identifier::Integer) { return false; },
+					   [](identifier::State) { return true; }};
+    auto ok = std::visit(v, i);
+    CPPUNIT_ASSERT(ok);
+  }
+}
+#import tunitas.tarwater.redirect.Specification
+#import tunitas.tarwater.member.Name
+#import tunitas.tarwater.time.Point
+#import tunitas.tarwater.url.encode
+#import tunitas.tarwater.sha1.Hexstring
+#import std.copy
+auto tests::unit::redirect::Fixture::test_Specification() -> void {
+  using namespace ::tunitas::tarwater;
+  redirect::Specification spec;
+  spec.member = member::Name{"loyal-customer"};
+  spec.ts = time::now();
+  spec.next = url::encode(url::Decoded{"http://example.org/"});
+  spec.token = []() -> sha1::Hexstring {
+		 //                    0         1          2        3         4 (WATCHOUT for the \0
+		 //                    01234657890123456789012345678901234567890
+		 char const specimen[] ="aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d";
+		 static_assert(41 == sizeof specimen);
+		 sha1::Hexstring ret;
+		 std::copy(&specimen[0], &specimen[40], ret.begin());
+		 return ret;
+	       }();
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::redirect::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("redirect");
+  {
+    Stream ide("identifier");
+    {
+      Stream con("Identifier");
+      con << call("Integer", &Fixture::test_Identifier_Integer)
+	  << call("State", &Fixture::test_Identifier_State)
+	;
+      ide << add(con.release());
+    }
+    ide << call("burst", &Fixture::test_identifier_burst)
+	<< call("Visitor", &Fixture::test_identifier_Visitor)
+      ;
+    series << add(ide.release());
+  }
+  series << call("Specification", &Fixture::test_Specification)
+    ;
+  return series.release();
+}
+#endiv

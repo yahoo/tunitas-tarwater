@@ -1,10 +1,44 @@
 // This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
 #divert <fpp>
 #import tunitas.server.constants
+#import std.string
+#import std.string_literals
 namespace tunitas::tarwater::constants {
   // cascade the namespaces
   using namespace tunitas::server::constants;
-  //
-  // (ahem) none just yet
+  namespace detail {
+    using namespace std::string_literals;
+    namespace api::v1 {
+      //
+      // User Sync Service (an API)
+      // https://github.com/digi-trust/dt-cdn/wiki/User-Sync-Service-(Draft)
+      //
+      inline auto const MEMBER = "member"s; // string, uint64, base64
+      inline auto const TS = "ts"s; //         int64 (time_t), seconds since the epoch (UTC)
+      inline auto const NEXT = "next"s; //     string, URL
+      inline auto const TOKEN = "token"s; //   string, hex-encoded SHA1
+    }
+    namespace cookie::v1 {
+      //
+      // The DigiTrust Cookie
+      // https://github.com/digi-trust/dt-cdn/wiki/ID-encryption
+      //
+      inline auto const NAME = "DigiTrust.v1.Identity"s;
+      inline auto const VERSION = 2; // yes the "v1" identity cookie is on version two.
+      namespace attributes {
+	// As documented once upon a time at...
+	// https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+	// cases: https://gist.github.com/samtingleff/e3004b92f180a3939f514e0b2f0e0fcb
+	inline auto const ID = "id"s; //             string, a uint64 as base64
+	inline auto const VERSION = "version"s; //   integer, smallish uint, e.g. 2; a schema version
+	inline auto const PRODUCER = "producer"s; // string, small integer, base64.
+	inline auto const PRIVACY = "privacy"s; //   privacy, { object }
+	namespace privacy {
+	  inline auto const OPTOUT = "optout"s; //   boolean, 'true' or 'false'
+	}
+      }
+    }
+  }
+  using namespace detail;
 }
 #endiv

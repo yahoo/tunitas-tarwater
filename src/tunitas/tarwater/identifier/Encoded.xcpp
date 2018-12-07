@@ -1,0 +1,18 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.substring.Object
+namespace tunitas::tarwater::identifier {
+  //
+  // The encoded representation of an identifier the base64 of an int64
+  // See further documentation in Integer.xcpp, which is nearby.
+  //
+  // Specification:
+  //   https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  //   Operations:
+  //     encode ---> btoa(integer)
+  //     decode ---> atob(value)
+  //
+  enum ENCODED { };
+  using Encoded = substring::Object<ENCODED>;
+}
+#endiv

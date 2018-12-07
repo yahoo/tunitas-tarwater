@@ -1,0 +1,46 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::exception {
+  //
+  // A generic tarwater exception.
+  // Descendants only.
+  //
+  // Descending from the generic tunitas server exception.
+  // Continues with the MI sense of the generic server exception.
+  // 
+  // Following the mandate for service exceptions, the messaging is terse and rudimentary.
+  // The messaging is intended for debugging, logging and internal operations.
+  // The messaging is NOT intended for local language translatoin or presentation to managed consumer targets.
+  //
+  // Usage:
+  //
+  //   class my::Problem : public tunitas::tarwater::exception::Generic, public std::out_of_range {
+  //     ...class body...
+  //     auto what() const noexcept -> char const * final { return out_of_range::what(); }
+  //   };
+  //   class my::Difficulty : public tunitas::tarwater::exception::Generic, public std::underflow_error {
+  //     ...class body...
+  //     auto what() const noexcept -> char const * final { return underflow_error::what(); }
+  //   };
+  //
+  //   try {
+  //      throw my::Difficulty{...};
+  //      throw my::Problem{...};
+  //   } catch (tunitas::tarwater::exception::Generic const &) {
+  //      ... a tunitas-tarwater problem...
+  //   } catch (std::exception const &) {
+  //      ...some other problem...
+  //   }
+  //
+  class Generic;
+}
+#endiv
+#divert <hpp>
+#import tunitas.server.exception.Generic
+class tunitas::tarwater::exception::Generic : public tunitas::server::exception::Generic {
+protected:
+  virtual ~Generic() = default;
+  Generic() = default;
+  virtual auto what() const noexcept -> char const * override = 0; // still abstract
+};
+#endiv

@@ -1,0 +1,5 @@
+2018-12-06  Wendell Baker  <wbaker@oath.com>
+
+	* Version 0.0.0, the basic skeleton of the service
+	- builds; does not function
+	- most unit tests work; some XFAIL is registered

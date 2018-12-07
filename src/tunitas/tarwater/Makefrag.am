@@ -12,20 +12,107 @@
 #       <= 0     if any interfaces were removed, changed
 #       <= AGE   if no interface change, but any other (source code) change
 #
-lib_libtunitas_tarwater_la_CURRENT = 1
+lib_libtunitas_tarwater_la_CURRENT = 2
 lib_libtunitas_tarwater_la_REVISION = 0
 lib_libtunitas_tarwater_la_AGE = 0
 lib_libtunitas_tarwater_la_CRA = $(lib_libtunitas_tarwater_la_CURRENT):$(lib_libtunitas_tarwater_la_REVISION):$(lib_libtunitas_tarwater_la_AGE)
 
 lib_libtunitas_tarwater_la_LDFLAGS = $(PACKAGE_LDFLAGS_SET) -version-info $(lib_libtunitas_tarwater_la_CRA)
-lib_libtunitas_tarwater_la_LIBADD  = -ltunitas-server
+lib_libtunitas_tarwater_la_LIBADD  = -ltunitas-server -lcryptopp
 lib_libtunitas_tarwater_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libtunitas_tarwater_la_SOURCES))
 lib_libtunitas_tarwater_la_SOURCES = \
   obj/src/tunitas/tarwater/namespace.cpp \
   obj/src/tunitas/tarwater/Version.cpp \
   obj/src/tunitas/tarwater/constants.cpp \
+  \
+  obj/src/tunitas/tarwater/cookie/namespace.cpp \
+  obj/src/tunitas/tarwater/cookie/Object.cpp \
+  obj/src/tunitas/tarwater/cookie/Superposition.cpp \
+  obj/src/tunitas/tarwater/cookie/required.Tag.cpp \
+  obj/src/tunitas/tarwater/cookie/Encoded.cpp \
+  obj/src/tunitas/tarwater/cookie/String.cpp \
+  obj/src/tunitas/tarwater/cookie/decode.cpp \
+  obj/src/tunitas/tarwater/cookie/encode.cpp \
+  obj/src/tunitas/tarwater/cookie/to_string.cpp \
+  \
   obj/src/tunitas/tarwater/endpoint/namespace.cpp \
   obj/src/tunitas/tarwater/endpoint/Sync.cpp \
+  \
+  obj/src/tunitas/tarwater/error/namespace.cpp \
+  obj/src/tunitas/tarwater/error/Code.cpp \
+  obj/src/tunitas/tarwater/error/Condition.cpp \
+  obj/src/tunitas/tarwater/error/category.cpp \
+  obj/src/tunitas/tarwater/error/Category.cpp \
+  \
+  obj/src/tunitas/tarwater/exception/namespace.cpp \
+  obj/src/tunitas/tarwater/exception/Generic.cpp \
+  obj/src/tunitas/tarwater/exception/Conversion.cpp \
+  \
+  obj/src/tunitas/tarwater/identifier/namespace.cpp \
+  obj/src/tunitas/tarwater/identifier/Encoded.cpp \
+  obj/src/tunitas/tarwater/identifier/Integer.cpp \
+  obj/src/tunitas/tarwater/identifier/State.cpp \
+  obj/src/tunitas/tarwater/identifier/encode.cpp \
+  obj/src/tunitas/tarwater/identifier/decode.cpp \
+  obj/src/tunitas/tarwater/identifier/to_string.cpp \
+  \
+  obj/src/tunitas/tarwater/member.Name.cpp \
+  obj/src/tunitas/tarwater/member.Secret.cpp \
+  \
+  obj/src/tunitas/tarwater/redirect/namespace.cpp \
+  obj/src/tunitas/tarwater/redirect/Specification.cpp \
+  obj/src/tunitas/tarwater/redirect/Identifier.cpp \
+  obj/src/tunitas/tarwater/redirect/identifier.Visitor.cpp \
+  obj/src/tunitas/tarwater/redirect/burst.cpp \
+  \
+  obj/src/tunitas/tarwater/service/namespace.cpp \
+  obj/src/tunitas/tarwater/service/Core.cpp \
+  obj/src/tunitas/tarwater/service/Configuration.cpp \
+  obj/src/tunitas/tarwater/service/Aspect.cpp \
+  \
+  obj/src/tunitas/tarwater/sha1/namespace.cpp \
+  obj/src/tunitas/tarwater/sha1/required/namespace.cpp \
+  obj/src/tunitas/tarwater/sha1/required/As_Dopable.cpp \
+  obj/src/tunitas/tarwater/sha1/required/As_Stringable.cpp \
+  obj/src/tunitas/tarwater/sha1/required/Byte.cpp \
+  obj/src/tunitas/tarwater/sha1/required/Byte_Traits.cpp \
+  obj/src/tunitas/tarwater/sha1/required/Character.cpp \
+  obj/src/tunitas/tarwater/sha1/required/Character_Traits.cpp \
+  obj/src/tunitas/tarwater/sha1/required/Character_Array_Zero.cpp \
+  obj/src/tunitas/tarwater/sha1/required/dope.Element.cpp \
+  obj/src/tunitas/tarwater/sha1/required/Container.cpp \
+  obj/src/tunitas/tarwater/sha1/required/container.Associative.cpp \
+  obj/src/tunitas/tarwater/sha1/required/container.Contiguous.cpp \
+  obj/src/tunitas/tarwater/sha1/required/container.Sequence.cpp \
+  obj/src/tunitas/tarwater/sha1/traits.Byte.cpp \
+  obj/src/tunitas/tarwater/sha1/traits.Character.cpp \
+  obj/src/tunitas/tarwater/sha1/traits.Container.cpp \
+  obj/src/tunitas/tarwater/sha1/traits.Dope.cpp \
+  obj/src/tunitas/tarwater/sha1/function.cpp \
+  obj/src/tunitas/tarwater/sha1/Workbench.cpp \
+  obj/src/tunitas/tarwater/sha1/workbench.As_String.cpp \
+  obj/src/tunitas/tarwater/sha1/workbench.As_Dope.cpp \
+  obj/src/tunitas/tarwater/sha1/as_string.cpp \
+  obj/src/tunitas/tarwater/sha1/as_dope.cpp \
+  obj/src/tunitas/tarwater/sha1/Bytes.cpp \
+  obj/src/tunitas/tarwater/sha1/detail.cpp \
+  obj/src/tunitas/tarwater/sha1/Hexstring.cpp \
+  obj/src/tunitas/tarwater/sha1/to_string.cpp \
+  \
+  obj/src/tunitas/tarwater/substring.Object.cpp \
+  obj/src/tunitas/tarwater/substring.Superposition.cpp \
+  obj/src/tunitas/tarwater/substring.Visitor.cpp \
+  \
+  obj/src/tunitas/tarwater/time.Point.cpp \
+  \
+  obj/src/tunitas/tarwater/url/namespace.cpp \
+  obj/src/tunitas/tarwater/url/Encoded.cpp \
+  obj/src/tunitas/tarwater/url/Pattern.cpp \
+  obj/src/tunitas/tarwater/url/Decoded.cpp \
+  obj/src/tunitas/tarwater/url/decode.cpp \
+  obj/src/tunitas/tarwater/url/encode.cpp \
+  obj/src/tunitas/tarwater/url/format.cpp \
+  obj/src/tunitas/tarwater/url/formatting.Variables.cpp \
   $(end)
 $(scold_cxxdir)/src/tunitas/tarwater/dependencies.mk:
 	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libtunitas_tarwater_la_SOURCES))

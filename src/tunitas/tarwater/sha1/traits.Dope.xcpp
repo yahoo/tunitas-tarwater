@@ -1,0 +1,102 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::sha1::traits {
+  //
+  // A dope vector is aa pointer to trivial type and a size.
+  //
+  // Forego the slangy druggy reference "is dope"; this is old-line computer hacking stuff.
+  // https://en.wikipedia.org/wiki/Dope_vector
+  //
+  // Basically these are contiguous random access containers on very simple types; arrays.
+  //
+  namespace dope_traits {
+    template<typename VECTOR, typename DIRECT_VALUE, typename INDIRECT_VALUE = DIRECT_VALUE> struct Base_IsA;
+    template<typename VECTOR> struct IsA;
+    template<typename VECTOR> struct IsA<VECTOR const>;
+    template<typename VECTOR> struct NotA;
+  }
+  template<typename VECTOR> struct Dope;
+}
+#import std.array
+#import std.size_t
+#import std.string
+#import std.string_view
+#import std.vector
+#import tunitas.tarwater.sha1.required.Character
+#import tunitas.tarwater.sha1.required.Character_Traits
+#import tunitas.tarwater.sha1.required.dope.Element
+#forward tunitas.tarwater.sha1.Bytes
+#forward tunitas.tarwater.sha1.Hexstring
+#forward tunitas.tarwater.sha1.workbench.As_Dope
+namespace tunitas::tarwater::sha1::traits {
+  // In the case of sha1, this is the complete universe of "dope vectors" that we admit.
+  template<required::Character CHAR, required::Character_Traits TRAITS, typename ALLOC> struct Dope<std::basic_string<CHAR, TRAITS, ALLOC>>;
+  template<required::Character CHAR, required::Character_Traits TRAITS> struct Dope<std::basic_string_view<CHAR, TRAITS>>;
+  template<required::Character CHAR, typename ALLOC> struct Dope<std::vector<CHAR, ALLOC>>;
+  template<required::Character CHAR, std::size_t N> struct Dope<std::array<CHAR, N>>;
+  template<> struct Dope<Bytes>;
+  template<> struct Dope<Hexstring>;
+  template<required::dope::Element ELEMENT> struct Dope<workbench::As_Dope<ELEMENT>>;
+};
+#endiv
+#divert <hpp>
+#import std.size_t
+#import std.false_type
+#import std.true_type
+namespace tunitas::tarwater::sha1::traits {
+  template<typename DOPE> struct dope_traits::NotA : public std::false_type {
+    static constexpr auto isa = false;
+  };
+  template<typename DOPE, typename DIRECT_VALUE, typename INDIRECT_VALUE> struct dope_traits::Base_IsA : public std::true_type {
+    static constexpr auto isa = true;
+    using Size = std::size_t;
+    using Value = DIRECT_VALUE;
+    static constexpr auto value_size = sizeof (Value);
+    // ....... ..new school
+    using Data = INDIRECT_VALUE *;
+    using Const_Data = INDIRECT_VALUE const *;
+    // ... old school
+    using size_type = Size;
+    using value_type = Value;
+    using data_type = Data;
+    using const_data_type = Data;
+  };
+  template<typename DOPE> struct dope_traits::IsA : public Base_IsA<DOPE, typename DOPE::value_type, typename DOPE::value_type> { };
+  template<typename DOPE> struct dope_traits::IsA<DOPE const> : public Base_IsA<DOPE, typename DOPE::value_type, typename DOPE::value_type const> { };
+}
+namespace tunitas::tarwater::sha1 {
+  template<typename DOPE> struct traits::Dope : public dope_traits::NotA<DOPE> { };
+}
+#import tunitas.tarwater.sha1.required.Character
+#import tunitas.tarwater.sha1.required.Character_Traits
+namespace tunitas::tarwater::sha1::traits {
+  template<required::Character CHAR, required::Character_Traits TRAITS, typename ALLOC> struct Dope<std::basic_string<CHAR, TRAITS, ALLOC>> : public dope_traits::IsA<std::basic_string<CHAR, TRAITS, ALLOC>> { };
+  // WATCHOUT - unlike std::basic_string, std::basic_string_view provides a "view" so the indirect objects are always const in nature.
+  template<required::Character CHAR, required::Character_Traits TRAITS> struct Dope<std::basic_string_view<CHAR, TRAITS>> : public dope_traits::Base_IsA<std::basic_string_view<CHAR, TRAITS>, CHAR, CHAR const> { };
+  template<required::Character CHAR, typename ALLOC> struct Dope<std::vector<CHAR, ALLOC>> : public dope_traits::IsA<std::vector<CHAR, ALLOC>> { };
+  template<required::Character CHAR, std::size_t N> struct Dope<std::array<CHAR, N>> : public dope_traits::IsA<std::array<CHAR, N>> { };
+};
+#import tunitas.tarwater.sha1.Bytes
+#import tunitas.tarwater.sha1.Hexstring
+#import tunitas.tarwater.sha1.workbench.As_Dope
+namespace tunitas::tarwater::sha1::traits {
+  template<> struct Dope<Bytes> : public dope_traits::IsA<Bytes> { };
+  template<> struct Dope<Hexstring> : public dope_traits::IsA<Hexstring> { };
+  // WATCHOUT - the workbench just needs the "view" sense of the object; so indirect object is consty.
+  template<required::dope::Element ELEMENT> struct Dope<workbench::As_Dope<ELEMENT>> : public dope_traits::Base_IsA<workbench::As_Dope<ELEMENT>, ELEMENT, ELEMENT const> { };
+}
+#endiv
+#divert <cpp>
+// This is test code
+#import std.byte
+#import std.string
+#import std.string_view
+#import std.vector
+namespace tunitas::tarwater::sha1::traits {
+  static_assert(Dope<std::string>::isa);
+  static_assert(Dope<std::string_view>::isa);
+  static_assert(Dope<std::vector<char>>::isa);
+  static_assert(Dope<workbench::As_Dope<char>>::isa);
+  static_assert(Dope<workbench::As_Dope<std::byte>>::isa);
+}
+#endiv

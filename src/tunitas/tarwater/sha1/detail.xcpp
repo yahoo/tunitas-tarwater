@@ -1,0 +1,61 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import std.pair
+#import std.byte
+namespace tunitas::tarwater::sha1::detail {
+  //
+  // The implementation details of the sha1 hash
+  //
+  // Usage: figure it out, there's not that much code here
+  //
+  // https://tools.ietf.org/html/rfc3986
+  // <quote>
+  //   The uppercase hexadecimal digits 'A' through 'F' are equivalent to the lowercase digits 'a' through 'f', respectively.
+  //   If two URIs differ only in the case of hexadecimal digits used in percent-encoded octets, they are equivalent.
+  //   For consistency, URI producers and normalizers should use uppercase hexadecimal digits for all percent-encodings.
+  // </quote>
+  //
+  //
+  // [[FIXTHIS]] this same code exists in tunitas::urlsafe::detail and with the same policy choices (uppercase)
+  // [[FIXTHIS]] do we really really need all these overloads here?
+  inline auto hexchar(std::byte) -> char;
+  inline auto hexchar(unsigned char) -> char;
+  inline auto hexchar(char) -> char;
+  inline auto hexchar(signed char) -> char;
+  inline auto hexchar(int signed) -> char;
+  inline auto hexchar(int unsigned) -> char;
+  namespace packaging::hexpair_function {
+    // [[FIXTHIS]] this is cut & paste from tunitas::urlsafe::detail
+    using Result = std::pair<unsigned char, unsigned char>;
+    inline auto hexpair(std::byte) -> Result;
+    inline auto hexpair(unsigned char) -> Result;
+  }
+  using packaging::hexpair_function::hexpair;
+  inline auto pairhex(unsigned char hi, unsigned char lo) -> std::byte;
+}
+#endiv
+#divert <ipp>
+namespace tunitas::tarwater::sha1 {
+  // recall: signed char and unsigned char are sizes of small integers; not glyphs of cultural literacy.
+  auto detail::hexchar(std::byte sb) -> char { return hexchar((unsigned char)sb); }
+  auto detail::hexchar(signed char sc) -> char { return hexchar((unsigned char)sc); }
+  auto detail::hexchar(char cc) -> char { return hexchar((unsigned char)cc); }
+  auto detail::hexchar(int signed is) -> char { return hexchar((unsigned char)is); }
+  auto detail::hexchar(int unsigned iu) -> char { return hexchar((unsigned char)iu); }
+  auto detail::hexchar(unsigned char uc) -> char {
+    auto offset = uc <= 9 ? '0' : 'A' - 10;
+    return char(uc + offset);
+  }
+  auto detail::packaging::hexpair_function::hexpair(std::byte b) -> Result {
+    return hexpair((unsigned char) b);
+  }
+  auto detail::packaging::hexpair_function::hexpair(unsigned char uc) -> Result {
+    auto hi = uc / 16;
+    auto lo = uc % 16;
+    return Result{hexchar(hi), hexchar(lo)};
+  }
+  auto detail::pairhex(unsigned char hi, unsigned char lo) -> std::byte {
+    return std::byte((hi<<4) | (lo & 0xf));
+  }
+}
+#endiv

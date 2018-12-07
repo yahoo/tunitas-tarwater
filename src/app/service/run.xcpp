@@ -13,6 +13,8 @@ namespace app::service {
 #import httpserver.Webserver
 #import std.cout
 #import std.move
+#import tunitas.tarwater.service.Configuration
+#import tunitas.tarwater.service.Core
 #import tunitas.tarwater.endpoint.Sync
 auto app::service::run(Configuration const &cfg) -> void {
   httpserver::Webserver ws{[&cfg]() {
@@ -28,9 +30,14 @@ auto app::service::run(Configuration const &cfg) -> void {
   }
   // [[FIXTHIS]] daemonize
   // [[FIXTHIS]] drop privileges
-  using namespace tunitas::tarwater;
+  using namespace tunitas;
+  tarwater::service::Configuration core_cfg;
+  core_cfg.member_name = "123";
+  core_cfg.member_secret = "decoder-ring";
+  //
+  tarwater::service::Core core{core_cfg};
   auto const FAMILY_SENSE = false;
-  endpoint::Sync sync;
+  tarwater::endpoint::Sync sync{core};
   ws.register_resource("/sync", &sync, FAMILY_SENSE);   // "our" standard name
   ws.register_resource("/userid", &sync, FAMILY_SENSE); // "their" standard name
   // There is no 'quit' method.  The service runs forever

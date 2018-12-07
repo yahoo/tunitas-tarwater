@@ -1,0 +1,19 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import std.remove_const
+namespace tunitas::tarwater::sha1::required {
+  //
+  // The character is a natural language glyph that is also a Byte
+  // This means that multi-byte characters and the single-byte small integers (unsigned & signed char) are not "characters"
+  //
+  // Reminder: traits::Character<CHAR> implements (inherits from) std::char_traits<CHAR>
+  //  whereas: traits::Byte<CHAR> implements our protocol (tunitas::tarwater::sha1).
+  //
+  // Thus it is reasonable to say the following:
+  //
+  //   template<required::Character C, required::Character_Traits T> ...std::basic_ostream<C, T>
+  //   template<required::Character C, required::Character_Traits T, typename A> ...std::basic_string<C, T, A>
+  //
+  template<typename CHAR> concept bool Character = std::is_same<char, typename std::remove_const<CHAR>::type>::value;
+}
+#endiv

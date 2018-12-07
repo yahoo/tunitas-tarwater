@@ -1,0 +1,35 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.tarwater.url.formatting.Variables
+#import tunitas.tarwater.url.Decoded
+#import tunitas.tarwater.url.Pattern
+namespace tunitas::tarwater::url {
+  //
+  // Format an URL pattern.
+  //
+  // The pattern is coped.
+  //
+  // Usage:
+  // 
+  //   auto variables = url::Variables{{"id", "nQjyizbdyF"}, {"status", "success"}};
+  //   auto pattern = url::Pattern{"http://example.org/some_page.html?id={id}&status={status}"};
+  //   auto formatted = url::format{pattern, variables);
+  //
+  inline auto format(Pattern const &, formatting::Variables const &) -> Decoded;
+}
+#endiv
+#divert <ipp>
+#import std.regex_replace
+#import std.string
+#import std.string_literals
+auto tunitas::tarwater::url::format(Pattern const &pattern, formatting::Variables const &variables) -> Decoded {
+  using namespace std::string_literals;
+  std::string ret{pattern};
+  for (auto const &nv : variables) {
+    auto const name = std::regex{"{"s + nv.first + "}"s};
+    auto const &value = nv.second;
+    ret = std::regex_replace(ret, name, value);
+  }
+  return Decoded{std::move(ret)};
+}
+#endiv

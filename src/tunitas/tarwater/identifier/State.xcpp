@@ -1,0 +1,9 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::identifier {
+  //
+  // The state of an identifier, upon recovery from a cookie container
+  //
+  enum class State { PRESENT, OPTOUT, ERROR };
+}
+#endiv

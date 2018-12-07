@@ -1,0 +1,20 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::substring {
+  //
+  // The Visitor provides access into the Variant.
+  // As such, the Visitor is also an implementation detail of the Object.
+  //
+  // Herein lies a copy of the generic "visitor."
+  // As exhibited in https://en.cppreference.com/w/cpp/utility/variant/visit
+  //
+  // Usage:
+  //
+  //   auto visitor = Visitor{[](Object<TAG> const &v) -> Computed { return function(v); },
+  //                          [](std::error_code const &e) -> Computed { return otherwise(e); }};
+  //   return std::visit(visitor, object);
+  //
+  template<typename... TYPES> struct Visitor : TYPES... { using TYPES::operator()...; };
+  template<typename... TYPES> Visitor(TYPES...) -> Visitor<TYPES...>;
+}
+#endiv

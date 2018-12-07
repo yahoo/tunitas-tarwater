@@ -1,0 +1,22 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.substring.Object
+#import tunitas.tarwater.cookie.required.Tag
+namespace tunitas::tarwater::cookie {
+  //
+  // The string representation of a cookie at various stages of encoding.
+  // This is an implementation detail.
+  //
+  // Prefer
+  //   cookie::Encoded
+  //   cookie::Object
+  //
+  // Specification:
+  //   https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  //   Operations:
+  //     encode ---> encodeURIComponent(btoa(JSON.stringify(object)))
+  //     decode ---> JSON.parse(atob(decodeURIComponent(value)))
+  //
+  template<required::Tag TAG> using String = substring::Object<TAG>;
+}
+#endiv

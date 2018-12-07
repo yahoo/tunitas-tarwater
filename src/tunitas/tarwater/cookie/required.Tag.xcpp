@@ -1,0 +1,22 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import std.is_same
+namespace tunitas::tarwater::cookie {
+  //
+  // The available encoding levels for cookies, as tags.
+  //
+  // Prefer: cookie::Encoded in over cookie::String<URLSAFE>
+  //
+  enum JSON { };
+  enum BASE64 { };
+  enum URLSAFE { };
+  namespace required {
+    //
+    // The concept of a cookie (string) Tag.
+    //
+    template<typename TAG> concept bool Tag = (std::is_same<TAG, JSON>::value ||
+					       std::is_same<TAG, BASE64>::value ||
+					       std::is_same<TAG, URLSAFE>::value);
+  }
+}
+#endiv

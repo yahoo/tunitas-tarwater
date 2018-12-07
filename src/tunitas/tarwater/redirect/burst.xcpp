@@ -1,0 +1,29 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import std.tuple
+#import std.optional
+#import std.variant
+#import tunitas.tarwater.identifier.Integer
+#import tunitas.tarwater.identifier.State
+namespace tunitas::tarwater::redirect {
+  namespace packaging::burst_function {
+    using tarwater::identifier::Integer;
+    using tarwater::identifier::State;
+    using Optional = std::optional<Integer>;
+    using Result = std::tuple<std::optional<Integer>, State>;
+    using Variant = std::variant<Integer, State>;
+    // ADL will not find this
+    inline auto burst(Variant) -> Result;
+  }
+  using packaging::burst_function::burst;
+}
+#endiv
+#divert <ipp>
+#import std.visit
+#import tunitas.tarwater.redirect.identifier.Visitor
+auto tunitas::tarwater::redirect::packaging::burst_function::burst(Variant candidate) -> Result {
+  auto visitor = identifier::Visitor{[](Integer v) { return Result{Optional{v}, State::PRESENT}; },
+				     [](State v)   { return Result{Optional{}, v}; }};
+  return std::visit(visitor, candidate);
+}
+#endiv

@@ -1,0 +1,30 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import std.string
+#import tunitas.tarwater.sha1.Bytes
+#import tunitas.tarwater.sha1.Hexstring
+namespace tunitas::tarwater::sha1 {
+  //
+  // Convert a SHA1 hash (bytes) to a (printable) string.
+  // These always copy.
+  //
+  inline auto to_string(Bytes const &) -> std::string;
+  inline auto to_string(Hexstring const &) -> std::string;
+}
+#endiv
+#divert <ipp>
+#import tunitas.tarwater.sha1.detail
+#import std.move
+auto tunitas::tarwater::sha1::to_string(Bytes const &bs) -> std::string {
+  std::string re;
+  for (auto b : bs) {
+    auto [hi, lo] = detail::hexpair(b);
+    re.push_back(hi);
+    re.push_back(lo);
+  }
+  return std::move(re);
+}
+auto tunitas::tarwater::sha1::to_string(Hexstring const &hs) -> std::string {
+  return std::string{hs.begin(), hs.end()};
+}
+#endiv

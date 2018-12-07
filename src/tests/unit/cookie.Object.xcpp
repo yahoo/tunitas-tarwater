@@ -1,0 +1,79 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::cookie { class Object; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+#import tunitas.tarwater.cookie.Object
+class tests::unit::cookie::Object : public cppunit::test::Fixture {
+public:
+  using Subject = ::tunitas::tarwater::cookie::Object;
+  auto test_constructor_default() -> void;
+  auto test_constructor_2arg() -> void;
+  auto test_constructor_3arg() -> void;
+  auto test_to_string() -> void;
+  auto test_operator_insert() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.string_literals
+using namespace std::literals;
+using namespace ::tunitas::tarwater::cookie;
+namespace member = ::tunitas::tarwater::member;
+namespace identifier = ::tunitas::tarwater::identifier;
+namespace constants = ::tunitas::tarwater::constants;
+auto tests::unit::cookie::Object::test_constructor_default() -> void {
+  Subject subject;
+  subject.id = identifier::Integer{1582106333220lu};
+  subject.version = constants::cookie::v1::VERSION;
+  subject.member = R"member(1CrsdUNAo6)member";
+  subject.optout = false;
+  CPPUNIT_ASSERT(!subject.optout);
+}
+auto tests::unit::cookie::Object::test_constructor_2arg() -> void {
+  Subject subject{identifier::Integer{1582106333220}, member::Name{R"member(1CrsdUNAo6)member"}};
+  CPPUNIT_ASSERT(!subject.optout);
+}
+auto tests::unit::cookie::Object::test_constructor_3arg() -> void {
+  Subject subject{identifier::Integer{1582106333220}, member::Name{R"member(1CrsdUNAo6)member"}, true};
+  CPPUNIT_ASSERT(subject.optout);
+}
+#import tunitas.tarwater.cookie.to_string
+auto tests::unit::cookie::Object::test_to_string() -> void {
+  std::ostringstream buf;
+  Subject subject{identifier::Integer{1582106333220}, member::Name{R"member(1CrsdUNAo6)member"}, true};
+  auto const actual = static_cast<std::string const &>(to_string(subject));
+  auto const expected = R"cookie(["id":"1234565","version":2,"producer":"1CrsdUNAo6","privacy":{"optout":false}})cookie"s;
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import std.ostringstream
+auto tests::unit::cookie::Object::test_operator_insert() -> void {
+  std::ostringstream buf;
+  Subject subject{identifier::Integer{1582106333220}, member::Name{R"member(1CrsdUNAo6)member"}, true};
+  buf << subject;
+  auto const actual = buf.str();
+  auto const expected = R"cookie(["id":"1234565","version":2,"producer":"1CrsdUNAo6","privacy":{"optout":false}})cookie"s;
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::cookie::Object::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("Object");
+  {
+    Stream con{"constructor"};
+    con << call("default", &Object::test_constructor_default)
+	<< call("2-arg", &Object::test_constructor_2arg)
+	<< call("3-arg", &Object::test_constructor_3arg)
+      ;
+    series << add(con.release());
+  }
+  series << call("to_string", &Object::test_to_string)
+	 << call("operator<<", &Object::test_operator_insert)
+    ;
+  return series.release();
+}
+#endiv

@@ -1,0 +1,62 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::sha1 {
+  //
+  // The hexidecimal character representation of the SHA1.
+  // The SHA1 is a known and published size: 20 bytes, 40 nibbles, 160 bits.
+  //
+  // Usage:
+  //
+  //   Hexstring x = sha1::function(...types...to...hash...over...);
+  //   std::cout << x;
+  //
+  class Hexstring;
+}
+#endiv
+#divert <hpp>
+#import std.ostream
+#forward tunitas.tarwater.sha1.Bytes
+namespace tunitas::tarwater::sha1 {
+  inline auto operator<<(std::ostream &, Hexstring const &) -> std::ostream &;
+  // These always copy
+  inline auto bytes(Hexstring const &) -> Bytes;
+  inline auto hexstring(Hexstring const &) -> Hexstring;
+}
+#import std.array
+class tunitas::tarwater::sha1::Hexstring : public std::array<char, 40> {
+  using ancestor = std::array<char, 40>;
+public:
+  Hexstring() = default;
+  using ancestor::array;
+};
+#endiv
+#divert <ipp>
+auto tunitas::tarwater::sha1::hexstring(Hexstring const &hs) -> Hexstring {
+  return Hexstring{hs};
+}
+#import std.ostream_iterator
+#import std.copy
+auto tunitas::tarwater::sha1::operator<<(std::ostream &os, Hexstring const &hx) -> std::ostream & {
+  std::copy(hx.begin(), hx.end(), std::ostream_iterator<char>{os});
+  return os;
+}
+#import tunitas.tarwater.sha1.Bytes
+#import tunitas.tarwater.sha1.detail
+auto tunitas::tarwater::sha1::bytes(Hexstring const &hs) -> Bytes {
+  Bytes ret;
+  auto b{ret.begin()};
+  for (auto i{hs.begin()}, e{hs.end()}; e != i; ) {
+    auto hi = *i++;
+    auto lo = *i++;
+    *b++ = detail::pairhex(hi, lo);
+  }
+  return ret;
+}
+#endiv
+#divert <cpp>
+#import cryptopp.SHA1
+namespace tunitas::tarwater::sha1 {
+  // A hexstring is nibbles, a SHA1 is bytes so thus.
+  static_assert(Hexstring{}.size() == 2*cryptopp::SHA1::DIGESTSIZE);
+}
+#endiv

@@ -1,0 +1,25 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.tarwater.cookie.String
+#import tunitas.tarwater.cookie.Object
+namespace tunitas::tarwater::cookie {
+  //
+  // Convert a cookie object to a (JSON) string.
+  // With the most cogent formatting option possible.
+  // NOT with the pretty printing option.
+  //
+  // Usage:
+  //
+  //   std::string str = to_string(obj);
+  //
+  inline auto to_string(Object const &) -> String<JSON>;
+}
+#endiv
+#divert <ipp>
+#import std.ostringstream
+auto tunitas::tarwater::cookie::to_string(Object const &o) -> String<JSON> {
+  std::ostringstream buf;
+  buf << o;
+  return buf.str();
+}
+#endiv

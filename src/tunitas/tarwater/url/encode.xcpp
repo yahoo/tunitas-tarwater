@@ -1,0 +1,33 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.tarwater.url.Decoded
+#import tunitas.tarwater.url.Encoded
+namespace tunitas::tarwater::url {
+  //
+  // Encode an URL.
+  //
+  // The string is always copied.
+  // Returns a value; but exceptions for the truly surprising (exceptional) problems.
+  //
+  // There can be no domain-sepcific failures here. The failures are system-level
+  // and as such are truly exceptional.
+  // The encode function does not return an Outcome because there is no reasonable way it can fail.
+  //
+  // See RFC 2396; and the documentariat within tunitas::urlsafe.
+  //
+  // Usage:
+  // 
+  //   auto unsafe = url::Decoded{"http://example.org/some_page.html?id={id}&status={status}"};
+  //   auto safe = encode(unsafe);
+  //
+  inline auto encode(Decoded const &) -> Encoded;
+}
+#endiv
+#divert <ipp>
+#import tunitas.urlsafe.encode
+auto tunitas::tarwater::url::encode(Decoded const &input) -> Encoded {
+  using Result = Encoded;
+  // If this throws then less subtle recovery methods must be employed.
+  return Result{tunitas::urlsafe::encode(input)};
+}
+#endiv

@@ -1,0 +1,58 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::cookie { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::cookie::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_JSON() -> void;
+  auto test_BASE64() -> void;
+  auto test_URLSAFE() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.string_literals
+#import tunitas.tarwater.cookie.String
+using namespace std::string_literals;
+auto tests::unit::cookie::Fixture::test_JSON() -> void {
+  using namespace ::tunitas::tarwater::cookie;
+  String<JSON> js{R"json({"id":"jyEB2UHSjLo=", "version": 2, "producer": "1CrsdUNAo6", "privacy": {"optout": false}})json"};
+  CPPUNIT_ASSERT(!js.empty());
+}
+auto tests::unit::cookie::Fixture::test_BASE64() -> void {
+  using namespace ::tunitas::tarwater::cookie;
+  String<BASE64> bs{R"base64(eyJpZCI6Imp5RUIyVUhTakxvPSIsICJ2ZXJzaW9uIjogMiwgInByb2R1Y2VyIjogIjFDcnNkVU5BbzYiLCAicHJpdmFjeSI6IHsib3B0b3V0IjogZmFsc2V9fQ==)base64"};
+  CPPUNIT_ASSERT(!bs.empty());
+}
+auto tests::unit::cookie::Fixture::test_URLSAFE() -> void {
+  using namespace ::tunitas::tarwater::cookie;
+  String<URLSAFE> us{R"urlsafe(eyJpZCI6Imp5RUIyVUhTakxvPSIsICJ2ZXJzaW9uIjogMiwgInByb2R1Y2VyIjogIjFDcnNkVU5BbzYiLCAicHJpdmFjeSI6IHsib3B0b3V0IjogZmFsc2V9fQ%3D%3D)urlsafe"};
+  CPPUNIT_ASSERT(!us.empty());
+}
+#import tests.unit.cookie.Object
+#import tests.unit.cookie.Encode
+#import tests.unit.cookie.Decode
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::cookie::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("cookie");
+  {
+    Stream str("String");
+    str << call("JSON", &Fixture::test_JSON)
+	<< call("BASE64", &Fixture::test_BASE64)
+	<< call("URLSAFE", &Fixture::test_URLSAFE)
+      ;
+    series << add(str.release());
+  }
+  series << add(Object::suite())
+	 << add(Decode::suite())
+	 << add(Encode::suite())
+    ;
+  return series.release();
+}
+#endiv

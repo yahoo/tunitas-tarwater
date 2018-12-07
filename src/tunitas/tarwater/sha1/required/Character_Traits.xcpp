@@ -1,0 +1,41 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import std.is_base_of
+#import std.char_traits
+#import tunitas.tarwater.sha1.required.Byte
+#include <hpp/tunitas.tarwater.sha1.traits.Character>
+namespace tunitas::tarwater::sha1::required {
+  //
+  // Characterizing byte-like quantities (for the purpose of sha1::Workbench)
+  // and as such multi-byte characters count as "bytes."
+  //
+  template<typename TRAITS> concept bool Character_Traits = requires(TRAITS traits) {
+    typename TRAITS::char_type;
+    requires Byte<typename TRAITS::char_type>;
+    requires std::is_base_of<std::char_traits<typename TRAITS::char_type>, TRAITS>::value;
+  };
+}
+#endiv
+#divert <cpp>
+// This is, of course, test code.
+#import std.byte
+#import std.char_traits
+#import tunitas.tarwater.sha1.traits.Character
+namespace tunitas::tarwater::sha1::required {
+  // the octet ones
+  static_assert(Character_Traits<traits::Character<char>>);
+  static_assert(Character_Traits<std::char_traits<char>>);
+#if 0 // template constraint failure anyway
+  // not the wide ones
+  static_assert(!Character_Traits<traits::Character<wchar_t>>);
+  static_assert(!Character_Traits<std::char_traits<wchar_t>>);
+  static_assert(!Character_Traits<traits::Character<char16_t>>);
+  static_assert(!Character_Traits<std::char_traits<char16_t>>);
+  static_assert(!Character_Traits<traits::Character<char32_t>>);
+  static_assert(!Character_Traits<std::char_traits<char32_t>>);
+  // not the byte
+  static_assert(Character_Traits<traits::Character<std::byte>>);
+  static_assert(Character_Traits<std::char_traits<std::byte>>);
+#endif
+}
+#endiv

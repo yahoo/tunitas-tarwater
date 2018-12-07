@@ -1,0 +1,24 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.substring.Object
+namespace tunitas::tarwater::url {
+  //
+  // The native (decoded) representation of an URL is "basically" a filepath.
+  // See RFC 2396; and the documentariat within tunitas::urlsafe.
+  //
+  // Usage:
+  //
+  //   auto safe = url::Encoded{"http%3A%2F%2Fexample.org%2Fsome_page.html%3Fid%3D%7Bid%7D%26status%3D%7Bstatus%7D%0A"}
+  //   auto decoded = decode(safe);
+  //   if (ok(decoded)) {
+  //     url::Decoded unsafe = value(std::move(decoded));
+  //     ...use the unsafe...
+  //   } else {
+  //     std::error_code ec = error_code(decoded);
+  //     ...explain why...
+  //   }
+  //
+  enum NATIVE { };
+  using Decoded = substring::Object<NATIVE>;
+}
+#endiv

@@ -1,0 +1,48 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.tarwater.identifier.Integer
+#import tunitas.tarwater.identifier.Encoded
+#import tunitas.tarwater.identifier.State
+#import std.string
+namespace tunitas::tarwater::identifier {
+  //
+  // Convert an identifier (integer) to a string
+  // using the standard 'to_string' idiom following std::to_string
+  //
+  inline auto to_string(Integer const &) -> std::string;
+  inline auto to_string(Encoded const &) -> std::string;
+  //
+  // Convert the state keywords out to the specified webby keywords
+  // c.f. https://github.com/digi-trust/dt-cdn/wiki/User-Sync-Service-(Draft)
+  //
+  auto to_string(State) -> std::string;
+}
+namespace std {
+  // Make the standard overload available.
+  using tunitas::tarwater::identifier::to_string;
+}
+#endiv
+#divert <ipp>
+#import tunitas.tarwater.identifier.encode
+#import tunitas.tarwater.exception.Conversion
+#import std.move
+auto tunitas::tarwater::identifier::to_string(Integer const &id) -> std::string {
+  return to_string(encode(id));
+}
+auto tunitas::tarwater::identifier::to_string(Encoded const &id) -> std::string {
+  return std::string{std::move(id)};
+}
+#endiv
+#divert <cpp>
+auto tunitas::tarwater::identifier::to_string(State state) -> std::string {
+  switch (state) {
+  case State::PRESENT:
+    return "present";
+  case State::OPTOUT:
+    return "optout";
+  case State::ERROR:
+  default: // <----------------- in webby land invalid State means "error"
+    return "error";
+  }
+}
+#endiv

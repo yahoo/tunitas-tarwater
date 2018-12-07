@@ -1,0 +1,108 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::service {
+  //
+  // The core of the service.
+  // The validation algorithms
+  // The decryption keys.
+  // etc.
+  // 
+  // Usage:
+  //
+  //   Core core{...}
+  //
+  //   endpoint::Sync sync{core}
+  //
+  class Core;
+}
+#endiv
+#divert <hpp>
+#import std.tuple
+#import tunitas.Outcome
+#import tunitas.tarwater.identifier.Integer
+#import tunitas.tarwater.identifier.State
+#import tunitas.tarwater.redirect.Identifier
+#import tunitas.tarwater.redirect.Specification
+#import tunitas.tarwater.service.Configuration
+#import tunitas.tarwater.url.Pattern
+class tunitas::tarwater::service::Core {
+public:
+  inline explicit Core(Configuration const &);
+  //
+  // Validate the redirect specification, returning the URL pattern.
+  auto validate(redirect::Specification) -> Outcome<url::Pattern>;
+  //
+  // Format the identifier for the Set-Cookie header.
+  auto format_cookie(identifier::Integer const &) -> std::string;
+  //
+  // Finalize the identifier, generating a new one if it is missing.
+  using Finalize_Identifier_Result = std::tuple<bool, identifier::Integer, identifier::State>;
+  auto finalize_identifier(Outcome<redirect::Identifier>) -> Finalize_Identifier_Result;
+  //
+  // Generate a new identifier, by pseudorandom methods.
+  auto generate_identifier() -> identifier::Integer;
+protected:
+  Configuration const &cfg;
+  using Random = std::uint64_t;
+  Random identifier_generator; // [[FIXTHIS]]
+};
+#endiv
+#divert <ipp>
+tunitas::tarwater::service::Core::Core(Configuration const &cfg)
+  : cfg{cfg}
+  , identifier_generator{0}
+{ }
+#endiv
+#divert <cpp>
+#import tunitas.tarwater.url.decode
+namespace tunitas::tarwater::service {
+  auto Core::validate(redirect::Specification spec) -> Outcome<url::Pattern> {
+    using Result = Outcome<url::Pattern>;
+    // is the member valid
+    // is the timestamp within ten minutes
+    // is the token valid
+#warning WRITETHIS auto Core::validate(redirect::Specification) -> Outcome<url::Pattern>
+    auto decoded = url::decode(spec.next);
+    return ok(decoded) ? Result{url::Pattern{value(std::move(decoded))}} : Result{error_code(decoded)};
+  }
+}
+#import tunitas.tarwater.constants
+#import tunitas.tarwater.cookie.Object
+#import tunitas.tarwater.cookie.encode
+#import tunitas.tarwater.exception.Conversion
+namespace tunitas::tarwater::service {
+  auto Core::format_cookie(identifier::Integer const &id) -> std::string {
+    cookie::Object c;
+    c.id = id;
+    c.version = constants::cookie::v1::VERSION;
+    c.member = cfg.member_name;
+    c.optout = false; // default opt-out is false => not opted out.
+    auto formatted = cookie::encode(c);
+    if (ok(formatted)) {
+      return value(std::move(formatted));
+    }
+    // How can this even happen?
+    throw exception::Conversion{"cookie"};
+  }
+}
+#import tunitas.tarwater.identifier.State
+#import tunitas.tarwater.redirect.burst
+namespace tunitas::tarwater::service {
+  auto Core::generate_identifier() -> identifier::Integer {
+#warning WRITETHIS auto Core::generate_identifier() -> identifier::Integer
+    return identifier::Integer(++identifier_generator);
+  }
+  auto Core::finalize_identifier(Outcome<redirect::Identifier> identified) -> Finalize_Identifier_Result {
+    using namespace identifier;
+    auto [optid, status] = redirect::burst(value(std::move(identified)));
+    if (State::PRESENT != status) {
+      // The State::OPTOUT and ERROR are basically the same outcome
+      return Finalize_Identifier_Result{false, Integer{}, status};
+    } else {
+      auto set_cookie = !optid;
+      auto identifier = optid ? *optid : generate_identifier();
+      return Finalize_Identifier_Result{set_cookie, identifier, State::PRESENT};
+    }
+  }
+}
+#endiv

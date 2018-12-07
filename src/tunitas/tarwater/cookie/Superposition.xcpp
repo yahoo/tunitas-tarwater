@@ -1,0 +1,13 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.Outcome
+#import tunitas.tarwater.cookie.String
+#import tunitas.tarwater.cookie.required.Tag
+#import std.variant
+namespace tunitas::tarwater::cookie {
+  //
+  // The outcome of a cookie (encode) operation
+  //
+  template<required::Tag TAG> using Superposition = ::tunitas::Outcome<String<TAG>>;
+}
+#endiv

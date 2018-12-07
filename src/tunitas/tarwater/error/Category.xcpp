@@ -1,0 +1,69 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::tarwater::error {
+  //
+  // The error category of tarwater
+  //
+  // Usage:
+  //
+  //   auto cond = category().default_error_condition(code);
+  //   auto name = category().name();
+  //   auto samecode = category().equivalent(code, integer);
+  //   auto samecond = category().equivalent(integer, condition);
+  //   auto message = category().message(code);
+  //
+  class Category;
+}
+#endiv
+#divert <hpp>
+#import std.string
+#import std.error_code
+#import std.error_condition
+#import std.error_category
+#forward tunitas.tarwater.error.category
+class tunitas::tarwater::error::Category : public std::error_category {
+  using ancestor = std::error_category;
+protected:
+  Category() = default;
+  friend auto category() -> Category const &;
+public:
+  auto name() const noexcept -> char const * final;
+  auto default_error_condition(int code) const noexcept -> std::error_condition final;
+  auto message(int code) const -> std::string final;
+};
+#endiv
+#divert <cpp>
+#import tunitas.tarwater.error.Code
+#import tunitas.tarwater.error.Condition
+#import std.to_string
+namespace tunitas::tarwater::error {
+  auto Category::name() const noexcept -> char const * {
+    return "tarwater-service";
+  }
+  auto Category::default_error_condition(int code) const noexcept -> std::error_condition {
+    auto reduced = 0 == code ? Condition::SUCCESS : Condition::FAILURE;
+    return std::error_condition{(int)reduced, *this};
+  }
+  auto Category::message(int code) const -> std::string {
+    switch (Code(code)) {
+    case Code::SUCCESS:
+      return "success";
+    case Code::NOT_A_NUMBER:
+      return "not a number";
+    case Code::NOT_AN_IDENTIFIER:
+      return "not an identifier"; // e.g. bad base64
+    case Code::INVALID_TIME:
+      return "invalid time"; // e.g. before the epoch
+    case Code::BAD_URLSAFE_ENCODING:
+      return "bad URL encoding";
+    case Code::BAD_BASE64_ENCODING:
+      return "bad base64 encoding";
+    case Code::BAD_JSON_ENCODING:
+      return "bad JSON encoding"; // e.g. a syntax error, or a semantic error (e.g. value out of range)
+    case Code::BAD_REDIRECT_SPECIFICATION:
+      return "bad redirect specification";
+    }
+    return "error code " + std::to_string(code);
+  }
+}
+#endiv

@@ -1,0 +1,16 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#include <hpp/tunitas.tarwater.sha1.traits.Byte>
+namespace tunitas::tarwater::sha1::required {
+  //
+  // A byte is an octet.
+  // The Byte concept is defined in terms of the existence of traits::Byte
+  //
+  // Reminder: traits::Byte<CHAR> implements our protocol (tunitas::tarwater::sha1).
+  //  whereas: traits::Character<CHAR> implements (inherits from) std::char_traits<CHAR>
+  //
+  // As such, testing for our 'isa' particle in the traits declaration is sufficient
+  //
+  template<typename BYTE> concept bool Byte = traits::Byte<BYTE>::isa;
+}
+#endiv

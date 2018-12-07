@@ -1,0 +1,13 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.sha1.required.Character
+namespace tunitas::tarwater::sha1::required {
+  //
+  // A zero-terminated array of bytelike.
+  // a.k.a. C-style "char* strings & string literals
+  //
+  template<typename VALUE> concept bool Character_Array_Zero = Character<VALUE> && requires(VALUE *value) {
+    { *value == VALUE(0) } -> bool;
+  };
+}
+#endiv

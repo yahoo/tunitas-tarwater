@@ -1,0 +1,128 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::substring { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+#import tunitas.tarwater.substring.Object
+class tests::unit::substring::Fixture : public cppunit::test::Fixture {
+public:
+  enum TAG { };
+  using Subject = ::tunitas::tarwater::substring::Object<TAG>;
+  auto test_abc() -> void;
+  auto test_constructor_default() -> void;
+  auto test_constructor_char_pointer() -> void;
+  auto test_constructor_copy_ancestor() -> void;
+  auto test_constructor_copy() -> void;
+  auto test_constructor_move_ancestor() -> void;
+  auto test_constructor_move() -> void;
+  auto test_assignment_char_pointer() -> void;
+  auto test_assignment_copy_ancestor() -> void;
+  auto test_assignment_copy() -> void;
+  auto test_assignment_move_ancestor() -> void;
+  auto test_assignment_move() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.move
+#import std.literals
+using namespace std::literals;
+auto tests::unit::substring::Fixture::test_abc() -> void {
+#warning WRITETHISauto tests::unit::substring::Fixture::test_abc() -> void (but what was it?)
+  CPPUNIT_ASSERT(true);
+}
+auto tests::unit::substring::Fixture::test_constructor_default() -> void {
+  auto subject = Subject{};
+  CPPUNIT_ASSERT(subject.empty());
+}
+auto tests::unit::substring::Fixture::test_constructor_char_pointer() -> void {
+  auto specimen = "that";
+  auto subject = Subject{specimen};
+  CPPUNIT_ASSERT(!subject.empty());
+}
+auto tests::unit::substring::Fixture::test_constructor_copy_ancestor() -> void {
+  auto specimen = "that"s;
+  auto subject = Subject{specimen};
+  CPPUNIT_ASSERT(!subject.empty());
+}
+auto tests::unit::substring::Fixture::test_constructor_copy() -> void {
+  auto specimen = Subject{"that"s};
+  auto subject = Subject{specimen};
+  CPPUNIT_ASSERT(!subject.empty());
+}
+auto tests::unit::substring::Fixture::test_constructor_move_ancestor() -> void {
+  auto specimen = "that"s;
+  auto subject = Subject{std::move(specimen)};
+  CPPUNIT_ASSERT(!subject.empty());
+}
+auto tests::unit::substring::Fixture::test_constructor_move() -> void {
+  auto specimen = Subject{"that"s};
+  auto subject = Subject{std::move(specimen)};
+  CPPUNIT_ASSERT(!subject.empty());
+}
+auto tests::unit::substring::Fixture::test_assignment_char_pointer() -> void {
+  Subject subject;
+  auto specimen = "that";
+  subject = specimen;
+  CPPUNIT_ASSERT(!subject.empty());
+}
+auto tests::unit::substring::Fixture::test_assignment_copy_ancestor() -> void {
+  Subject subject;
+  auto specimen = "that"s;
+  subject = specimen;
+  CPPUNIT_ASSERT(!subject.empty());
+}
+auto tests::unit::substring::Fixture::test_assignment_copy() -> void {
+  Subject subject;
+  auto specimen = Subject{"that"s};
+  subject = specimen;
+  CPPUNIT_ASSERT(!subject.empty());
+}
+auto tests::unit::substring::Fixture::test_assignment_move_ancestor() -> void {
+  auto specimen = "that"s;
+  Subject subject;
+  subject = std::move(specimen);
+  CPPUNIT_ASSERT(!subject.empty());
+}
+auto tests::unit::substring::Fixture::test_assignment_move() -> void {
+  auto specimen = Subject{"that"s};
+  Subject subject;
+  subject = std::move(specimen);
+  CPPUNIT_ASSERT(!subject.empty());
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::substring::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("substring");
+  {
+    Stream over("overload");
+    over << call("abc", &Fixture::test_abc)
+      ;
+    series << add(over.release());
+  } {
+    Stream cons("constructor");
+    cons << call("default", &Fixture::test_constructor_default)
+	 << call("char const *", &Fixture::test_constructor_char_pointer)
+	 << call("copy_ancestor", &Fixture::test_constructor_copy_ancestor)
+	 << call("copy", &Fixture::test_constructor_copy)
+	 << call("move_ancestor", &Fixture::test_constructor_move_ancestor)
+	 << call("move", &Fixture::test_constructor_move)
+      ;
+    series << add(cons.release());
+  } {
+    Stream assn("assignment");
+    assn << call("char const *", &Fixture::test_assignment_char_pointer)
+	 << call("copy_ancestor", &Fixture::test_assignment_copy_ancestor)
+	 << call("copy", &Fixture::test_assignment_copy)
+	 << call("move_ancestor", &Fixture::test_assignment_move_ancestor)
+	 << call("move", &Fixture::test_assignment_move)
+      ;
+    series << add(assn.release());
+  }
+  return series.release();
+}
+#endiv

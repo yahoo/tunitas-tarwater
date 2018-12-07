@@ -1,0 +1,43 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import std.string // need the complete type
+#import std.to_string // need the complete declaration
+#include <hpp/tunitas.tarwater.sha1.to_string> // and these declarations too
+namespace tunitas::tarwater::sha1::required {
+  //
+  // The workbench uses this constraint to ensure that only stringable types are put into the As_String<TYPE> protocol.
+  // A type is "as stringable" if there is a to_string(...) converter for the type.
+  // c.f. sha1::to_string(...)
+  //
+  template<typename CONTAINER> concept bool As_Stringable = requires(CONTAINER container) {
+    // Look for an ADL-available version
+    { to_string(container) } -> std::string;
+  } || requires(CONTAINER container) {
+    // Look for the std-namespace version
+    { std::to_string(container) } -> std::string;
+  };
+}
+#endiv
+#divert <ipp>
+#import tunitas.tarwater.sha1.to_string
+#endiv
+#divert <cpp>
+// This is test code
+#import std.byte
+#import std.string
+#import std.string_view
+#import tunitas.tarwater.sha1.Bytes
+#import tunitas.tarwater.sha1.Hexstring
+namespace tunitas::tarwater::sha1::required {
+  static_assert(As_Stringable<Bytes>);
+  static_assert(As_Stringable<Hexstring>);
+  // Oddly, a std::string  is not "stringable"
+  static_assert(!As_Stringable<std::string>);
+  static_assert(!As_Stringable<std::string_view>);
+  static_assert(!As_Stringable<char const *>);
+  static_assert(!As_Stringable<std::byte const *>);
+  // there is a to_string(int)
+  static_assert(As_Stringable<int>);
+  static_assert(!As_Stringable<int *>);
+}
+#endiv

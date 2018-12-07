@@ -1,0 +1,15 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.sha1.required.container.Contiguous
+#import tunitas.tarwater.sha1.required.container.Sequence
+namespace tunitas::tarwater::sha1::required {
+  //
+  // A container is either sequential or continguous.
+  //
+  // Usage:
+  //
+  //   template<required::Container CONTAINER> auto function(CONTAINER const &) -> Something;
+  //
+  template<typename CONTAINER> concept bool Container = container::Sequence<CONTAINER> || container::Contiguous<CONTAINER>;
+}
+#endiv

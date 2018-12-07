@@ -1,0 +1,30 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import std.variant
+#import std.optional
+#import tunitas.tarwater.identifier.Integer
+#import tunitas.tarwater.identifier.State
+namespace tunitas::tarwater::redirect {
+  //
+  // The redirect(ion) of an identifier consists of the dimensions
+  //
+  //   success status { error or no-error }
+  //   regulatory status { optout or not-optout }
+  //   identifier payload.
+  //
+  // Obviously not all possible combinations make sense.
+  //
+  // See https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  //
+  // if error -> then State::ERROR (and the identifier is not available)
+  // if optout -> then State::OPTOUT (and the identifier is not available)
+  // else the identifier is available.
+  //
+  namespace packaging::identifier_type {
+    using tarwater::identifier::Integer;
+    using tarwater::identifier::State;
+    using Identifier = std::variant<Integer, State>;
+  }
+  using packaging::identifier_type::Identifier;
+}
+#endiv

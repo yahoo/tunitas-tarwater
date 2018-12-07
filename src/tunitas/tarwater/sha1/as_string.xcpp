@@ -1,0 +1,28 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.tarwater.sha1.required.As_Stringable
+#import tunitas.tarwater.sha1.workbench.As_String
+namespace tunitas::tarwater::sha1 {
+  //
+  // Format a data type as "a string" for the workbench.
+  //
+  // Precondition:
+  //   The lifetime of the value must be longer than the returned formatter object.
+  //   The function std::to_string(TYPE) must exist.
+  //
+  // Usage:
+  //
+  //   Workbench wb;
+  //   auto something = ...something...
+  //   wb << as_string(something);
+  //
+  template<required::As_Stringable TYPE> inline auto as_string(TYPE const &) -> workbench::As_String<TYPE>;
+}
+#endiv
+#divert <ipp>
+namespace tunitas::tarwater {
+  template<sha1::required::As_Stringable TYPE> auto sha1::as_string(TYPE const &value) -> workbench::As_String<TYPE> {
+    return workbench::As_String<TYPE>{value};
+  }
+}
+#endiv

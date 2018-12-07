@@ -45,16 +45,26 @@ auto app::service::Usage::what() const noexcept -> char const * {
   return ancestors::Messaging::what();
 }
 #import std.ostringstream
-auto app::service::Usage::format(std::string const &name) -> std::string {
+#import app.service.defaults
+auto app::service::Usage::format(std::string const &NAME) -> std::string {
   std::ostringstream buf;
-  buf << "usage: " << name << " [...options...]\n"
+  buf << "usage: " << NAME << " [...options...]\n"
+      << "\n"
+      << "Service Options\n"
+      << "--foreground, --fg, -f             remain in the foreground, e.g. for systemd\n"
+      << "--background, --bg                 daemonize into the background\n"
+      << "--pid, -P                          emit the PID of the running daemon on the standard output\n"
+      << "  alternative: --emit-pid\n"
+      << "--port=NUMBER, -p NUMBER           use port NUMBER instead of the default " << defaults::SERVICE_PORT << '\n'
       << '\n'
-      << "Server Options:\n"
-      << "(none yet)\n"
-      << '\n'
-      << "Standard Options:\n"
-      << "--usage, --help, -h              emit this usage message and quit\n"
-      << "--version, -V                    emit the version message and quit"; // no final \n
+      << "General Options:\n"
+      << "--usage, --help, -h                emit this message, and exit\n"
+      << "--version, -V                      emit the package version, and exit\n"
+      << "--dry-run, --dryrun, -y            dry run, do not start the server\n"
+      << "--warnings, --warning, -w          emit warnings\n"
+      << "--quiet, -q                        be quiet, emit no notices or warnings\n"
+      << "--verbose, -v                      be verbose (independent of --quiet)\n"
+      << "--debug, -d                        debug output (you should not need this)"; // no '\n'
   return buf.str();
 }
 #endiv

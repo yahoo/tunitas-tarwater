@@ -1,0 +1,99 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::sha1::traits {
+  //
+  // Characterizing the container as an iteratable object of elements
+  // https://en.cppreference.com/w/cpp/container
+  // https://en.wikipedia.org/wiki/Associative_containers
+  //
+  // A container is iteratable.
+  // A container is at least a sequence.
+  // A container may have contiguous storage of simple types in which case it is characterized (here) by a "dope vector."
+  //
+  namespace container_traits {
+    template<typename CONTAINER, typename ITERATOR = typename CONTAINER::iterator> struct Base_IsA;
+    template<typename CONTAINER> struct IsA;
+    template<typename CONTAINER> struct NotA;
+    template<typename CONTAINER> concept bool Maybe = requires(CONTAINER) { typename CONTAINER::iterator; };
+  }
+  template<typename CONTAINER> struct Container;
+  template<typename CONTAINER> struct Container<CONTAINER const>;
+}
+#import std.basic_string
+#import std.basic_string_view
+#import std.vector
+#import tunitas.tarwater.sha1.required.Character
+#import tunitas.tarwater.sha1.required.Character_Traits
+namespace tunitas::tarwater::sha1::traits {
+  template<required::Character CHAR, required::Character_Traits TRAITS, typename ALLOC> struct Container<std::basic_string<CHAR, TRAITS, ALLOC>>;
+  template<required::Character CHAR, required::Character_Traits TRAITS> struct Container<std::basic_string_view<CHAR, TRAITS>>;
+  template<required::Character CHAR, typename ALLOC> struct Container<std::vector<CHAR, ALLOC>>;
+}
+#endiv
+#divert <hpp>
+#import std.size_t
+#import std.iterator_traits
+namespace tunitas::tarwater::sha1::traits {
+  template<typename CONTAINER> struct container_traits::NotA {
+    inline static constexpr auto isa = false;
+  };
+  template<typename CONTAINER, typename ITERATOR> struct container_traits::Base_IsA {
+    static constexpr auto isa = true;
+    using Iterator = ITERATOR;
+    using Value = typename std::iterator_traits<Iterator>::value_type;
+    using Size = std::size_t;
+    static constexpr auto element_size = sizeof (Value);
+    // ....... ..new school
+    using Pointer = typename std::iterator_traits<Iterator>::pointer;
+    using Reference = typename std::iterator_traits<Iterator>::reference;
+    using Const_Pointer = Value const *;
+    using Const_Reference = Value const &;
+    // ... old school
+    using size_type = Size;
+    using value_type = Value;
+    using iterator = Iterator;
+    using data_type = Pointer;
+    using pointer = Pointer;
+    using reference = Reference;
+    using const_pointer = Const_Pointer;
+    using const_reference = Const_Reference;
+  };
+  template<typename CONTAINER> struct container_traits::IsA : public Base_IsA<CONTAINER, typename CONTAINER::iterator> { };
+}
+#import std.conditional
+namespace tunitas::tarwater::sha1 {
+  template<typename CONTAINER> struct traits::Container : public std::conditional<container_traits::Maybe<CONTAINER>, container_traits::IsA<CONTAINER>, container_traits::NotA<CONTAINER>>::type { };
+  template<typename CONTAINER> struct traits::Container<CONTAINER const> : public Container<CONTAINER> { };
+}
+namespace tunitas::tarwater::sha1::traits {
+  template<required::Character CHAR, required::Character_Traits TRAITS, typename ALLOC> struct Container<std::basic_string<CHAR, TRAITS, ALLOC>> : public container_traits::IsA<std::basic_string<CHAR, TRAITS, ALLOC>> { };
+  template<required::Character CHAR, typename ALLOC> struct Container<std::vector<CHAR, ALLOC>> : public container_traits::IsA<std::vector<CHAR, ALLOC>> { };
+  template<required::Character CHAR, required::Character_Traits TRAITS> struct Container<std::basic_string_view<CHAR, TRAITS>> : public container_traits::IsA<std::basic_string_view<CHAR, TRAITS>> { };
+};
+#endiv
+#divert <cpp>
+// This is test code
+#import std.set
+#import std.string
+#import std.string_view
+#import std.map
+#import std.set
+#import std.vector
+#import tunitas.tarwater.sha1.required.Container
+namespace tunitas::tarwater::sha1::traits {
+  //
+  // Invariants:
+  // Anything that is an iteratable sequence is a "container"
+  // Such aggregate structures may also be continguous in which case they area  "Dope Vector"
+  // 
+  static_assert(Container<std::string>::isa);
+  static_assert(Container<std::string_view>::isa);
+  static_assert(Container<std::vector<char>>::isa);
+  // To be a "container" it cannot also be a "dope vector"
+  static_assert(Container<std::set<char>>::isa);
+  static_assert(Container<std::map<int, char>>::isa);
+  // And it can't be something else
+  static_assert(!Container<int>::isa);
+  static_assert(!Container<char const *>::isa);
+}
+#endiv

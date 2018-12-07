@@ -1,0 +1,38 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.sha1.required.Byte
+namespace tunitas::tarwater::sha1::required::dope {
+  //
+  // A "dope vector element" is a simple trivially-copyable type.
+  // A character or a byte which has simple treatment in the sha1::Workbench algorithm.
+  //
+  // Multi-byte characters have an encoding problem.
+  // Mutl-byte integers have an endian problem.
+  //
+  template<typename ELEMENT> concept bool Element = Byte<ELEMENT>;
+}
+#endiv
+#divert <cpp>
+// This is, of course, test code.
+#import std.array
+#import std.byte
+#import std.string
+#import std.string_view
+namespace tunitas::tarwater::sha1::required::dope {
+  // These can reasonably be an element of a dope vector
+  static_assert(Element<char>);
+  static_assert(Element<unsigned char>);
+  static_assert(Element<signed char>);
+  static_assert(Element<std::byte>);
+  // anti-examples
+  static_assert(!Element<bool>); // ambiguous whether this is a single bit or an 8-bit quantity containing the values 0 or 1
+  static_assert(!Element<int short>);
+  static_assert(!Element<int unsigned>);
+  static_assert(!Element<int long>);
+  static_assert(!Element<double>);
+  // These can't reasonably be elements of a dope vector
+  static_assert(!Element<std::array<char, 99>>);
+  static_assert(!Element<std::string>);
+  static_assert(!Element<std::string_view>);
+}
+#endiv

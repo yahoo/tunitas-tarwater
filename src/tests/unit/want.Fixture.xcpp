@@ -14,6 +14,7 @@ public:
 #divert <cpp>
 #import want
 auto tests::unit::want::Fixture::test_something() -> void {
+#warning WRITETHYIS auto tests::unit::want::Fixture::test_something() -> void 
   CPPUNIT_ASSERT(true);
 }
 #import unit.rigging.suite.Stream

@@ -1,0 +1,23 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.substring.Object
+#import tunitas.Outcome
+namespace tunitas::tarwater::substring {
+  //
+  // An outcome on the substring object.
+  //
+  // Usage:
+  //
+  //   namespace apple {
+  //     enum APPLE { };
+  //     using String = substring::Object<APPLE>;
+  //     using Superposition = substring::Superpositoin<APPLE>;
+  //     auto function(String) -> Superposition;
+  //   }
+  //   auto visitor = Visitor{[](Object<TAG> const &v) -> Computed { return function(v); },
+  //                          [](std::error_code const &e) -> Computed { return otherwise(e); }};
+  //   return std::visit(visitor, object);
+  //
+  template<typename TAG> using Superposition = Outcome<Object<TAG>>;
+}
+#endiv

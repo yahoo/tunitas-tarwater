@@ -1,0 +1,9 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.outcome.Visitor
+namespace tunitas::tarwater::redirect::identifier {
+  // Herein lies a copy of the generic "visitor"
+  // As exhibited in https://en.cppreference.com/w/cpp/utility/variant/visit
+  using tunitas::outcome::Visitor;
+}
+#endiv

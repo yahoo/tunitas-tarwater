@@ -1,8 +1,10 @@
 // This is -*- c++ -*- (as close to C++2a as possible)
 #divert <fpp>
 #import tunitas.app
+#import tunitas.tarwater.service
 namespace app::service {
   // cascade the namespaces
   using namespace tunitas::app;
+  using namespace tunitas::tarwater::service;
 }
 #endiv

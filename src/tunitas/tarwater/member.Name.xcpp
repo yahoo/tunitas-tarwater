@@ -1,0 +1,17 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.substring.Object
+namespace tunitas::tarwater::member {
+  //
+  // The member name is a special sort of a (shortish) string.
+  //
+  // Specification:
+  //   https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  //
+  // Operations:
+  //   none    (welll, there is always comparison)
+  //
+  enum NAME { };
+  using Name = substring::Object<NAME>;
+}
+#endiv

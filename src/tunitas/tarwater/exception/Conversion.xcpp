@@ -1,0 +1,45 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::exception {
+  //
+  // There was some exceptionally unexpected problem with conversion,
+  // where the conversion is to or from the data representations.
+  //
+  // This exception is for extraordinarily exceptional conditions.
+  // The normal course of the tarwater service uses outcomes to precisely capture any problems.
+  // This exception captures cases where less subtle techniques are warranted.
+  //
+  // Following the mandate for service exceptions, the messaging is terse and rudimentary.
+  //
+  // Usage:
+  //
+  //   throw Conversion{"base64"};
+  //
+  class [[nodiscard]] Conversion;
+}
+#endiv
+#divert <hpp>
+#import tunitas.tarwater.exception.Generic
+#import std.string
+#import std.runtime_error
+class tunitas::tarwater::exception::Conversion : public Generic, public std::runtime_error {
+  struct ancestors {
+    using Tunitas = Generic;
+    using Exception = std::runtime_error;
+  };
+public:
+  inline explicit Conversion(std::string const &);
+  auto what() const noexcept -> char const * final;
+};
+#endiv
+#divert <ipp>
+tunitas::tarwater::exception::Conversion::Conversion(std::string const &reason)
+  : ancestors::Tunitas{}
+  , ancestors::Exception{reason}
+{ }
+#endiv
+#divert <cpp>
+auto tunitas::tarwater::exception::Conversion::what() const noexcept -> char const * {
+  return ancestors::Exception::what();
+}
+#endiv

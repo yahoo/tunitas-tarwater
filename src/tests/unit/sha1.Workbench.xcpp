@@ -1,0 +1,258 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::sha1 { class Workbench; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+#import tunitas.tarwater.sha1.Workbench
+class tests::unit::sha1::Workbench : public cppunit::test::Fixture {
+public:
+  using Subject = ::tunitas::tarwater::sha1::Workbench;
+  auto test_constructor() -> void;
+  auto test_bytes() -> void;
+  auto test_hexstring() -> void;
+  //
+  auto test_operator_insert_string_literal() -> void;
+  auto test_operator_insert_char_star() -> void;
+  auto test_operator_insert_char_const_star() -> void;
+  auto test_operator_insert_Character_Array_Zero() -> void;
+  auto test_operator_insert_Element() -> void;
+  auto test_operator_insert_Dopable() -> void;
+  auto test_operator_insert_Container() -> void;
+  auto test_operator_insert_manifest_array_Element() -> void;
+  auto test_operator_insert_manifest_array_Dopable() -> void;
+  auto test_operator_insert_manifest_array_Container() -> void;
+  auto test_operator_insert_As_String_int() -> void;
+  auto test_operator_insert_As_String_double() -> void;
+  auto test_operator_insert_As_Dope_string() -> void;
+  auto test_operator_insert_As_Dope_string_view() -> void;
+  auto test_operator_insert_As_Dope_array_char() -> void;
+  auto test_operator_insert_As_Dope_vector_char() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.string
+#import std.string_literals
+#import tunitas.tarwater.sha1.to_string
+#import tunitas.tarwater.sha1.Bytes
+#import tunitas.tarwater.sha1.Hexstring
+using namespace std::literals;
+#import tunitas.tarwater.sha1
+namespace tests::unit::sha1 {
+  // cascade the namespaces
+  using namespace tunitas::tarwater::sha1;
+}
+auto tests::unit::sha1::Workbench::test_constructor() -> void {
+  Subject ws;
+  auto const actual = to_string(bytes(ws));
+  CPPUNIT_ASSERT(!actual.empty());
+  // If you ask a workbench for the sha1 with nothing put into it you get exactly that!
+  auto expected = "da39a3ee5e6b4b0d3255bfef95601890afd80709"s;   // echo -n "" | sha1sum;
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.sha1.to_string
+auto tests::unit::sha1::Workbench::test_bytes() -> void {
+  Subject ws;
+  ws << "test";
+  auto actual = to_string(bytes(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum; 
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::sha1::Workbench::test_hexstring() -> void {
+  Subject ws;
+  ws << "test";
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;    // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::sha1::Workbench::test_operator_insert_string_literal() -> void {
+  Subject ws;
+  ws << "test";
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;    // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::sha1::Workbench::test_operator_insert_char_star() -> void {
+  Subject ws;
+  char specimen[] = { "test" };
+  ws << &specimen[0];
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;    // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::sha1::Workbench::test_operator_insert_char_const_star() -> void {
+  Subject ws;
+  char const specimen[] = { "test" };
+  ws << &specimen[0];
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;    // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import std.byte
+auto tests::unit::sha1::Workbench::test_operator_insert_Character_Array_Zero() -> void {
+  Subject ws;
+  char const raw[] = { "test" };
+  char const *const specimen{reinterpret_cast<char const *>(&raw[0])};
+  ws << specimen;
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::sha1::Workbench::test_operator_insert_Element() -> void {
+  Subject ws;
+  ws << '1';
+  auto actual = to_string(hexstring(ws));
+  auto expected = "356a192b7913b04c54574d18c28d46e6395428ab"s;  // echo -n 1 | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.sha1.as_dope
+auto tests::unit::sha1::Workbench::test_operator_insert_Dopable() -> void {
+  Subject ws;
+  auto doped = std::string{"test"};
+  ws << as_dope(doped);
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import std.set
+auto tests::unit::sha1::Workbench::test_operator_insert_Container() -> void {
+  Subject ws;
+  auto contained = std::set<std::string>{"test"};
+  ws << contained;
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::sha1::Workbench::test_operator_insert_manifest_array_Element() -> void {
+  Subject ws;
+  char array[1]{ '1' };
+  ws << as_dope(array);
+  auto actual = to_string(hexstring(ws));
+  auto expected = "356a192b7913b04c54574d18c28d46e6395428ab"s;  // echo -n 1 | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::sha1::Workbench::test_operator_insert_manifest_array_Dopable() -> void {
+  Subject ws;
+  std::string array[1]{ "test"s };
+  ws << array;
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::sha1::Workbench::test_operator_insert_manifest_array_Container() -> void {
+  Subject ws;
+  std::set<std::string> array[1]{std::set<std::string>{"test"s}};
+  ws << array;
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.sha1.as_string
+#import std.to_string
+auto tests::unit::sha1::Workbench::test_operator_insert_As_String_int() -> void {
+  using ::tunitas::tarwater::sha1::as_string;
+  Subject ws;
+  ws << as_string(1) << as_string(2);
+  auto actual = to_string(hexstring(ws));
+  auto expected = "7b52009b64fd0a2a49e6d8a939753077792b0554"s;  // echo -n 12 | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::sha1::Workbench::test_operator_insert_As_String_double() -> void {
+  using ::tunitas::tarwater::sha1::as_string;
+  Subject ws;
+  ws << as_string(1.2) << '/' << as_string(3.4);
+  auto actual = to_string(hexstring(ws));
+  auto expected = "da1a3d9244195773128932b1ceb52eea03c553ea"s;  // echo -n 1.2/3.4 | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.sha1.as_dope
+#import std.string
+auto tests::unit::sha1::Workbench::test_operator_insert_As_Dope_string() -> void {
+  using ::tunitas::tarwater::sha1::as_dope;
+  Subject ws;
+  auto raw = std::string{"test"};
+  ws << as_dope(raw);
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import std.string_view
+auto tests::unit::sha1::Workbench::test_operator_insert_As_Dope_string_view() -> void {
+  using ::tunitas::tarwater::sha1::as_dope;
+  Subject ws;
+  auto raw = std::string_view{"test"};
+  ws << as_dope(raw);
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import std.array
+auto tests::unit::sha1::Workbench::test_operator_insert_As_Dope_array_char() -> void {
+  using ::tunitas::tarwater::sha1::as_dope;
+  Subject ws;
+  auto raw = std::array<char,4>{'t','e','s','t'};
+  ws << as_dope(raw);
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import std.vector
+auto tests::unit::sha1::Workbench::test_operator_insert_As_Dope_vector_char() -> void {
+  using ::tunitas::tarwater::sha1::as_dope;
+  Subject ws;
+  auto raw = std::vector<char>{'t','e','s','t'};
+  ws << as_dope(raw);
+  auto actual = to_string(hexstring(ws));
+  auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::sha1::Workbench::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("Workbench");
+  series << call("constructor", &Workbench::test_constructor)
+	 << call("Bytes", &Workbench::test_bytes)
+	 << call("Hexstring", &Workbench::test_hexstring)
+    ;
+  {
+    Stream det("operator<<");
+    det << call("char *", &Workbench::test_operator_insert_char_star)
+        << call("char const *", &Workbench::test_operator_insert_char_const_star)
+        << call("string-literal", &Workbench::test_operator_insert_string_literal)
+        << call("Character_Array_Zero", &Workbench::test_operator_insert_Character_Array_Zero)
+        << call("Element", &Workbench::test_operator_insert_Element)
+        << call("Dopable", &Workbench::test_operator_insert_Dopable)
+        << call("Container", &Workbench::test_operator_insert_Container)
+      ;
+      ;
+    {
+      Stream man("manifest-array");
+      man << call("Element", &Workbench::test_operator_insert_manifest_array_Element)
+          << call("Dopable", &Workbench::test_operator_insert_manifest_array_Dopable)
+          << call("Container", &Workbench::test_operator_insert_manifest_array_Container)
+        ;
+      det << add(man.release());
+    } {
+      Stream ass("As_String");
+      ass << call("int", &Workbench::test_operator_insert_As_String_int)
+          << call("double", &Workbench::test_operator_insert_As_String_double)
+        ;
+      det << add(ass.release());
+    } {
+      Stream asd("As_Dope");
+      asd << call("string", &Workbench::test_operator_insert_As_Dope_string)
+          << call("string_view", &Workbench::test_operator_insert_As_Dope_string_view)
+          << call("array<char,4>", &Workbench::test_operator_insert_As_Dope_array_char)
+          << call("vector<char>", &Workbench::test_operator_insert_As_Dope_vector_char)
+        ;
+      det << add(asd.release());
+    }
+    series << add(std::move(det.release()));
+  }
+  return series.release();
+}
+#endiv

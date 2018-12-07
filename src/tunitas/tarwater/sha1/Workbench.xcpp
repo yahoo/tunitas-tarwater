@@ -1,0 +1,141 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::sha1 {
+  //
+  // The sha1 computation in a workbench
+  //
+  // Usage:
+  //
+  //   Workbench ws;
+  //   ws << this << that << other;
+  //   auto b = bytes(ws);
+  //   auto h = hexstring(ws);
+  //
+  class Workbench;
+}
+#endiv
+#divert <hpp>
+#import tunitas.tarwater.sha1.Bytes
+#import tunitas.tarwater.sha1.Hexstring
+#import tunitas.tarwater.sha1.Workbench
+namespace tunitas::tarwater::sha1 {
+  inline auto bytes(Workbench &) -> Bytes;
+  inline auto hexstring(Workbench &) -> Hexstring;
+}
+#import cryptopp.SHA1
+#import std.is_array
+#import std.is_pointer
+#import std.is_same
+#import std.size_t
+#import std.string
+#import tunitas.tarwater.sha1.required.Character
+#import tunitas.tarwater.sha1.required.Character_Array_Zero
+#import tunitas.tarwater.sha1.required.Container
+#import tunitas.tarwater.sha1.required.container.Associative
+#import tunitas.tarwater.sha1.required.container.Contiguous
+#import tunitas.tarwater.sha1.required.dope.Element
+#import tunitas.tarwater.sha1.required.As_Dopable
+#import tunitas.tarwater.sha1.required.As_Stringable
+#import tunitas.tarwater.sha1.workbench.As_Dope
+#import tunitas.tarwater.sha1.workbench.As_String
+class tunitas::tarwater::sha1::Workbench {
+public:
+  // WATCHOUT -  because this template can match string literals which contain an implicit '\0' at N-1
+  //             we MUST have the Character_Array_Zero against a pointer type handle that case.
+  //
+  // src/tests/unit/sha1.Fixture.xcpp:40:6: error: ambiguous overload for ‘operator<<’ (operand types are ‘tunitas::tarwater::sha1::Workbench’ and ‘const char [6]’)
+  //   wb << "apple" << "banana" << "cherry";
+  //   ~~~^~~~~~~~~~
+  //
+  template<required::Character_Array_Zero TYPE> inline auto operator<<(TYPE const *) -> Workbench &;
+  template<required::dope::Element TYPE> inline auto operator<<(TYPE const &) -> Workbench & requires !std::is_pointer<TYPE>::value && !std::is_array<TYPE>::value;
+  template<required::dope::Element TYPE, std::size_t N> inline auto operator<<(TYPE const (&)[N]) -> Workbench & requires !std::is_same<TYPE, char>::value;
+  //
+  // These are are unambiguous
+  template<required::container::Contiguous TYPE> inline auto operator<<(TYPE const &) -> Workbench &;
+  template<required::container::Associative TYPE> inline auto operator<<(TYPE const &) -> Workbench &;
+  template<required::Container TYPE, std::size_t N> inline auto operator<<(TYPE const (&)[N]) -> Workbench &;
+  template<required::As_Stringable TYPE> inline auto operator<<(workbench::As_String<TYPE>) -> Workbench &;
+  template<required::As_Dopable TYPE> inline auto operator<<(workbench::As_Dope<TYPE>) -> Workbench &;
+protected:
+  // See https://www.cryptopp.com/wiki/Hash_functions
+  // for the basic recipe of how to use the hash function state to make incremental progress
+  cryptopp::SHA1 state;
+  friend auto sha1::bytes(Workbench &) -> Bytes;
+  friend auto sha1::hexstring(Workbench &) -> Hexstring;
+};
+#endiv
+#divert <ipp>
+#import std.move
+#import tunitas.tarwater.sha1.detail
+namespace tunitas::tarwater {
+  auto sha1::bytes(Workbench &wb) -> Bytes {
+    Bytes ret;
+    wb.state.Final(reinterpret_cast<cryptopp::byte *>(ret.data()));
+    return std::move(ret);
+  }
+  auto sha1::hexstring(Workbench &wb) -> Hexstring {
+    cryptopp::byte digest[cryptopp::SHA1::DIGESTSIZE];
+    wb.state.Final(digest);
+    Hexstring ret;
+    for (auto di{0lu}, de{sizeof (digest)/sizeof (digest[0])}, h0{0lu}, h1{1lu}; de != di; ++di, h0+=2, h1+=2) {
+      auto [hi, lo] = detail::hexpair(digest[di]);
+      ret[h0] = hi;
+      ret[h1] = lo;
+    }
+    return std::move(ret);
+  }
+}
+#import std.to_string
+#import std.char_traits
+#import tunitas.tarwater.sha1.traits.Container
+namespace tunitas::tarwater::sha1 {
+  template<required::Character_Array_Zero CHAR> auto Workbench::operator<<(CHAR const *value) -> Workbench & {
+    if (nullptr != value) {
+      using traits = std::char_traits<CHAR>;
+      state.Update(reinterpret_cast<cryptopp::byte const *>(value), traits::length(value));
+    }
+    return *this;
+  }
+  template<required::dope::Element TYPE> auto Workbench::operator<<(TYPE const &value) -> Workbench &
+    requires !std::is_pointer<TYPE>::value && !std::is_array<TYPE>::value { 
+    state.Update(reinterpret_cast<cryptopp::byte const *>(&value), sizeof (value));
+    return *this;
+  }
+  template<required::container::Contiguous TYPE> auto Workbench::operator<<(TYPE const &value) -> Workbench & { 
+    auto const VALUE_SIZE = sizeof (typename traits::Dope<TYPE>::Value);
+    state.Update(reinterpret_cast<cryptopp::byte const *>(value.data()), VALUE_SIZE * value.size());
+    return *this;
+  }
+  template<required::container::Associative TYPE> auto Workbench::operator<<(TYPE const &value) -> Workbench & { 
+    for (auto &item : value) {
+      operator<<(item);
+    }
+    return *this;
+  }
+  template<required::dope::Element TYPE, std::size_t N> auto Workbench::operator<<(TYPE const (&value)[N]) -> Workbench & requires !std::is_same<TYPE, char>::value {
+    state.Update(reinterpret_cast<cryptopp::byte const *>(&value[0]), N * sizeof (value));
+    return *this;
+  }
+  template<required::Container TYPE, std::size_t N> auto Workbench::operator<<(TYPE const (&value)[N]) -> Workbench & { 
+    for (auto &item : value) {
+      operator<<(item);
+    }
+    return *this;
+  }
+}
+#import cryptopp // cryptopp::byte
+#import tunitas.tarwater.sha1.to_string
+namespace tunitas::tarwater::sha1 {
+  template<required::As_Stringable TYPE> auto Workbench::operator<<(workbench::As_String<TYPE> as) -> Workbench & { 
+    using std::to_string; // visibility on either the ADL variant or the std-variant
+    auto stringified = to_string(as.value);
+    state.Update(reinterpret_cast<cryptopp::byte const *>(stringified.data()), stringified.size());
+    return *this;
+  }
+  template<required::As_Dopable TYPE> auto Workbench::operator<<(workbench::As_Dope<TYPE> as) -> Workbench & { 
+    state.Update(reinterpret_cast<cryptopp::byte const *>(as.data()), as.size());
+    return *this;
+  }
+}
+#endiv

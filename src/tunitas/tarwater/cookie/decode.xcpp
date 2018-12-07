@@ -1,0 +1,94 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import tunitas.tarwater.cookie.String
+#import tunitas.tarwater.cookie.Object
+#import tunitas.tarwater.cookie.Superposition
+namespace tunitas::tarwater::cookie {
+  //
+  // Encode the DigiTrust cookie.
+  //
+  // See Encoding within
+  // https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  //
+  // <paraphrase>
+  //   The object encoded within this cookie is wrapped in multiple layers
+  //   for maximum compatibility with web browsers and cookie encoding.
+  //
+  //    1. JSON encoded
+  //    2. Base-64 encoded
+  //    3. URL encoded
+  //
+  //  The javascript, the following code is used to encode the cookie.
+  //
+  //   FIND
+  //
+  // </paraphrase>
+  //
+  // Usage:
+  //
+  //   auto decoded = decode(jsonstring);
+  //   auto decoded = decode(cookieobject);
+  //   if (ok(decoded)) {
+  //     auto urlsafe = value(std::move(decoded));
+  //     ...use the urlsafe string...
+  //   } else {
+  //     std::cerr << "problem " << error_code(urlsafe).message() << '\n';
+  //   }
+  //   
+  inline auto decode(String<JSON>) -> Superposition<JSON>;
+  inline auto decode(String<BASE64> const &) -> Superposition<JSON>;
+  inline auto decode(String<URLSAFE> const &) -> Superposition<JSON>;
+  // cascadable
+  inline auto decode(Superposition<JSON>) -> Superposition<JSON>;
+  inline auto decode(Superposition<BASE64> const &) -> Superposition<JSON>;
+  inline auto decode(Superposition<URLSAFE> const &) -> Superposition<JSON>;
+}
+#endiv
+#divert <ipp>
+#import std.move
+auto tunitas::tarwater::cookie::decode(String<JSON> input) -> Superposition<JSON> {
+  using Result = Superposition<JSON>;
+  return Result{std::move(input)};
+}
+#import std.error_code
+#import tunitas.tarwater.error.Code
+#import tunitas.base64.decode
+#import tunitas.base64.Exception
+auto tunitas::tarwater::cookie::decode(String<BASE64> const &input) -> Superposition<JSON> {
+  using Result = Superposition<JSON>;
+  try {
+    return Result{base64::decode(input)};
+  } catch (base64::Exception const &) {
+    return Result{std::error_code{error::Code::BAD_BASE64_ENCODING}};
+  }
+}
+#import tunitas.urlsafe.decode
+#import tunitas.urlsafe.Exception
+auto tunitas::tarwater::cookie::decode(String<URLSAFE> const &input) -> Superposition<JSON> {
+  using Result = Superposition<JSON>;
+  try {
+    return decode(String<BASE64>{urlsafe::decode(input)});
+  } catch (urlsafe::Exception const &) {
+    return Result{std::error_code{error::Code::BAD_URLSAFE_ENCODING}};
+  }
+}
+auto tunitas::tarwater::cookie::decode(Superposition<JSON> input) -> Superposition<JSON> {
+  return std::move(input);
+}
+#import tunitas.outcome.Visitor
+#import tunitas.outcome.visit
+auto tunitas::tarwater::cookie::decode(Superposition<BASE64> const &input) -> Superposition<JSON> {
+  using namespace tunitas::outcome;
+  using Result = Superposition<JSON>;
+  auto visitor = Visitor{[](String<BASE64> const &s) -> Result { return decode(s); },
+                         [](std::error_code const &e) -> Result { return Result{e}; }};
+  using tunitas::outcome::visit;
+  return decode(tunitas::outcome::visit(visitor, input));
+}
+auto tunitas::tarwater::cookie::decode(Superposition<URLSAFE> const &input) -> Superposition<JSON> {
+  using Result = Superposition<JSON>;
+  auto visitor = outcome::Visitor{[](String<URLSAFE> const &s) -> Result { return decode(s); },
+				  [](std::error_code const &e) -> Result { return Result{e}; }};
+  return decode(std::visit(visitor, input));
+}
+#endiv

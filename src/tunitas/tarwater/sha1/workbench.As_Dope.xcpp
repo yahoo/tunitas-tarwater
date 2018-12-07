@@ -1,0 +1,44 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.tarwater.sha1.required.dope.Element
+namespace tunitas::tarwater::sha1::workbench {
+  //
+  // The dope vector formatter for the Workbench
+  //
+  // Precondition:
+  //   The lifetime of the underlying dope vector value must be longer than the As_Dope object.
+  //   The Workbench::operator<< for the vector's element type must be well-defined.
+  //
+  // Rhymes with as_string(...), nearby.
+  //
+  // Usage:
+  //
+  //   Workbench wb;
+  //   auto const *pointer = ...something...
+  //   auto const size = ...howbig?...
+  //   wb << as_dope(size, pointer);
+  //
+  //   auto thing = something "dopelike" with a data() and a size()
+  //   wb << as_dope(thing);
+  //
+  template<required::dope::Element ELEMENT> struct As_Dope;
+}
+#endiv
+#divert <hpp>
+#import std.size_t
+namespace tunitas::tarwater::sha1 {
+  template<sha1::required::dope::Element ELEMENT> struct workbench::As_Dope {
+  public:
+    using Size = std::size_t;
+    using Value = ELEMENT;
+    using Data = Value const *;
+    inline As_Dope(Size size, Data data) : the_size{size}, the_data{data} { }
+    // So, wow! true == Dopable<As_Dope<ELEMENT>>
+    inline auto size() const -> Size { return the_size; }
+    inline auto data() const -> Data { return the_data; }
+  protected:
+    Size the_size;
+    Data the_data;
+  };
+}
+#endiv

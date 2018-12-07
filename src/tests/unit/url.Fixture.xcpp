@@ -1,0 +1,116 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::url { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::url::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_Decoded() -> void;
+  auto test_Encoded() -> void;
+  auto test_Pattern() -> void;
+  auto test_formatting_Variables() -> void;
+  auto test_encode() -> void;
+  auto test_decode() -> void;
+  auto test_format() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.string
+#import std.string_literals
+using namespace std::literals;
+#import tunitas.tarwater.url.Decoded
+auto tests::unit::url::Fixture::test_Decoded() -> void {
+  using namespace ::tunitas::tarwater::url;
+  auto decoded = Decoded{"http://example.org/some_page.html?id={id}&status={status}"};
+  CPPUNIT_ASSERT(!decoded.empty());
+  CPPUNIT_ASSERT('h' == decoded.at(0));
+  CPPUNIT_ASSERT('t' == decoded.at(1));
+  CPPUNIT_ASSERT('t' == decoded.at(2));
+  CPPUNIT_ASSERT('p' == decoded.at(3));
+}
+#import tunitas.tarwater.url.Encoded
+auto tests::unit::url::Fixture::test_Encoded() -> void {
+  using namespace ::tunitas::tarwater::url;
+  auto encoded = Encoded{"http%3A%2F%2Fexample.org%2Fsome_page.html%3Fid%3D%7Bid%7D%26status%3D%7Bstatus%7D%0A"};
+  CPPUNIT_ASSERT(!encoded.empty());
+  CPPUNIT_ASSERT('h' == encoded.at(0));
+  CPPUNIT_ASSERT('t' == encoded.at(1));
+  CPPUNIT_ASSERT('t' == encoded.at(2));
+  CPPUNIT_ASSERT('p' == encoded.at(3));
+}
+#import tunitas.tarwater.url.Pattern
+auto tests::unit::url::Fixture::test_Pattern() -> void {
+  using namespace ::tunitas::tarwater::url;
+  auto pattern = Pattern{"http://example.org/some_page.html?id={id}&status={status}"};
+  CPPUNIT_ASSERT(!pattern.empty());
+  CPPUNIT_ASSERT('h' == pattern.at(0));
+  CPPUNIT_ASSERT('t' == pattern.at(1));
+  CPPUNIT_ASSERT('t' == pattern.at(2));
+  CPPUNIT_ASSERT('p' == pattern.at(3));
+}
+#import tunitas.tarwater.url.formatting.Variables
+auto tests::unit::url::Fixture::test_formatting_Variables() -> void {
+  using namespace ::tunitas::tarwater::url::formatting;
+  auto variables = Variables{{"id", "deadbeef"},{"status","error"}};
+  CPPUNIT_ASSERT(2 == variables.size());
+  CPPUNIT_ASSERT("deadbeef"s == variables.at("id"));
+  CPPUNIT_ASSERT("error"s == variables.at("status"));
+}
+#import tunitas.tarwater.url.Encoded
+#import tunitas.tarwater.url.decode
+auto tests::unit::url::Fixture::test_decode() -> void {
+  using namespace ::tunitas::tarwater::url;
+  auto const subject = Encoded{"http%3A%2F%2Fexample.org%2Fsome_page.html%3Fid%3D%7Bid%7D%26status%3D%7Bstatus%7D"};
+  auto const decoded = decode(subject);
+  auto const actual = value(decoded);
+  auto const expected = Decoded{"http://example.org/some_page.html?id={id}&status={status}"};
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.url.Decoded
+#import tunitas.tarwater.url.Encoded
+#import tunitas.tarwater.url.encode
+auto tests::unit::url::Fixture::test_encode() -> void {
+  using namespace ::tunitas::tarwater::url;
+  auto const subject = Decoded{"http://example.org/some_page.html?id={id}&status={status}"};
+  auto const actual = encode(subject);
+  auto const expected = Encoded{"http%3A%2F%2Fexample.org%2Fsome_page.html%3Fid%3D%7Bid%7D%26status%3D%7Bstatus%7D"};
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.url.Pattern
+#import tunitas.tarwater.url.formatting.Variables
+#import tunitas.tarwater.url.format
+auto tests::unit::url::Fixture::test_format() -> void {
+  using namespace ::tunitas::tarwater::url;
+  auto variables = formatting::Variables{{"id", "nQjyizbdyF"}, {"status", "success"}};
+  auto pattern = Pattern{"http://example.org/some_page.html?id={id}&status={status}"};
+  auto formatted = format(pattern, variables);
+  std::string const &actual = formatted;
+  std::string const &expected = "http://example.org/some_page.html?id=nQjyizbdyF&status=success"s;
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::url::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("url");
+  series << call("Decoded", &Fixture::test_Decoded)
+	 << call("Encoded", &Fixture::test_Encoded)
+	 << call("Pattern", &Fixture::test_Pattern)
+    ;
+  {
+    Stream fmt("formatting");
+    fmt << call("Variables", &Fixture::test_formatting_Variables)
+      ;
+    series << add(fmt.release());
+  }
+  series << call("encode", &Fixture::test_encode)
+	 << call("decode", &Fixture::test_decode)
+	 << call("format", &Fixture::test_format)
+    ;
+  return series.release();
+}
+#endiv

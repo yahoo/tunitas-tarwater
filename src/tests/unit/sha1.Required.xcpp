@@ -1,0 +1,222 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::sha1 { class Required; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::sha1::Required : public cppunit::test::Fixture {
+public:
+  auto test_Byte() -> void;
+  auto test_Byte_Traits() -> void;
+  auto test_Character_Array_Zero() -> void;
+  auto test_Character() -> void;
+  auto test_Character_Traits() -> void;
+  auto test_Container() -> void;
+  auto test_container_Contiguous() -> void;
+  auto test_container_Sequence() -> void;
+  auto test_dope_Element() -> void;
+  auto test_As_Dopable() -> void;
+  auto test_As_Stringable() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.byte
+#import std.map
+#import std.set
+#import std.string
+#import std.string
+#import std.string_literals
+#import std.string_view
+#import std.vector
+#import tunitas.tarwater.sha1.Bytes
+#import tunitas.tarwater.sha1.Hexstring
+#import tunitas.tarwater.sha1.required
+using namespace std::literals;
+namespace tests::unit::sha1 {
+  // cascade the namespaces, make it easy for testing
+  // even at the expense of blending two namespaces that don't belong together
+  using namespace ::tunitas::tarwater::sha1;
+  using namespace ::tunitas::tarwater::sha1::required;
+}
+#import tunitas.tarwater.sha1.required.Byte
+auto tests::unit::sha1::Required::test_Byte() -> void {
+  static_assert(Byte<decltype('a')>);
+  static_assert(Byte<char>);
+  static_assert(Byte<char const>);
+  static_assert(Byte<unsigned char>);
+  static_assert(Byte<unsigned char const>);
+  static_assert(Byte<signed char>);
+  static_assert(Byte<signed char const>);
+  static_assert(Byte<std::byte>);
+  static_assert(Byte<std::byte const>);
+  static_assert(!Byte<int>);
+  static_assert(!Byte<int *>);
+  static_assert(!Byte<std::string>);
+  static_assert(!Byte<std::string_view>);
+}
+#import tunitas.tarwater.sha1.traits.Byte
+#import tunitas.tarwater.sha1.required.Byte_Traits
+auto tests::unit::sha1::Required::test_Byte_Traits() -> void {
+  static_assert(Byte_Traits<traits::Byte<char>>);
+  static_assert(Byte_Traits<traits::Byte<std::byte>>);
+  // "not" because they are multibyte
+  static_assert(!Byte_Traits<traits::Byte<wchar_t>>);
+  static_assert(!Byte_Traits<traits::Byte<char16_t>>);
+  static_assert(!Byte_Traits<traits::Byte<char32_t>>);
+  // "not" because ... obvious.
+  static_assert(!Byte_Traits<traits::Byte<int>>);
+  static_assert(!Byte_Traits<traits::Byte<int *>>);
+  static_assert(!Byte_Traits<traits::Byte<std::string>>);
+}
+#import tunitas.tarwater.sha1.required.Character
+auto tests::unit::sha1::Required::test_Character() -> void {
+  static_assert(Character<decltype('a')>);
+  static_assert(Character<char>);
+  static_assert(Character<char const>);
+  static_assert(!Character<unsigned char>);
+  static_assert(!Character<unsigned char const>);
+  static_assert(!Character<signed char>);
+  static_assert(!Character<signed char const>);
+  static_assert(!Character<std::byte>);
+  static_assert(!Character<std::byte const>);
+  static_assert(!Character<int>);
+  static_assert(!Character<int *>);
+  static_assert(!Character<std::string>);
+  static_assert(!Character<std::string_view>);
+}
+#import tunitas.tarwater.sha1.traits.Character
+#import tunitas.tarwater.sha1.required.Character_Traits
+auto tests::unit::sha1::Required::test_Character_Traits() -> void {
+  static_assert(Character_Traits<traits::Character<char>>);
+#if 0 // template constraint failure anyway
+  static_assert(!Character_Traits<traits::Character<std::byte>>);
+  // "not" because they are multibyte
+  static_assert(!Character_Traits<traits::Character<wchar_t>>);
+  static_assert(!Character_Traits<traits::Character<char16_t>>);
+  static_assert(!Character_Traits<traits::Character<char32_t>>);
+  // "not" because ... obvious.
+  static_assert(!Character_Traits<traits::Character<int>>);
+  static_assert(!Character_Traits<traits::Character<int *>>);
+  static_assert(!Character_Traits<traits::Character<std::string>>);
+#endif
+}
+#import tunitas.tarwater.sha1.required.Character_Array_Zero
+auto tests::unit::sha1::Required::test_Character_Array_Zero() -> void {
+  static_assert(Character_Array_Zero<char>);
+  static_assert(Character_Array_Zero<char const>);
+#if 0 // template constraint failure anyway
+  static_assert(Character_Array_Zero<unsigned char>);
+  static_assert(Character_Array_Zero<unsigned char const>);
+  static_assert(Character_Array_Zero<signed char>);
+  static_assert(Character_Array_Zero<signed char const>);
+  static_assert(Character_Array_Zero<std::byte>);
+  static_assert(Character_Array_Zero<std::byte const>);
+  static_assert(!Character_Array_Zero<int>);
+  static_assert(!Character_Array_Zero<int *>);
+  static_assert(!Character_Array_Zero<void>);
+  static_assert(!Character_Array_Zero<void *>);
+  static_assert(!Character_Array_Zero<std::string>);
+  static_assert(!Character_Array_Zero<std::string_view>);
+#endif
+}
+
+#import tunitas.tarwater.sha1.required.Container
+auto tests::unit::sha1::Required::test_Container() -> void {
+  static_assert(!Container<char>);
+  static_assert(!Container<int>);
+  static_assert(Container<std::string>);
+  static_assert(Container<std::string_view>);
+  static_assert(Container<std::vector<char>>);
+  static_assert(Container<std::vector<std::string>>);
+  static_assert(Container<std::set<std::string>>);
+  static_assert(Container<std::map<int, std::string>>);
+  static_assert(!Container<int *>);
+}
+#import tunitas.tarwater.sha1.required.container.Contiguous
+auto tests::unit::sha1::Required::test_container_Contiguous() -> void {
+  static_assert(!container::Contiguous<char>);
+  static_assert(!container::Contiguous<int>);
+  static_assert(container::Contiguous<std::string>);
+  static_assert(container::Contiguous<std::string_view>);
+  static_assert(container::Contiguous<std::vector<char>>);
+  static_assert(!container::Contiguous<int *>);
+}
+#import tunitas.tarwater.sha1.required.container.Sequence
+auto tests::unit::sha1::Required::test_container_Sequence() -> void {
+  static_assert(!container::Sequence<char>);
+  static_assert(!container::Sequence<int>);
+  static_assert(container::Sequence<std::string>);
+  static_assert(container::Sequence<std::string_view>);
+  static_assert(container::Sequence<std::vector<char>>);
+  static_assert(container::Sequence<std::vector<std::string>>);
+  static_assert(container::Sequence<std::set<std::string>>);
+  static_assert(container::Sequence<std::map<int, std::string>>);
+  static_assert(!container::Sequence<int *>);
+}
+#import tunitas.tarwater.sha1.required.dope.Element
+auto tests::unit::sha1::Required::test_dope_Element() -> void {
+  // A thing that is an element of a container or a dope(vector)
+  static_assert(!dope::Element<bool>);
+  static_assert(dope::Element<char>);
+  static_assert(dope::Element<signed char>);
+  static_assert(dope::Element<unsigned char>);
+  static_assert(!dope::Element<signed int>);
+  static_assert(!dope::Element<unsigned int>);
+  static_assert(!dope::Element<double>);
+  struct Thing { int i; };
+  static_assert(!dope::Element<Thing>);
+  static_assert(!dope::Element<std::string>);
+  static_assert(!dope::Element<std::string_view>);
+  static_assert(!dope::Element<std::string>);
+  static_assert(!dope::Element<std::set<char>>);
+  static_assert(!dope::Element<std::vector<char>>);
+  static_assert(!dope::Element<std::map<char, char>>);
+}
+#import tunitas.tarwater.sha1.required.As_Dopable
+auto tests::unit::sha1::Required::test_As_Dopable() -> void {
+  static_assert(container::Contiguous<Bytes>);
+  static_assert(As_Dopable<Bytes>);
+  static_assert(As_Dopable<Hexstring>);
+  static_assert(As_Dopable<std::string>);
+  static_assert(As_Dopable<std::string_view>);
+  static_assert(!As_Dopable<int>);
+  static_assert(!As_Dopable<char const *>);
+}
+#import tunitas.tarwater.sha1.required.As_Stringable
+auto tests::unit::sha1::Required::test_As_Stringable() -> void {
+  static_assert(As_Stringable<Bytes>);
+  static_assert(As_Stringable<Hexstring>);
+  // no to_string(...) on these types so they are not "As_Stringable"
+  static_assert(!As_Stringable<char *>);
+  static_assert(!As_Stringable<char const *>);
+  static_assert(!As_Stringable<std::string>);
+  static_assert(As_Stringable<int>);
+  static_assert(!As_Stringable<int *>);
+  static_assert(As_Stringable<double>);
+  static_assert(!As_Stringable<double *>);
+  static_assert(!As_Stringable<std::byte const *>);
+  static_assert(!As_Stringable<std::string_view>);
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::sha1::Required::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("required");
+  series 
+	 << call("Byte_Traits", &Required::test_Byte_Traits)
+	 << call("Byte", &Required::test_Byte)
+	 << call("Character_Traits", &Required::test_Character_Traits)
+	 << call("Character", &Required::test_Character)
+	 << call("Character_Array_Zero", &Required::test_Character_Array_Zero)
+	 << call("container.Contiguous", &Required::test_container_Contiguous)
+	 << call("container.Sequence", &Required::test_container_Sequence)
+	 << call("dope.Element", &Required::test_dope_Element)
+	 << call("As_Dopable", &Required::test_As_Dopable)
+	 << call("As_Stringable", &Required::test_As_Stringable)
+    ;
+  return series.release();
+}
+#endiv

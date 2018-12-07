@@ -1,0 +1,153 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::cookie { class Decode; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::cookie::Decode : public cppunit::test::Fixture {
+public:
+  auto test_good_string_u2j() -> void;
+  auto test_good_string_b2j() -> void;
+  auto test_good_string_j2j() -> void;
+  auto test_good_outcome_u2j() -> void;
+  auto test_good_outcome_b2j() -> void;
+  auto test_good_outcome_j2j() -> void;
+  auto test_bad_generic() -> void;
+  auto test_bad_outcome_u2j() -> void;
+  auto test_bad_outcome_b2j() -> void;
+  auto test_bad_outcome_j2j() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.string_literals
+#import tunitas.tarwater.cookie.decode
+using namespace std::string_literals;
+using namespace ::tunitas::tarwater::cookie;
+namespace error = ::tunitas::tarwater::error;
+auto tests::unit::cookie::Decode::test_good_string_u2j() -> void {
+  auto const original = String<URLSAFE>{R"urlsafe(eyJpZCI6Imp5RUIyVUhTakxvPSIsICJ2ZXJzaW9uIjogMiwgInByb2R1Y2VyIjogIjFDcnNkVU5BbzYiLCAicHJpdmFjeSI6IHsib3B0b3V0IjogZmFsc2V9fQ%3D%3D)urlsafe"};
+  auto const decoded = decode(original);
+  CPPUNIT_ASSERT(ok(decoded));
+  auto const &actual = static_cast<std::string const &>(value(decoded));
+  auto const &expected = R"json({"id":"jyEB2UHSjLo=", "version": 2, "producer": "1CrsdUNAo6", "privacy": {"optout": false}})json"s;
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::cookie::Decode::test_good_string_b2j() -> void {
+  auto const original = String<BASE64>{R"base64(eyJpZCI6Imp5RUIyVUhTakxvPSIsICJ2ZXJzaW9uIjogMiwgInByb2R1Y2VyIjogIjFDcnNkVU5BbzYiLCAicHJpdmFjeSI6IHsib3B0b3V0IjogZmFsc2V9fQ==)base64"};
+  auto const decoded = decode(original);
+  CPPUNIT_ASSERT(ok(decoded));
+  auto const &actual = static_cast<std::string const &>(value(decoded));
+  auto const &expected = R"json({"id":"jyEB2UHSjLo=", "version": 2, "producer": "1CrsdUNAo6", "privacy": {"optout": false}})json"s;
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::cookie::Decode::test_good_string_j2j() -> void {
+  auto const original = R"json({"id":"jyEB2UHSjLo=", "version": 2, "producer": "1CrsdUNAo6", "privacy": {"optout": false}})json"s;
+  auto const specimen = String<JSON>{original};
+  auto const decoded = decode(specimen);
+  CPPUNIT_ASSERT(ok(decoded));
+  auto const &actual = static_cast<std::string const &>(value(decoded));
+  auto const &expected = original;
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::cookie::Decode::test_good_outcome_u2j() -> void {
+  using Outcome = ::tunitas::Outcome<String<URLSAFE>>;
+  auto const original = R"urlsafe(eyJpZCI6Imp5RUIyVUhTakxvPSIsICJ2ZXJzaW9uIjogMiwgInByb2R1Y2VyIjogIjFDcnNkVU5BbzYiLCAicHJpdmFjeSI6IHsib3B0b3V0IjogZmFsc2V9fQ%3D%3D)urlsafe"s;
+  auto const specimen = Outcome{original};
+  auto const decoded = decode(specimen);
+  CPPUNIT_ASSERT(ok(decoded));
+  auto const &actual = static_cast<std::string const &>(value(decoded));
+  auto const &expected = R"json({"id":"jyEB2UHSjLo=", "version": 2, "producer": "1CrsdUNAo6", "privacy": {"optout": false}})json"s;
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::cookie::Decode::test_good_outcome_b2j() -> void {
+  using Outcome = ::tunitas::Outcome<String<BASE64>>;
+  auto const original = R"base64(eyJpZCI6Imp5RUIyVUhTakxvPSIsICJ2ZXJzaW9uIjogMiwgInByb2R1Y2VyIjogIjFDcnNkVU5BbzYiLCAicHJpdmFjeSI6IHsib3B0b3V0IjogZmFsc2V9fQ==)base64"s;
+  auto const specimen = Outcome{original};
+  auto const decoded = decode(specimen);
+  CPPUNIT_ASSERT(ok(decoded));
+  auto const &actual = static_cast<std::string const &>(value(decoded));
+  auto const &expected = R"json({"id":"jyEB2UHSjLo=", "version": 2, "producer": "1CrsdUNAo6", "privacy": {"optout": false}})json"s;
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::cookie::Decode::test_good_outcome_j2j() -> void {
+  using Outcome = ::tunitas::Outcome<String<JSON>>;
+  auto const original = R"json({"id":"jyEB2UHSjLo=", "version": 2, "producer": "1CrsdUNAo6", "privacy": {"optout": false}})json"s;
+  auto const specimen = Outcome{original};
+  auto const decoded = decode(specimen);
+  CPPUNIT_ASSERT(ok(decoded));
+  auto const &actual = static_cast<std::string const &>(value(decoded));
+  auto const &expected = original;
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+#import tunitas.tarwater.cookie.decode
+auto tests::unit::cookie::Decode::test_bad_generic() -> void {
+  auto const original = R"urlsafe(eyJp\xde\xad\xbe\xefZCI6Imp5RUIyVUhTakxvPSIsICJ2ZXJzaW9uIjogMiwgInByb2R1Y2VyIjogIjFDcnNkVU5BbzYiLCAicHJpdmFjeSI6IHsib3B0b3V0IjogZmFsc2V9fQ%3D%3D)urlsafe"s;
+  auto const specimen = String<URLSAFE>{original};
+  auto const decoded = decode(specimen);
+  CPPUNIT_ASSERT(!ok(decoded));
+}
+#import tunitas.tarwater.error.Code
+#import std.error_code
+auto tests::unit::cookie::Decode::test_bad_outcome_u2j() -> void {
+  using Outcome = ::tunitas::Outcome<String<URLSAFE>>;
+  auto const original = Outcome{std::error_code{error::Code::BAD_URLSAFE_ENCODING}};
+  auto const decoded = decode(original);
+  CPPUNIT_ASSERT(!ok(decoded));
+}
+auto tests::unit::cookie::Decode::test_bad_outcome_b2j() -> void {
+  namespace error = ::tunitas::tarwater::error;
+  using Outcome = ::tunitas::Outcome<String<BASE64>>;
+  auto const original = Outcome{std::error_code{error::Code::BAD_BASE64_ENCODING}};
+  auto const decoded = decode(original);
+  CPPUNIT_ASSERT(!ok(decoded));
+}
+auto tests::unit::cookie::Decode::test_bad_outcome_j2j() -> void {
+  namespace error = ::tunitas::tarwater::error;
+  using Outcome = ::tunitas::Outcome<String<JSON>>;
+  auto const original = Outcome{std::error_code{error::Code::BAD_JSON_ENCODING}};
+  auto const decoded = decode(original);
+  CPPUNIT_ASSERT(!ok(decoded));
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::cookie::Decode::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("decode");
+  {
+    Stream good{"good"};
+    {
+      Stream str{"String"};
+      str << call("JSON", &Decode::test_good_string_j2j)
+	  << call("BASE64", &Decode::test_good_string_b2j)
+	  << call("URLSAFE", &Decode::test_good_string_j2j)
+	;
+      good << add(str.release());
+    } {
+      Stream out{"Outcome"};
+      out << call("JSON", &Decode::test_good_outcome_j2j)
+	  << call("BASE64", &Decode::test_good_outcome_b2j)
+	  << call("URLSAFE", &Decode::test_good_outcome_j2j)
+	;
+      good << add(out.release());
+    }
+    series << add(good.release());
+  } {
+    Stream bad{"bad"};
+    bad << call("generic", &Decode::test_bad_generic)
+      ;
+    {
+      Stream out{"Outcome"};
+      out << call("JSON", &Decode::test_bad_outcome_j2j)
+	  << call("BASE64", &Decode::test_bad_outcome_b2j)
+	  << call("URLSAFE", &Decode::test_bad_outcome_u2j)
+	;
+      bad << add(out.release());
+    }
+    series << add(bad.release());
+  }
+  return series.release();
+}
+#endiv

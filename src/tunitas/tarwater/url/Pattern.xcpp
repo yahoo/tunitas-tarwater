@@ -1,0 +1,50 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::url {
+  //
+  // The pattern form of an URL.
+  // It's a pattern if you say it is.
+  // A "pattern" has the known variable references within it.
+  //
+  // Specification:
+  //   https://github.com/digi-trust/dt-cdn/wiki/User-Sync-Service-(Draft)
+  //   Variables
+  //     {id}        -- the identifier::Urlsafe version of the identifier
+  //     {status}    -- among the keywords: "success", "optout", "error"
+  //    
+  // Usage:
+  //
+  //   url::Pattern pattern{...something...};    e.g. http://www.example.org/id={id}/status={status}
+  //
+  //   url::Encoded next = ...query-parameter...
+  //   url::Pattern recovered = decode(next);
+  //
+  class Pattern;
+}
+#endiv
+#divert <hpp>
+#import tunitas.tarwater.url.Decoded
+class tunitas::tarwater::url::Pattern : public Decoded {
+  using ancestor = Decoded;
+public:
+  Pattern() = default;
+  using ancestor::Object; // back through all the type aliases 
+  inline Pattern(ancestor const &);
+  inline Pattern(ancestor &&);
+  inline auto operator=(ancestor const &) -> Pattern &;
+  inline auto operator=(ancestor &&) -> Pattern &;
+  // Because of the nonstandard operator=
+  auto operator=(Pattern const &) -> Pattern & = default;
+  auto operator=(Pattern &&) -> Pattern & = default;
+  Pattern(Pattern const &) = default;
+  Pattern(Pattern &&) = default;
+};
+#endiv
+#divert <ipp>
+namespace tunitas::tarwater::url {
+  Pattern::Pattern(ancestor const &other) : ancestor{other} { }
+  Pattern::Pattern(ancestor &&other) : ancestor{std::forward<ancestor>(other)} { }
+  auto Pattern::operator=(ancestor const &other) -> Pattern & { ancestor::operator=(other); return *this; }
+  auto Pattern::operator=(ancestor &&other) -> Pattern & { ancestor::operator=(std::forward<ancestor>(other)); return *this; }
+}
+#endiv

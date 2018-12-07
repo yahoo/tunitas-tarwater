@@ -1,0 +1,68 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::sha1::traits {
+  //
+  // The byte-like quantities (for the purpose of sha1::Workbench)
+  // and as such multi-byte characters DO NOT count as "bytes."
+  //
+  namespace byte_traits {
+    template<typename BYTE> struct IsA;
+    template<typename BYTE> struct NotA;
+  }
+  template<typename BYTE> struct Byte;
+  template<typename BYTE> struct Byte<BYTE const>;
+}
+#import std.byte
+namespace tunitas::tarwater::sha1::traits {
+  template<> struct Byte<char>;
+  template<> struct Byte<signed char>;
+  template<> struct Byte<unsigned char>;
+  template<> struct Byte<std::byte>;
+}
+#endiv
+#divert <hpp>
+namespace tunitas::tarwater::sha1::traits {
+  template<typename BYTE> struct byte_traits::NotA {
+    static constexpr auto isa = false;
+  };
+  template<typename BYTE> struct byte_traits::IsA {
+    static constexpr auto isa = true;
+    static constexpr auto size = sizeof (BYTE);
+    using Value = BYTE ;
+    // ... new school
+    using Pointer = Value *;
+    using Const_Pointer = Value const *;
+    using Reference = Value &;
+    using Const_Reference = Value const &;
+    // ... old school
+    using value_type = Value;
+    using pointer = Pointer;
+    using reference = Reference;
+    // ... new old school
+    using const_pointer = Const_Pointer;
+    using const_reference = Const_Reference;
+  };
+}
+namespace tunitas::tarwater::sha1 {
+  template<typename BYTE> struct traits::Byte : public byte_traits::NotA<BYTE> { };
+  template<typename BYTE> struct traits::Byte<BYTE const> : public Byte<BYTE> { };
+  template<> struct traits::Byte<char> : public byte_traits::IsA<char> { };
+  template<> struct traits::Byte<unsigned char> : public byte_traits::IsA<unsigned char> { };
+  template<> struct traits::Byte<signed char> : public byte_traits::IsA<signed char> { };
+  template<> struct traits::Byte<std::byte> : public byte_traits::IsA<std::byte> { };
+}
+#endiv
+#divert <cpp>
+// This is, of course, test code.
+#import std.byte
+namespace tunitas::tarwater::sha1::traits {
+  static_assert(Byte<char>::isa);
+  static_assert(Byte<unsigned char>::isa);
+  static_assert(Byte<signed char>::isa);
+  static_assert(Byte<std::byte>::isa);
+  static_assert(!Byte<wchar_t>::isa);
+  static_assert(!Byte<char16_t>::isa);
+  static_assert(!Byte<char32_t>::isa);
+  static_assert(!Byte<int>::isa);
+}
+#endiv

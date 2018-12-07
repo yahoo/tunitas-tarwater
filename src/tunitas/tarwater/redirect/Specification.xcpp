@@ -1,0 +1,29 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::redirect {
+  //
+  // The specification of a redirect
+  //
+  // See https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  //
+  // Usage:
+  //
+  //   auto specified = get_redirect_specification(request);
+  //   auto specification = value(std::move(specified));
+  //   auto validated = state.validated(specification);
+  //
+  class Specification;
+}
+#endiv
+#divert <hpp>
+#import tunitas.tarwater.member.Name
+#import tunitas.tarwater.time.Point
+#import tunitas.tarwater.url.Encoded
+#import tunitas.tarwater.sha1.Hexstring
+struct tunitas::tarwater::redirect::Specification {
+  member::Name member;
+  time::Point ts;
+  url::Encoded next;
+  sha1::Hexstring token;
+};
+#endiv

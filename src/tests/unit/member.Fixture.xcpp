@@ -1,0 +1,37 @@
+// -*- c++ -*- with SCOLD stylings
+#divert <fpp>
+namespace tests::unit::member { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::member::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_Name() -> void;
+  auto test_Secret() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import tunitas.tarwater.member.Name
+auto tests::unit::member::Fixture::test_Name() -> void {
+  ::tunitas::tarwater::member::Name name{"adtech"};
+  CPPUNIT_ASSERT(!name.empty());
+}
+#import tunitas.tarwater.member.Secret
+auto tests::unit::member::Fixture::test_Secret() -> void {
+  ::tunitas::tarwater::member::Secret secret{"decoder-ring"};
+  CPPUNIT_ASSERT(!secret.empty());
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::member::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("member");
+  series << call("Name", &Fixture::test_Name)
+	 << call("Secret", &Fixture::test_Secret)
+    ;
+  return series.release();
+}
+#endiv
