@@ -26,7 +26,10 @@ auto tunitas::tarwater::url::format(Pattern const &pattern, formatting::Variable
   using namespace std::string_literals;
   std::string ret{pattern};
   for (auto const &nv : variables) {
-    auto const name = std::regex{"{"s + nv.first + "}"s};
+    // https://ecma-international.org/ecma-262/5.1/#sec-15.10
+    // The use of braces '{' '}' are quantifiers, so the backslashes are necessary.
+    // The nv.first name is expected to be regex safe.
+    auto const name = std::regex{"\\{"s + nv.first + "\\}"s};
     auto const &value = nv.second;
     ret = std::regex_replace(ret, name, value);
   }

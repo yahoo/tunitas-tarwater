@@ -5,6 +5,7 @@
 #import tests.unit.error.Fixture
 #import tests.unit.exception.Fixture
 #import tests.unit.identifier.Fixture
+#import tests.unit.member.Fixture
 #import tests.unit.redirect.Fixture
 #import tests.unit.service.Fixture
 #import tests.unit.sha1.Fixture
@@ -21,6 +22,7 @@ auto main(int argc, char *argv[]) -> int {
 			      error::Fixture::suite(),
 			      exception::Fixture::suite(),
 			      identifier::Fixture::suite(),
+			      member::Fixture::suite(),
 			      redirect::Fixture::suite(),
 			      service::Fixture::suite(),
 			      sha1::Fixture::suite(),

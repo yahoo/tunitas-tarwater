@@ -27,7 +27,7 @@ auto tests::unit::identifier::Fixture::test_Encoded() -> void {
 #import tunitas.tarwater.identifier.Integer
 auto tests::unit::identifier::Fixture::test_Integer() -> void {
   using namespace ::tunitas::tarwater::identifier;
-  auto id = Integer{0x0'9f54'8e93'e1b8'f59e};
+  auto id = Integer{0x0'9f54'8e93'e1b8'f59elu};
   CPPUNIT_ASSERT(0 != (std::uint64_t)id);
 }
 #import tunitas.tarwater.identifier.State
@@ -38,18 +38,28 @@ auto tests::unit::identifier::Fixture::test_State() -> void {
 #import tunitas.tarwater.identifier.encode
 auto tests::unit::identifier::Fixture::test_encode() -> void {
   using namespace ::tunitas::tarwater::identifier;
-  auto const subject = Integer{0x0'9f54'8e93'e1b8'f59e};
+  // as published https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  // WATCHOUT - the published standard uses "little endian" for network order THAT IS WRONG by RFC1700
+  //
+  // 0x0'ba8c'd241'd901'218flu
+  //
+  // RFC 1700  big-endian-------> $ perl -e 'print qq(\xba\x8c\xd2\x41\xd9\x01\x21\x8f);' | base64
+  // RFC 1700  big-endian-------> uozSQdkBIY8=
+  // DigiTrust little-endian----> $ perl -e 'print qq(\x8f\x21\x01\xd9\x41\xd2\x8c\xba);' | base64
+  // DigiTrust little-endian----> jyEB2UHSjLo=
+  //
+  auto const subject = Integer{0x0'ba8c'd241'd901'218flu};
   auto const actual = encode(subject);
-  auto const expected = Encoded{"VJ+TjrjhnvU="};
+  auto const expected = Encoded{"jyEB2UHSjLo="};
   CPPUNIT_ASSERT_EQUAL(expected, actual);
 }
 #import tunitas.tarwater.identifier.decode
 auto tests::unit::identifier::Fixture::test_decode() -> void {
   using namespace ::tunitas::tarwater::identifier;
-  auto const subject = Encoded{"VJ+TjrjhnvU="};
+  auto const subject = Encoded{"jyEB2UHSjLo="};
   auto const decoded = decode(subject);
   auto const actual = value(decoded);
-  auto const expected = Integer{0x0'9f54'8e93'e1b8'f59e};
+  auto const expected = Integer{0x0'ba8c'd241'd901'218flu};
   CPPUNIT_ASSERT_EQUAL(expected, actual);
 }
 #import tunitas.tarwater.identifier.to_string
@@ -62,9 +72,9 @@ auto tests::unit::identifier::Fixture::test_to_string_Encoded() -> void {
 }
 auto tests::unit::identifier::Fixture::test_to_string_Integer() -> void {
   using namespace ::tunitas::tarwater::identifier;
-  auto const subject = Integer{0x0'9f54'8e93'e1b8'f59e};
+  auto const subject = Integer{0x0'ba8c'd241'd901'218flu};
   auto const actual = to_string(subject);
-  auto const expected = std::string{"VJ+TjrjhnvU="};
+  auto const expected = std::string{"jyEB2UHSjLo="};
   CPPUNIT_ASSERT_EQUAL(expected, actual);
 }
 #import unit.rigging.suite.Stream

@@ -5,6 +5,9 @@ namespace tunitas::tarwater::sha1::workbench {
   //
   // The to_string(TYPE) formatter for the Workbench
   //
+  // WATCHOUT - if TYPE is a floating point type then six digits of precision are used
+  // as documented https://en.cppreference.com/w/cpp/string/basic_string/to_string
+  //
   // Precondition:
   //   The lifetime of the value must be longer than the As_String object.
   //   The function std::to_string(TYPE) must exist.

@@ -4,6 +4,16 @@ namespace tunitas::tarwater::endpoint {
   //
   // The code behind the /sync endpoint
   //
+  // See https://github.com/digi-trust/dt-cdn/wiki/User-Sync-Service-(Draft)
+  //
+  // Scheme:
+  //
+  //   //usync.digitru.st/userid?member={member_id}&ts={timestamp}&next={next}&token={token}
+  //
+  // Example:
+  //
+  //   //usync.digitru.st/userid?member=nQjyizbdyF&ts=1528757444&next=http%3A%2F%2Fusync.example.com%2Fdigitrust%3Fid%3D%7Bid%7D%26status%3D%7Bstatus%7D&token=21944721d8f6279332ecc8beb61dbbc80edbb504
+  //
   // Usage:
   //
   //   uss::endpoint::Sync sync;

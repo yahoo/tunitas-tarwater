@@ -129,6 +129,8 @@ namespace tunitas::tarwater::sha1 {
 namespace tunitas::tarwater::sha1 {
   template<required::As_Stringable TYPE> auto Workbench::operator<<(workbench::As_String<TYPE> as) -> Workbench & { 
     using std::to_string; // visibility on either the ADL variant or the std-variant
+    // WATCHOUT - if TYPE is a floating point type then six digits of precision are used
+    // as documented https://en.cppreference.com/w/cpp/string/basic_string/to_string
     auto stringified = to_string(as.value);
     state.Update(reinterpret_cast<cryptopp::byte const *>(stringified.data()), stringified.size());
     return *this;

@@ -82,14 +82,22 @@ auto tests::unit::url::Fixture::test_encode() -> void {
 #import tunitas.tarwater.url.Pattern
 #import tunitas.tarwater.url.formatting.Variables
 #import tunitas.tarwater.url.format
+#import std.cerr
+#import std.regex_error
 auto tests::unit::url::Fixture::test_format() -> void {
-  using namespace ::tunitas::tarwater::url;
-  auto variables = formatting::Variables{{"id", "nQjyizbdyF"}, {"status", "success"}};
-  auto pattern = Pattern{"http://example.org/some_page.html?id={id}&status={status}"};
-  auto formatted = format(pattern, variables);
-  std::string const &actual = formatted;
-  std::string const &expected = "http://example.org/some_page.html?id=nQjyizbdyF&status=success"s;
-  CPPUNIT_ASSERT_EQUAL(expected, actual);
+  try {
+    using namespace ::tunitas::tarwater::url;
+    auto variables = formatting::Variables{{"id", "nQjyizbdyF"}, {"status", "success"}};
+    auto pattern = Pattern{"http://example.org/some_page.html?id={id}&status={status}"};
+    auto formatted = format(pattern, variables);
+    std::string const &actual = formatted;
+    std::string const &expected = "http://example.org/some_page.html?id=nQjyizbdyF&status=success"s;
+    CPPUNIT_ASSERT_EQUAL(expected, actual);
+  } catch (std::regex_error const &e) {
+    std::cerr << "DEBUG: regex error " << e.what() << '\n';
+    std::cerr << "DEBUG: regex code " << (int) e.code() << '\n';
+    throw;
+  }
 }
 #import unit.rigging.suite.Stream
 #import unit.rigging.suite.call

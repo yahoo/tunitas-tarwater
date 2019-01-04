@@ -38,7 +38,7 @@ auto app::service::run(Configuration const &cfg) -> void {
   tarwater::service::Core core{core_cfg};
   auto const FAMILY_SENSE = false;
   tarwater::endpoint::Sync sync{core};
-  ws.register_resource("/sync", &sync, FAMILY_SENSE);   // "our" standard name
+  ws.register_resource("/sync", &sync, FAMILY_SENSE);   // "our" standard name (same as theirs)
   ws.register_resource("/userid", &sync, FAMILY_SENSE); // "their" standard name
   // There is no 'quit' method.  The service runs forever
   ws.start(cfg.foreground.value_or(defaults::FOREGROUND));

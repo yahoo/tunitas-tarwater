@@ -1,11 +1,22 @@
 #!/bin/sh
 source ${0%/*}/rigging.sh || exit 70
-exit 70
-port=8081
-pid=$(${exe?} --port=${port?} </dev/null &) &&
-sleep 1 &&
-curl localhost:${port?}/sync &&
-echo OK
+if true; then
+    echo "FAILing the test: this test is unimplemented because there is no way to stop the server"
+    exit 70
+else
 
-# be careful what you kill here.
-kill ${pid:-0}
+    # The test case exhibited at
+    #
+    # https://github.com/digi-trust/dt-cdn/wiki/User-Sync-Service-(Draft)
+    #
+    QUERY="nQjyizbdyF&ts=1528757444&next=http%3A%2F%2Fusync.example.com%2Fdigitrust%3Fid%3D%7Bid%7D%26status%3D%7Bstatus%7D&token=21944721d8f6279332ecc8beb61dbbc80edbb504"
+    #
+    port=8081
+    pid=$(${exe?} --pid --port=${port?} </dev/null &) &&
+    sleep 1 &&
+    curl --verbose http://localhost:${port?}/sync"?$QUERY" &&
+    echo OK pid=$pid
+
+    # be careful what you kill here.
+    # kill ${pid:-0}
+fi

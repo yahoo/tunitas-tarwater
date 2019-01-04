@@ -45,16 +45,40 @@ auto tests::unit::cookie::Object::test_to_string() -> void {
   std::ostringstream buf;
   Subject subject{identifier::Integer{1582106333220}, member::Name{R"member(1CrsdUNAo6)member"}, true};
   auto const actual = static_cast<std::string const &>(to_string(subject));
-  auto const expected = R"cookie(["id":"1234565","version":2,"producer":"1CrsdUNAo6","privacy":{"optout":false}})cookie"s;
+  // expected output has the fields in alphabetical orderk alphabetical 
+  auto const expected = R"cookie({"id":1582106333220,"privacy":{"optout":true},"producer":"1CrsdUNAo6","version":2})cookie"s;
+  CPPUNIT_ASSERT('\0' != actual.back());
+  std::cerr << "expected.back=" << (int) expected.back() << '\n';
+  std::cerr << "actual.back=" << (int) actual.back() << '\n';
+  CPPUNIT_ASSERT_EQUAL(expected.back(), actual.back());
+  CPPUNIT_ASSERT_EQUAL(expected.size(), actual.size());
   CPPUNIT_ASSERT_EQUAL(expected, actual);
 }
 #import std.ostringstream
 auto tests::unit::cookie::Object::test_operator_insert() -> void {
   std::ostringstream buf;
-  Subject subject{identifier::Integer{1582106333220}, member::Name{R"member(1CrsdUNAo6)member"}, true};
+  Subject subject{identifier::Integer{1582106333220}, member::Name{R"member(1CrsdUNAo6)member"}, false};
   buf << subject;
   auto const actual = buf.str();
-  auto const expected = R"cookie(["id":"1234565","version":2,"producer":"1CrsdUNAo6","privacy":{"optout":false}})cookie"s;
+  //
+  // expected output has the fields in alphabetical orderk alphabetical                                                      v
+  auto const almost_expected = R"cookie({"id":1582106333220,"privacy":{"optout":false},"producer":"1CrsdUNAo6","version":2})cookie"s;
+  //
+  // The newline at the end is very very pesky
+  // It is an artifact of json.writer.Fast (jsoncpp-1.8.4-3.fc28.x86_64)
+  //
+  //
+  // NASTY NASTY NASTY ---------------------\ the
+  //                                        | newline
+  //                                        | here
+  //                                        v
+  auto const expected = almost_expected + "\n"s;
+  CPPUNIT_ASSERT('\0' != actual.back());
+  std::cerr << "expected.back=" << (int) expected.back() << '\n';
+  std::cerr << "actual.back=" << (int) actual.back() << '\n';
+  CPPUNIT_ASSERT_EQUAL(expected.back(), actual.back());
+  CPPUNIT_ASSERT_EQUAL(expected.back(), actual.back());
+  CPPUNIT_ASSERT_EQUAL(expected.size(), actual.size());
   CPPUNIT_ASSERT_EQUAL(expected, actual);
 }
 #import unit.rigging.suite.Stream

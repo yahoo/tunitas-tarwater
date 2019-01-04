@@ -31,7 +31,8 @@ auto tests::unit::time::Fixture::test_from_chars() -> void {
   CPPUNIT_ASSERT(!ok(f0));
   auto f1 = from_chars("1541551531");
   CPPUNIT_ASSERT(ok(f1));
-  CPPUNIT_ASSERT_EQUAL(1541551531, value(f1).time_since_epoch().count());
+  // The "count" is the count of the nanoseconds.
+  CPPUNIT_ASSERT_EQUAL(1541551531'000'000'000l, value(f1).time_since_epoch().count());
 }
 auto tests::unit::time::Fixture::test_from_integer() -> void {
   using namespace ::tunitas::tarwater::time;
@@ -41,7 +42,8 @@ auto tests::unit::time::Fixture::test_from_integer() -> void {
   CPPUNIT_ASSERT(!ok(fm1));
   auto f1 = from_integer(1541551531);
   CPPUNIT_ASSERT(ok(f1));
-  CPPUNIT_ASSERT_EQUAL(1541551531, value(f1).time_since_epoch().count());
+  // The "count" is the count of the nanoseconds.
+  CPPUNIT_ASSERT_EQUAL(1541551531'000'000'000l, value(f1).time_since_epoch().count());
 }
 auto tests::unit::time::Fixture::test_now() -> void {
   using namespace ::tunitas::tarwater::time;

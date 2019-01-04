@@ -4,20 +4,24 @@
 #import tunitas.tarwater.identifier.Encoded
 namespace tunitas::tarwater::identifier {
   //
-  // Encode the DigiTrust identifier.
-  // An integer -> base64 string
+  // Encode the DigiTrust identifier (for network transmission)
   //
-  // This should not throw exceptions, but can possibly throw an exception.
+  // An integer -> base64 string.
+  //
+  // <WATCHOUT>DigiTrust is using LITTLE-ENDIAN for NETWORK ORDER</WATCHOUT>
+  // See the documentariat in namespace.xcpp
+  //
+  // Operation:
+  //
+  // Encoding SHOULD not throw exceptions, but can possibly throw an exception.
   // Failures are truly exceptional.
   // It does not return an Outcome because there is no reasonable way it can fail.
-  //
-  // See Encoding within
-  // https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
   //
   // Usage:
   // 
   //   auto id = Integer{0x123456789abcdef};
   //   auto str = encode(id);
+  //   Encoded{"782riWdFIwE="} == encode(Integer{0x123456789abcdef});
   //
   inline auto encode(Integer const &) -> Encoded;
 }
@@ -25,11 +29,27 @@ namespace tunitas::tarwater::identifier {
 #divert <ipp>
 #import tunitas.base64.Encoder
 #import tunitas.base64.Exception
+#import std.byte
 auto tunitas::tarwater::identifier::encode(Integer const &input) -> Encoded {
   using namespace ::tunitas::base64;
   try {
+    // Encoder does host-to-network order translation.  The result is network order.
     Encoder enc;
-    enc.put((std::underlying_type<Integer>::type) input);
+    if constexpr (HAD_USED_PROPER_NETWORK_ORDER_PROPERLY) {
+      enc.put((std::underlying_type<Integer>::type) input);
+    } else {
+      // blik
+      // byte order within the integer is little endian.
+      // bit order within bytes are still big-endian
+      // bytes are extracted in little-to-big order
+      auto const underlying = (std::underlying_type<Integer>::type) input;
+      for (auto i{0lu}, e{sizeof (underlying)}; e != i; ++i) {
+	auto const position = i<<3;
+	auto const mask = 0xfflu << position;
+	auto byte = char((mask & underlying) >> position);
+	enc.put(byte);
+      }
+    }
     return Encoded{enc.finalize()};
   } catch (base64::Exception const &) {
     // How can this happen?  A 64-bit quantity encodes in base64 without fuss.

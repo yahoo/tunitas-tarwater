@@ -8,11 +8,11 @@ namespace tunitas::tarwater::identifier {
   // Decode the DigiTrust identifier (string)
   // An base64 -> integer.
   //
+  // <WATCHOUT>DigiTrust is using LITTLE-ENDIAN for NETWORK ORDER</WATCHOUT>
+  // See the documentariat in namespace.xcpp
+  //
   // Failure is not exceptional because the string values come from the Big Bad Internet.
   // Returns an outcome; but exceptions for the truly surprising (exceptional) problems.
-  //
-  // See Encoding within
-  // https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
   //
   // Usage:
   // 
@@ -25,6 +25,8 @@ namespace tunitas::tarwater::identifier {
   //       std::error_code ec = error_code(decoded);
   //       std::cerr << ec.message() << '\n';
   //   }
+  //
+  //   encode(Integer{0x123456789abcdef}) == Encoded{"782riWdFIwE="};
   //
   inline auto decode(Encoded const &) -> Outcome<Integer>;
 }
@@ -40,7 +42,22 @@ auto tunitas::tarwater::identifier::decode(Encoded const &input) -> Outcome<Inte
   using namespace ::tunitas::base64;
   try {
     Decoder dec{input};
-    auto candidate = dec.get<std::underlying_type<Integer>::type>();
+    using Underlying = std::underlying_type<Integer>::type;
+    Underlying candidate{0};
+    if constexpr (HAD_USED_PROPER_NETWORK_ORDER_PROPERLY) {
+      candidate = dec.get<Underlying>();
+    } else {
+      // blik
+      // byte order within the integer is little endian.
+      // bit order within bytes are still big-endian
+      // bytes are decoded in little endian order; but them into the candidate big-into-small.
+      auto const SHIFT = 8*(sizeof (Underlying)-1);
+      static_assert(56 == SHIFT);
+      for (auto i{0lu}, e{sizeof (Underlying)}; e != i; ++i) {
+	candidate >>= 8;
+	candidate |= Underlying(dec.get<unsigned char>()) << SHIFT;
+      }
+    }
     if (!dec.eof()) {
       // extra junk at the end
       return Result{std::error_code{error::Code::BAD_BASE64_ENCODING}};

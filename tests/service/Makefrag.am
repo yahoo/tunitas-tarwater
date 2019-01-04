@@ -34,5 +34,6 @@ tests_service_TESTS = \
   tests/service/error.port.missing-2.test \
   tests/service/error.port.missing-3.test \
   tests/service/error.unknown.test \
+  \
   $(tests_service_XFAIL_TESTS) \
   $(end)

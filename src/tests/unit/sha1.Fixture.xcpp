@@ -11,7 +11,8 @@ public:
   auto test_Workbench() -> void;
   auto test_Bytes() -> void;
   auto test_Hexstring() -> void;
-  auto test_to_string() -> void;
+  auto test_to_string_upcasing() -> void;
+  auto test_to_string_nocasing() -> void;
   auto test_detail_hexchar() -> void;
   auto test_detail_hexpair() -> void;
   static auto suite() -> cppunit::Test *;
@@ -20,6 +21,7 @@ public:
 #divert <cpp>
 #import tunitas.tarwater.sha1.function
 #import std.copy
+#import std.transform
 auto tests::unit::sha1::Fixture::test_function() -> void {
   using namespace ::tunitas::tarwater::sha1;
   auto const hashed = function("apple", "banana", "cherry");
@@ -28,7 +30,7 @@ auto tests::unit::sha1::Fixture::test_function() -> void {
 			  char const specimen[] = "a163b2115d1ed751ee870b2fe8ba06fc43ce1b0b";
 			  Hexstring ret;
 			  static_assert(41 == sizeof (specimen));
-			  std::copy(&specimen[0], &specimen[40], ret.begin());
+			  std::transform(&specimen[0], &specimen[40], ret.begin(), [](char c) { return std::toupper(c); });
 			  return ret;
 			}();
   CPPUNIT_ASSERT_EQUAL(expected, actual);
@@ -43,7 +45,7 @@ auto tests::unit::sha1::Fixture::test_Workbench() -> void {
 			  char const specimen[] = "a163b2115d1ed751ee870b2fe8ba06fc43ce1b0b";
 			  Hexstring ret;
 			  static_assert(41 == sizeof (specimen));
-			  std::copy(&specimen[0], &specimen[40], ret.begin());
+			  std::transform(&specimen[0], &specimen[40], ret.begin(), [](char c) { return std::toupper(c); });
 			  return ret;
 			}();
   CPPUNIT_ASSERT_EQUAL(expected, actual);
@@ -77,28 +79,29 @@ auto tests::unit::sha1::Fixture::test_Hexstring() -> void {
   CPPUNIT_ASSERT(40 == h1.size());
 }
 #import tunitas.tarwater.sha1.to_string
-auto tests::unit::sha1::Fixture::test_to_string() -> void {
+auto tests::unit::sha1::Fixture::test_to_string_upcasing() -> void {
+  using namespace ::tunitas::tarwater::sha1;
+  std::string const expected{"DA39A3EE5E6B4B0D3255BFEF95601890AFD80709"};
+  auto subject = []() -> Bytes {
+		   char const specimen[] = "\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09";
+		   Bytes ret;
+		   std::copy((std::byte const *)&specimen[0], (std::byte const *)&specimen[20], ret.begin());
+		   return ret;
+		 }();
+  auto const actual = to_string(subject); // <-------------- DOES upcase
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
+}
+auto tests::unit::sha1::Fixture::test_to_string_nocasing() -> void {
   using namespace ::tunitas::tarwater::sha1;
   std::string const expected{"da39a3ee5e6b4b0d3255bfef95601890afd80709"};
-  {
-    auto subject = []() -> Bytes {
-		     char const specimen[] = "\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09";
-		     Bytes ret;
-		     std::copy((std::byte const *)&specimen[0], (std::byte const *)&specimen[20], ret.begin());
-		     return ret;
-		   }();
-    auto const actual = to_string(subject);
-    CPPUNIT_ASSERT_EQUAL(expected, actual);
-  } {
-    auto subject = []() -> Hexstring {
-		     char const specimen[] = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-		     Hexstring ret;
-		     std::copy(&specimen[0], &specimen[40], ret.begin());
-		     return ret;
-		   }();
-    auto const actual = to_string(subject);
-    CPPUNIT_ASSERT_EQUAL(expected, actual);
-  }
+  auto subject = []() -> Hexstring {
+		   char const specimen[] = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+		   Hexstring ret;
+		   std::copy(&specimen[0], &specimen[40], ret.begin());
+		   return ret;
+		 }();
+  auto const actual = to_string(subject); // <--------------------- does NOT upcase
+  CPPUNIT_ASSERT_EQUAL(expected, actual);
 }
 #import tunitas.tarwater.sha1.detail
 auto tests::unit::sha1::Fixture::test_detail_hexchar() -> void {
@@ -113,12 +116,12 @@ auto tests::unit::sha1::Fixture::test_detail_hexchar() -> void {
   CPPUNIT_ASSERT('7' == hexchar(7));
   CPPUNIT_ASSERT('8' == hexchar(8));
   CPPUNIT_ASSERT('9' == hexchar(9));
-  CPPUNIT_ASSERT('a' == hexchar(10));
-  CPPUNIT_ASSERT('b' == hexchar(11));
-  CPPUNIT_ASSERT('c' == hexchar(12));
-  CPPUNIT_ASSERT('d' == hexchar(13));
-  CPPUNIT_ASSERT('e' == hexchar(14));
-  CPPUNIT_ASSERT('f' == hexchar(15));
+  CPPUNIT_ASSERT('A' == hexchar(10));
+  CPPUNIT_ASSERT('B' == hexchar(11));
+  CPPUNIT_ASSERT('C' == hexchar(12));
+  CPPUNIT_ASSERT('D' == hexchar(13));
+  CPPUNIT_ASSERT('E' == hexchar(14));
+  CPPUNIT_ASSERT('F' == hexchar(15));
 }
 #import std.tuple
 #import std.cerr
@@ -129,8 +132,9 @@ auto tests::unit::sha1::Fixture::test_detail_hexpair() -> void {
   using namespace ::tunitas::tarwater::sha1::detail;
   for (auto hi{0u}, he{16u}; he != hi; ++hi) {
     for (auto li{0u}, le{16u}; le != li; ++li) {
+      auto rehex = [](unsigned n) -> char { return n < 10 ? char('0' + n) : char('A' - 10 + n); };
+      auto [expected_hi, expected_lo] = std::tuple<unsigned char, unsigned char>{rehex(hi), rehex(li)};
       auto specimen = 16*hi + li;
-      auto [expected_hi, expected_lo] = std::tuple<unsigned char, unsigned char>{hi, li};
       auto [actual_hi, actual_lo] = hexpair(specimen);
       std::cerr << "DEBUG: expected=" << std::hex << std::setw(2) << std::setfill('0') << (unsigned)expected_hi
 		<< '.' << std::hex << std::setw(2) << std::setfill('0') << (unsigned)expected_lo
@@ -153,9 +157,14 @@ auto tests::unit::sha1::Fixture::suite() -> cppunit::Test * {
 	 << call("Workbench", &Fixture::test_Workbench)
 	 << call("Bytes", &Fixture::test_Bytes)
 	 << call("Hexstring", &Fixture::test_Hexstring)
-	 << call("to_string", &Fixture::test_to_string)
     ;
   {
+    Stream tos("to_string");
+    tos << call("upcasing", &Fixture::test_to_string_upcasing)
+	<< call("nocasing", &Fixture::test_to_string_nocasing)
+      ;
+    series << add(tos.release());
+  } {
     Stream det("detail");
     det << call("hexchar", &Fixture::test_detail_hexchar)
         << call("hexpair", &Fixture::test_detail_hexpair)

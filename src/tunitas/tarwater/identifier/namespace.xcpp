@@ -2,3 +2,46 @@
 #divert <fpp>
 namespace tunitas::tarwater::identifier { }
 #endiv
+#divert <hpp>
+namespace tunitas::tarwater::identifier {
+  //
+  // The encoding of the DigiTrust identifier (for network transmission)
+  // is NOT STANDARD
+  //
+  // <WATCHOUT>DigiTrust is using LITTLE-ENDIAN for NETWORK ORDER</WATCHOUT>
+  //
+  // See Encoding within
+  // https://github.com/digi-trust/dt-cdn/wiki/Cookies-for-Platforms
+  // Observe how the integer is imputed to be little endian in the Encoding section.
+  //
+  // But the world does not work that way.
+  //
+  // Why is Network Order "Big Endian"
+  // Because: http://tools.ietf.org/html/rfc1700
+  //   <quote>
+  //   The convention in the documentation of Internet Protocols is to express numbers in decimal
+  //   and to picture data in "big-endian" order [COHEN].  That is, fields are described left to
+  //   right, with the most significant octet on the left and the least significant octet on the right.
+  //   </quote>
+  //
+  // Also
+  //   http://www.ietf.org/rfc/ien/ien137.txt
+  //   http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=1667115 
+  //
+  // Example:
+  //
+  // specimen 0x0'0123'4567'89ab'cdef;
+  //
+  // big-endian-------> $ perl -e 'print qq(\x01\x23\x45\x67\x89\xab\xcd\xef);' | base64
+  // big-endian-------> ASNFZ4mrze8=
+  //
+  // little-endian----> $ perl -e 'print qq(\xef\xcd\xab\x89\x67\x45\x23\x01);' | base64
+  // little-endian----> 782riWdFIwE=
+  //
+  // Output
+  //
+  //   Encoded{"782riWdFIwE="} == encode(Integer{0x123456789abcdef});
+  //
+  auto const HAD_USED_PROPER_NETWORK_ORDER_PROPERLY = false;
+}
+#endiv

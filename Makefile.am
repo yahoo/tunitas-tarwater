@@ -65,7 +65,10 @@ OBJECTS = \
   $(end)
 $(if $(OBJECTS),$(__ok),$(error NO OBJECTS))
 
-$(OBJECTS) : $(MODULES)
+# All this does is make every object depend upon every module
+# so any change makes everything recompile. You don't want that.
+# 
+# DO NOT ---> $(OBJECTS) : $(MODULES)
 
 include tests/unit/Makefrag.am
 include tests/service/Makefrag.am
