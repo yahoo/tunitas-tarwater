@@ -57,6 +57,7 @@ app::service::options::Parser::Parser(Configuration &cfg, Specification const &s
 #import std.to_string
 #import sys.exits.constants
 #import tunitas.app.options.get_port
+#import tunitas.app.options.get_identifier
 #import tunitas.tarwater.Version
 using namespace std::literals;
 auto app::service::options::Parser::parse(Args args) -> Result {
@@ -106,6 +107,15 @@ auto app::service::options::Parser::parse(Args args) -> Result {
     case oi::CHR_p:
     case oi::SERVICE_PORT:
       cfg.service_port = tunitas::app::options::get_port<exception::Quitting>(cfg, step);
+      break;
+    case oi::CHR_D:
+    case oi::DROP_PRIVILEGES:
+      cfg.drop_privileges = true;
+      break;
+    case oi::CHR_U:
+    case oi::UNPRIVILEGED_USER:
+      cfg.drop_privileges = true;
+      cfg.unprivileged_user = tunitas::app::options::get_identifier<exception::Quitting>(cfg, step);
       break;
     case oi::MISSING:
       // [[FIXTHIS,TODO]] -- resolve whether it is a short or long option as ::options::option_in_error(code)

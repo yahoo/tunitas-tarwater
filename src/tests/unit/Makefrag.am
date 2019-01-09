@@ -4,7 +4,7 @@
 #            and also that LDFLAGS is reserved to the command line.
 # if --with-nonstd-libhttpserver=yes (or similar) then we must link appropriately with -L, -Wl,-rpath=
 bin_unit_LDFLAGS = -lrigging-bench-module $(CHECK_LDFLAGS_SET)
-bin_unit_LDADD = lib/libtunitas-tarwater.la
+bin_unit_LDADD = lib/libapp-service.la lib/libtunitas-tarwater.la
 bin_unit_MODULES = $(call TF_SOURCEStoMODULES, $(bin_unit_SOURCES))
 bin_unit_SOURCES = \
   obj/src/tests/unit/main.cpp \

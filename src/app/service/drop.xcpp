@@ -1,0 +1,61 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import app.service.Configuration
+namespace app::service {
+  //
+  // drop (privileges) - do that thing
+  //
+  // Preconditions:
+  // - The process is running as root
+  //
+  // Postcondition:
+  // a. Failure
+  // - an exception is thrown
+  // - the process is still running as root
+  //
+  // b. Success
+  // - the process is running as the unprivileged user
+  //
+  // Usage:
+  //
+  //   try {
+  //     if (cfg.drop_privileges) {
+  //       drop(cfg);
+  //     }
+  //     ...do something...
+  //   } catch (std::exception const &) {
+  //     ...report the problem...
+  //     ...exit gracefully...
+  //   }
+  //
+  auto drop(Configuration const &) -> void;
+}
+#endiv
+#divert <cpp>
+#import app.service.defaults
+#import app.service.exception.Quitting
+#import want.sys.posix.Endent
+#import want.sys.posix.geteuid
+#import want.sys.posix.getpwname
+#import want.sys.posix.seteuid
+#include <pwd.h> // [[FIXTHIS]] module-posix-os #import passwd
+auto app::service::drop(Configuration const &cfg) -> void {
+  namespace sys = want::sys;
+  debug(cfg) << "before uid=" << sys::posix::geteuid() << '\n';
+  auto user = cfg.unprivileged_user.value_or(defaults::UNPRIVILEGED_USER);
+  sys::posix::Endent<::passwd> guard;
+  auto got = sys::posix::getpwname(user);
+  if (!ok(got)) {
+    error(cfg) << "cannot drop privileges to " << user << " because " << error_code(got).message() << '\n';
+    throw exception::Quitting{cfg.NAME, sys::exits::NOUSER};
+  }
+  auto uid = value(got)->pw_uid;
+  auto set = sys::posix::seteuid(uid);
+  if (!ok(set)) {
+    error(cfg) << "cannot drop privileges to " << user << " with uid " << uid << " because " << error_code(set).message() << '\n';
+    throw exception::Quitting{cfg.NAME, sys::exits::NOUSER};
+  }
+  verbose(cfg) << "successfully dropped privileges to " << user << " with uid " << uid << '\n';
+  debug(cfg) << "after uid=" << sys::posix::geteuid() << '\n';
+}
+#endiv

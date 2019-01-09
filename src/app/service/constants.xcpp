@@ -11,5 +11,10 @@ namespace app::service::constants {
     inline auto const PORT = 8080u;
     inline auto const THREADS = 5u;
   }
+  namespace daemon {
+    // for use with sys::posix::daemon(...) a.k.a. daemon(3)
+    inline auto const CHDIR = true;
+    inline auto const CLOSE = true;
+  }
 }
 #endiv

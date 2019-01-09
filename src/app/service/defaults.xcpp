@@ -1,10 +1,16 @@
 // This is -*- c++ -*- (as close to C++2a as possible)
 #divert <hpp>
 #import std.uint16_t
+#import std.string_literals
 namespace app::service::defaults {
-  inline auto const FOREGROUND = true;
-  inline auto const EMIT_PID = false;
-  // This is a cookie sync server, so the actual service port will be 80 or 443
-  inline auto const SERVICE_PORT = std::uint16_t{8080u};
+  inline namespace constants {
+    using namespace std::literals;
+    inline auto const FOREGROUND = true;
+    inline auto const EMIT_PID = false;
+    inline auto const DROP_PRIVILEGES = true;
+    inline auto const UNPRIVILEGED_USER = "nobody"s;
+    // This is a cookie sync server, so the actual service port will be 80 or 443
+    inline auto const SERVICE_PORT = std::uint16_t{8080u};
+  }
 }
 #endiv

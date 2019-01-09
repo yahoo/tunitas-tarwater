@@ -5,9 +5,12 @@ namespace app::service {
   // The User Sync Service (USS) Configuration
   // captures the user-configurable settings of the service
   //
+  // Default values are declared nearby in app.service.defaults
+  //
   // Usage:
   //
-  //   Configuration cfg{};
+  //   Program prg{argv[0]};
+  //   Configuration cfg{prg};
   //
   class Configuration;
 }
@@ -15,6 +18,7 @@ namespace app::service {
 #divert <hpp>
 #import tunitas.app.Configuration
 #import std.optional
+#import std.string
 class app::service::Configuration : public tunitas::app::Configuration {
   using ancestor = tunitas::app::Configuration;
 public:
@@ -22,5 +26,7 @@ public:
   std::optional<bool> foreground;
   std::optional<bool> emit_pid;
   std::optional<std::uint16_t> service_port;
+  std::optional<bool> drop_privileges;
+  std::optional<std::string> unprivileged_user;
 };
 #endiv

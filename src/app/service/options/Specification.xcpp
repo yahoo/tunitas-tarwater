@@ -38,7 +38,7 @@ app::service::options::Specification::Specification()
   //          /------------------ this [read carefully getopt(3)]
   //          |
   //          v
-  : ancestor{":hVdvqwybfPp:",
+  : ancestor{":hVdvqwybfPp:Du:",
              {{"usage", oa::NO, oi::USAGE_SUBCOMMAND},
               {"help", oa::NO, oi::USAGE_SUBCOMMAND},
               {"version", oa::NO, oi::VERSION_SUBCOMMAND},
@@ -55,6 +55,9 @@ app::service::options::Specification::Specification()
 	      {"background", oa::NO, oi::BACKGROUND_MODE},
 	      {"pid", oa::NO, oi::EMIT_PID},
 	      {"emit-pid", oa::NO, oi::EMIT_PID},
-	      {"port", oa::REQUIRED, oi::SERVICE_PORT}}}
+	      {"port", oa::REQUIRED, oi::SERVICE_PORT},
+	      {"drop", oa::NO, oi::DROP_PRIVILEGES},
+	      {"user", oa::REQUIRED, oi::UNPRIVILEGED_USER},
+	      {"unprivileged-user", oa::REQUIRED, oi::UNPRIVILEGED_USER}}}
 { }
 #endiv

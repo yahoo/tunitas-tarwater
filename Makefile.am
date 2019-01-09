@@ -33,6 +33,7 @@ sbin_PROGRAMS = sbin/tarwater-service
 lib_LTLIBRARIES = 
 noinst_LTLIBRARIES = \
   lib/libtunitas-tarwater.la \
+  lib/libapp-service.la \
   lib/libwant.la \
   $(end)
 check_PROGRAMS = bin/unit
@@ -53,15 +54,15 @@ include src/tests/unit/Makefrag.am
 MODULES = \
   $(lib_libtunitas_tarwater_la_MODULES) \
   $(lib_libwant_la_MODULES) \
-  $(sbin_tarwater_service_MODULES) \
   $(bin_unit_MODULES) \
+  $(src_app_service_MODULES_SET) \
   $(end)
 $(if $(MODULES),$(__ok),$(error NO MODULES))
 OBJECTS = \
   $(lib_libtunitas_tarwater_la_OBJECTS) \
   $(lib_libwant_la_OBJECTS) \
-  $(sbin_tarwater_service_OBJECTS) \
   $(bin_unit_OBJECTS) \
+  $(src_app_service_OBJECTS) \
   $(end)
 $(if $(OBJECTS),$(__ok),$(error NO OBJECTS))
 

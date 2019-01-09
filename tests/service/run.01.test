@@ -12,7 +12,7 @@ else
     QUERY="nQjyizbdyF&ts=1528757444&next=http%3A%2F%2Fusync.example.com%2Fdigitrust%3Fid%3D%7Bid%7D%26status%3D%7Bstatus%7D&token=21944721d8f6279332ecc8beb61dbbc80edbb504"
     #
     port=8081
-    pid=$(${exe?} --pid --port=${port?} </dev/null &) &&
+    pid=$(${exe?} --test --bg --pid --port=${port?} </dev/null &) &&
     sleep 1 &&
     curl --verbose http://localhost:${port?}/sync"?$QUERY" &&
     echo OK pid=$pid

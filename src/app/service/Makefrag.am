@@ -1,15 +1,37 @@
 # This is a GNU -*- Makefile -*- fragment which is managed by automake
 
+src_app_service_MODULES_SET = \
+  $(sbin_tarwater_service_MODULES) \
+  $(lib_libapp_service_la_MODULES) \
+  $(end)
+src_app_service_SOURCES_SET = \
+  $(sbin_tarwater_service_SOURCES) \
+  $(lib_libapp_service_la_SOURCES) \
+  $(end)
+src_app_service_OBJECTS_SET = \
+  $(sbin_tarwater_service_OBJECTS) \
+  $(lib_libapp_service_la_OBJECTS) \
+  $(end)
+
 sbin_tarwater_service = sbin/tarwater-service
 # WATCHOUT - AM_LDFLAGS is not automatically added to the final link line anywhere (oddly enough...)
 #            and also that LDFLAGS is reserved to the command line.
 # if --with-nonstd-libhttpserver=yes (or similar) then we must link appropriately with -L, -Wl,-rpath=
-sbin_tarwater_service_LDFLAGS = $(PACKAGE_LDFLAGS_SET) -ltunitas-tarwater -lhttpserver -loptions-module
-sbin_tarwater_service_LDADD = lib/libwant.la 
+sbin_tarwater_service_LDFLAGS = $(lib_libapp_service_la_LDFLAGS)
+sbin_tarwater_service_LDADD = $(lib_libapp_service_la)
 sbin_tarwater_service_MODULES = $(call TF_SOURCEStoMODULES, $(sbin_tarwater_service_SOURCES))
 sbin_tarwater_service_SOURCES = \
   obj/src/app/service/main.cpp \
+  obj/src/app/service/run.cpp \
+  $(end)
+# separated out as a library to make it testable
+lib_libapp_service_la = lib/libapp-service.la
+lib_libapp_service_la_LDFLAGS = $(PACKAGE_LDFLAGS_SET) -ltunitas-tarwater -lhttpserver -loptions-module
+lib_libapp_service_la_LIBADD = $(lib_libwant.la)
+lib_libapp_service_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libapp_service_la_SOURCES))
+lib_libapp_service_la_SOURCES = \
   obj/src/app/service/namespace.cpp \
+  obj/src/app/service/drop.cpp \
   obj/src/app/service/Configuration.cpp \
   obj/src/app/service/Usage.cpp \
   obj/src/app/service/constants.cpp \
@@ -21,11 +43,12 @@ sbin_tarwater_service_SOURCES = \
   obj/src/app/service/options/indicator.cpp \
   obj/src/app/service/options/namespace.cpp \
   obj/src/app/service/options/parser.Result.cpp \
-  obj/src/app/service/run.cpp \
   $(end)
+$(info DEBUG sbin_tarwater_service_LDFLAGS=$(sbin_tarwater_service_LDFLAGS))
+$(info DEBUG sbin_tarwater_service_LDADD=$(sbin_tarwater_service_LDADD))
 $(scold_cxxdir)/src/app/service/dependencies.mk:
-	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(sbin_tarwater_service_SOURCES))
-	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(sbin_tarwater_service_SOURCES))
+	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(src_app_service_SOURCES_SET))
+	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(src_app_service_SOURCES_SET))
 	test -e $@
 include $(scold_cxxdir)/src/app/service/dependencies.mk
 clean-dependencies::

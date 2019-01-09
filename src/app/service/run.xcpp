@@ -2,12 +2,28 @@
 #divert <hpp>
 #import app.service.Configuration
 namespace app::service {
+  //
+  // run - do that thing
+  //
+  // Does not return because httpserver::Webserver::start(...) does not return.
+  //
+  // Usage:
+  //
+  //   try {
+  //     Configuration cfg{...};
+  //     run(cfg);
+  //   } catch (std::exception const &) {
+  //     ...report the problem...
+  //   }
+  //
   auto run(Configuration const &) -> void;
 }
 #endiv
 #divert <cpp>
 #import app.service.constants
 #import app.service.defaults
+#import app.service.exception.Quitting
+#import app.service.drop
 #import getpid
 #import httpserver.Create_Webserver
 #import httpserver.Webserver
@@ -17,6 +33,7 @@ namespace app::service {
 #import tunitas.tarwater.service.Core
 #import tunitas.tarwater.endpoint.Sync
 auto app::service::run(Configuration const &cfg) -> void {
+  using namespace want;
   httpserver::Webserver ws{[&cfg]() {
     httpserver::Create_Webserver specification;
     using namespace constants::server;
@@ -28,8 +45,9 @@ auto app::service::run(Configuration const &cfg) -> void {
   if (cfg.emit_pid) {
     std::cout << getpid() << std::flush;
   }
-  // [[FIXTHIS]] daemonize
-  // [[FIXTHIS]] drop privileges
+  if (cfg.drop_privileges) {
+    drop(cfg);
+  }
   using namespace tunitas;
   tarwater::service::Configuration core_cfg;
   core_cfg.member_name = "123";

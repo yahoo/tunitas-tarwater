@@ -7,14 +7,111 @@ namespace tests::unit::service { class Fixture; }
 #import cppunit.test.Fixture
 class tests::unit::service::Fixture : public cppunit::test::Fixture {
 public:
-  auto test_something() -> void;
+  auto test_Configuration() -> void;
+  auto test_exception_Quitting() -> void;
+  auto test_options_Specification() -> void;
+  auto test_options_Parser() -> void;
+  auto test_options_parser_Result() -> void;
+  auto test_Usage() -> void;
+  // some functions (may be hard to test)
+  auto test_run() -> void;
+  auto test_drop() -> void;
   static auto suite() -> cppunit::Test *;
 };
 #endiv
 #divert <cpp>
-auto tests::unit::service::Fixture::test_something() -> void {
-#warning WRITETHIS auto tests::unit::service::Fixture::test_something() -> void
+#import tunitas.app.Program
+#import app.service.Configuration
+auto tests::unit::service::Fixture::test_Configuration() -> void {
+  ::tunitas::app::Program prg{"a.out"};
+  ::app::service::Configuration cfg{prg};
   CPPUNIT_ASSERT(true);
+}
+#import std.exception
+#import app.service.Usage
+auto tests::unit::service::Fixture::test_Usage() -> void {
+  try {
+    ::tunitas::app::Program prg{"a.out"};
+    throw ::app::service::Usage{prg, sys::exits::OK};
+  } catch (std::exception const &) {
+    CPPUNIT_ASSERT(true);
+  }
+}
+#import app.service.exception.Quitting
+auto tests::unit::service::Fixture::test_exception_Quitting() -> void {
+  try {
+    ::tunitas::app::Program prg{"a.out"};
+    ::app::service::Configuration cfg{prg};
+    throw ::app::service::exception::Quitting{cfg.NAME, sys::exits::FAIL};
+  } catch (std::exception const &) {
+    CPPUNIT_ASSERT(true);
+  }
+}
+#import app.service.options.Specification
+auto tests::unit::service::Fixture::test_options_Specification() -> void {
+  ::app::service::options::Specification spec{};
+  CPPUNIT_ASSERT(true);
+}
+#import std.move
+#import app.service.options.Parser
+auto tests::unit::service::Fixture::test_options_Parser() -> void {
+  ::tunitas::app::Program prg{"a.out"};
+  ::app::service::Configuration cfg{prg};
+  ::app::service::options::Specification spec{};
+  ::app::service::options::Parser parser{cfg, spec};
+  char argv0[] = "a.out";
+  char argv1[] = "-v";
+  char argv2[] = "-d";
+  char argv3[] = "here";
+  char argv4[] = "there";
+  char argv5[] = "everywhere";
+  char *a__v[] = { &argv0[0], &argv1[0], &argv2[0], &argv3[0], &argv4[0], &argv5[0], nullptr };
+  auto const a__c = sizeof (a__v)/sizeof (a__v[0]) - 1lu;
+  auto args = ::tunitas::app::options::Args{a__c, a__v};
+  auto parsed = parser.parse(args);
+  auto rest = value(std::move(parsed));
+  CPPUNIT_ASSERT(ok(parsed));
+}
+#import app.service.options.parser.Result
+auto tests::unit::service::Fixture::test_options_parser_Result() -> void {
+  // Reminder: parser::Result is basically an outcome
+  //
+  //   auto const b = ok(res);
+  //   auto const &words = value(res);
+  //
+  char argv0[] = "a.out";
+  char argv1[] = "-v";
+  char argv2[] = "-w";
+  char argv3[] = "here";
+  char argv4[] = "there";
+  char argv5[] = "everywhere";
+  char *v[] = { &argv0[0], &argv1[0], &argv2[0], &argv3[0], &argv4[0], &argv5[0], nullptr };
+  auto how = false;
+  auto start = &v[3];
+  auto finish = &v[sizeof (v)/sizeof (v[0]) - 1];
+  auto res = ::app::service::options::parser::Result{how, start, finish};
+  CPPUNIT_ASSERT(how == ok(res));
+  CPPUNIT_ASSERT(3 == value(res).size());
+}
+#import app.service.drop
+#import tunitas.app.Program
+#import app.service.Configuration
+#import std.cerr
+#import std.exception
+auto tests::unit::service::Fixture::test_drop() -> void {
+  try {
+    ::tunitas::app::Program prg{"a.out"};
+    ::app::service::Configuration cfg{prg};
+    drop(cfg); // <--------------------------------------- test this which will fail (because you are not root)
+    CPPUNIT_ASSERT(false);
+  } catch (std::exception const &e) {
+    std::cerr << "failed to drop privileges in the unit tester because " << e.what() << '\n';
+    CPPUNIT_ASSERT(true);
+  }
+}
+auto tests::unit::service::Fixture::test_run() -> void {
+  // Not testable here in unit testing
+    CPPUNIT_ASSERT(true);
 }
 #import unit.rigging.suite.Stream
 #import unit.rigging.suite.call
@@ -22,8 +119,29 @@ auto tests::unit::service::Fixture::test_something() -> void {
 auto tests::unit::service::Fixture::suite() -> cppunit::Test * {
   using namespace ::unit::rigging::suite;
   Stream series("service");
-  series << call("something", &Fixture::test_something)
+  series << call("Configuration", &Fixture::test_Configuration)
+	 << call("Usage", &Fixture::test_Usage)
+	 << call("drop", &Fixture::test_drop)
+	 << call("run", &Fixture::test_run)
     ;
+  {
+    Stream exc("exception");
+    exc << call("Quitting", &Fixture::test_exception_Quitting)
+      ;
+    series << add(exc.release());
+  } {
+    Stream opt("options");
+    opt << call("Specification", &Fixture::test_options_Specification)
+	<< call("Parser", &Fixture::test_options_Parser)
+      ;
+    {
+      Stream par("parser");
+      par << call("Result", &Fixture::test_options_parser_Result)
+	;
+      opt << add(par.release());
+    }
+    series << add(opt.release());
+  }
   return series.release();
 }
 #endiv

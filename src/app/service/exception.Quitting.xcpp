@@ -6,8 +6,9 @@ namespace app::service::exception {
   //
   // Usage:
   //
-  //   throw Quitting{std::cerr, sys::exits::FAIL}
-  //   throw Quitting{sys::exits::CONFIG};
+  //   auto NAME = std::string{"a.out"};
+  //   throw Quitting{NAME, std::cerr, sys::exits::FAIL}
+  //   throw Quitting{NAME, sys::exits::CONFIG};
   //
   class [[nodiscard]] Quitting;
 }

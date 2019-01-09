@@ -1,5 +1,19 @@
+2019-01-09  Wendell Baker  <wbaker@oath.com>
+
+	* Version v0.0.0-0.devel, basic infrastructure
+	- tarwater-service implements --drop-privileges, --unprivileged-user.
+	- the "integer" representation of network order is "little endian" in contravention of RFC 1700
+	- unit tests all pass
+	* src/tunitas/tarwater/identifier/namespace.xcpp: documentation of little-endian sense
+	* src/tunitas/tarwater/endpoint/Sync.xcpp: the work flow to validate a sync call is defined
+	* src/want/nonstd.uninitialized_zero.xcpp: provided
+	* src/want/sys.posix.getpwuid.xcpp, src/want/sys.posix.getpwname.xcpp: provided
+	* src/app/service/Makerag.am: a convenience library for testability
+	* src/app/service/drop.xcpp: drop the privileges
+	* src/app/service/options/*: in support of the new drop-privileges, unprivileged-user
+
 2018-12-06  Wendell Baker  <wbaker@oath.com>
 
-	* Version 0.0.0, the basic skeleton of the service
+	* Version v0.0.0-0.devel, the basic skeleton of the service
 	- builds; does not function
 	- most unit tests work; some XFAIL is registered
