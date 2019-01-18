@@ -48,14 +48,21 @@ auto app::service::Usage::what() const noexcept -> char const * {
 #import app.service.defaults
 auto app::service::Usage::format(std::string const &NAME) -> std::string {
   std::ostringstream buf;
+  auto const is_default = [](bool which) { return which ? "yes" : "no"; };
   buf << "usage: " << NAME << " [...options...]\n"
       << "\n"
       << "Service Options\n"
       << "--foreground, --fg, -f             remain in the foreground, e.g. for systemd\n"
+      << "                                   default " << is_default(defaults::FOREGROUND) << '\n'
       << "--background, --bg                 daemonize into the background\n"
+      << "                                   default " << is_default(!defaults::FOREGROUND) << '\n'
       << "--pid, -P                          emit the PID of the running daemon on the standard output\n"
-      << "  alternative: --emit-pid\n"
-      << "--port=NUMBER, -p NUMBER           use port NUMBER instead of the default " << defaults::SERVICE_PORT << '\n'
+      << "  alternative: --emit-pid          default " << is_default(defaults::EMIT_PID) << '\n'
+      << "--port=NUMBER, -p NUMBER           use port NUMBER\n"
+      << "--drop                             drop privileges to the unprivileged user\n"
+      << "  alternate: --drop-privileges     default " << is_default(defaults::DROP_PRIVILEGES) << '\n'
+      << "--user=NAME                        the unprivileged user\n"
+      << "  alternate: --unprivileged-user   default " << defaults::UNPRIVILEGED_USER << '\n'
       << '\n'
       << "General Options:\n"
       << "--usage, --help, -h                emit this message, and exit\n"

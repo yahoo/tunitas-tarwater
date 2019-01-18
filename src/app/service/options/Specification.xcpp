@@ -57,6 +57,8 @@ app::service::options::Specification::Specification()
 	      {"emit-pid", oa::NO, oi::EMIT_PID},
 	      {"port", oa::REQUIRED, oi::SERVICE_PORT},
 	      {"drop", oa::NO, oi::DROP_PRIVILEGES},
+	      {"drop-privilege", oa::NO, oi::DROP_PRIVILEGES},
+	      {"drop-privileges", oa::NO, oi::DROP_PRIVILEGES},
 	      {"user", oa::REQUIRED, oi::UNPRIVILEGED_USER},
 	      {"unprivileged-user", oa::REQUIRED, oi::UNPRIVILEGED_USER}}}
 { }

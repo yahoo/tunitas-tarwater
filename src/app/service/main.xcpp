@@ -2,7 +2,6 @@
 #divert <hpp>
 #import tunitas.app.options.Args
 namespace app::service {
-  inline auto const NAME = "uss";
   using tunitas::app::options::Args;
   auto main(Args) -> int;
 }
@@ -12,6 +11,7 @@ auto main(int c, char *v[]) -> int {
   return app::service::main(app::service::Args{(unsigned)c, v});
 }
 #import app.service.Configuration
+#import app.service.defaults
 #import app.service.exception.Quitting
 #import app.service.options.Specification
 #import app.service.options.Parser
@@ -27,7 +27,7 @@ auto app::service::main(Args args) -> int try {
   auto parsed = pa.parse(std::move(args));
   if (!ok(parsed)) {
     error(cfg) << ": error, the command line contains errors\n"; // [[FIXTHIS]] return an error indication in the outcome " << error_code(parsed).message() << '\n';
-    throw exception::Quitting{NAME, sys::exits::FAIL};
+    throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
   }
   if (cfg.dry_run_mode) {
     verbose(cfg) << "nothing to do in dry-run mode\n";
@@ -40,7 +40,7 @@ auto app::service::main(Args args) -> int try {
   g.stream() << g << '\n';
   return g.code();
 } catch (std::exception const &e) {
-  std::cerr << NAME << ": fatal, an unexpected error - " << e.what() << '\n';
+  std::cerr << defaults::NAME << ": fatal, an unexpected error - " << e.what() << '\n';
   return sys::exits::SOFTWARE;
 }
 #endiv

@@ -5,6 +5,7 @@
 namespace app::service::defaults {
   inline namespace constants {
     using namespace std::literals;
+    inline auto const NAME = "tarwater-service";
     inline auto const FOREGROUND = true;
     inline auto const EMIT_PID = false;
     inline auto const DROP_PRIVILEGES = true;

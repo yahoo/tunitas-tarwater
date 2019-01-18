@@ -3,32 +3,40 @@ tests_service_XFAIL_TESTS = \
   $(end)
 tests_service_TESTS = \
   tests/service/usage.test \
+  tests/service/option.D.test \
+  tests/service/option.P.test \
+  tests/service/option.V.test \
+  tests/service/option.b.test \
   tests/service/option.background.test \
   tests/service/option.bg.test \
-  tests/service/option.b.test \
+  tests/service/option.d.test \
+  tests/service/option.drop-privilege.test \
+  tests/service/option.drop-privileges.test \
+  tests/service/option.drop.test \
   tests/service/option.dry-run.test \
   tests/service/option.dryrun.test \
-  tests/service/option.d.test \
   tests/service/option.emit-pid.test \
+  tests/service/option.f.test \
   tests/service/option.fg.test \
   tests/service/option.foreground.test \
-  tests/service/option.f.test \
-  tests/service/option.help.test \
   tests/service/option.h.test \
+  tests/service/option.help.test \
+  tests/service/option.p.test \
   tests/service/option.pid.test \
   tests/service/option.port.test \
-  tests/service/option.p.test \
-  tests/service/option.P.test \
   tests/service/option.q.test \
   tests/service/option.quiet.test \
+  tests/service/option.u.test \
+  tests/service/option.U.test \
+  tests/service/option.unprivileged-user.test \
   tests/service/option.usage.test \
+  tests/service/option.user.test \
+  tests/service/option.v.test \
   tests/service/option.verbose.test \
   tests/service/option.version.test \
-  tests/service/option.v.test \
-  tests/service/option.V.test \
-  tests/service/option.warnings.test \
-  tests/service/option.warning.test \
   tests/service/option.w.test \
+  tests/service/option.warning.test \
+  tests/service/option.warnings.test \
   tests/service/option.y.test \
   tests/service/error.port.missing-1.test \
   tests/service/error.port.missing-2.test \

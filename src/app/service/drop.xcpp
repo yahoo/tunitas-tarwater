@@ -50,6 +50,10 @@ auto app::service::drop(Configuration const &cfg) -> void {
     throw exception::Quitting{cfg.NAME, sys::exits::NOUSER};
   }
   auto uid = value(got)->pw_uid;
+  if (0 == uid) {
+    error(cfg) << "the user " << user << " is not unprivileged\n";
+    throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
+  }
   auto set = sys::posix::seteuid(uid);
   if (!ok(set)) {
     error(cfg) << "cannot drop privileges to " << user << " with uid " << uid << " because " << error_code(set).message() << '\n';
