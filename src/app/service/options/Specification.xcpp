@@ -38,7 +38,7 @@ app::service::options::Specification::Specification()
   //          /------------------ this [read carefully getopt(3)]
   //          |
   //          v
-  : ancestor{":hVdvqwybfPp:Du:",
+  : ancestor{":hVdvqwybfPp:Du:M:",
              {{"usage", oa::NO, oi::USAGE_SUBCOMMAND},
               {"help", oa::NO, oi::USAGE_SUBCOMMAND},
               {"version", oa::NO, oi::VERSION_SUBCOMMAND},
@@ -60,6 +60,11 @@ app::service::options::Specification::Specification()
 	      {"drop-privilege", oa::NO, oi::DROP_PRIVILEGES},
 	      {"drop-privileges", oa::NO, oi::DROP_PRIVILEGES},
 	      {"user", oa::REQUIRED, oi::UNPRIVILEGED_USER},
-	      {"unprivileged-user", oa::REQUIRED, oi::UNPRIVILEGED_USER}}}
+	      {"unprivileged-user", oa::REQUIRED, oi::UNPRIVILEGED_USER},
+	      {"ms", oa::REQUIRED, oi::MEMBER_STORAGE},
+	      {"member-storage", oa::REQUIRED, oi::MEMBER_STORAGE},
+	      {"memberstoreage", oa::REQUIRED, oi::MEMBER_STORAGE},
+	      {"member-store", oa::REQUIRED, oi::MEMBER_STORAGE},
+	      {"memberstore", oa::REQUIRED, oi::MEMBER_STORAGE}}}
 { }
 #endiv

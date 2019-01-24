@@ -9,6 +9,7 @@ class tests::unit::exception::Fixture : public cppunit::test::Fixture {
 public:
   auto test_Generic() -> void;
   auto test_Conversion() -> void;
+  auto test_Configuration() -> void;
   static auto suite() -> cppunit::Test *;
 };
 #endiv
@@ -45,6 +46,16 @@ auto tests::unit::exception::Fixture::test_Conversion() -> void {
     CPPUNIT_ASSERT(true);
   }
 }
+#import tunitas.tarwater.exception.Configuration
+auto tests::unit::exception::Fixture::test_Configuration() -> void {
+  using namespace ::tunitas::tarwater::exception;
+  try {
+    // Throw the conversion problem (is concrete enough to construct)
+    throw Configuration{"badness"};
+  } catch (Generic const &) {
+    CPPUNIT_ASSERT(true);
+  }
+}
 #import unit.rigging.suite.Stream
 #import unit.rigging.suite.call
 #import unit.rigging.suite.add
@@ -52,6 +63,7 @@ auto tests::unit::exception::Fixture::suite() -> cppunit::Test * {
   using namespace ::unit::rigging::suite;
   Stream series("exception");
   series << call("Generic", &Fixture::test_Generic)
+	 << call("Configuration", &Fixture::test_Configuration)
 	 << call("Conversion", &Fixture::test_Conversion)
     ;
   return series.release();

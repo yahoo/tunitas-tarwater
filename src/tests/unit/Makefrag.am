@@ -9,6 +9,7 @@ bin_unit_MODULES = $(call TF_SOURCEStoMODULES, $(bin_unit_SOURCES))
 bin_unit_SOURCES = \
   obj/src/tests/unit/main.cpp \
   obj/src/tests/unit/namespace.cpp \
+  obj/src/tests/unit/app.Fixture.cpp \
   obj/src/tests/unit/cookie.Fixture.cpp \
   obj/src/tests/unit/cookie.Encode.cpp \
   obj/src/tests/unit/cookie.Decode.cpp \

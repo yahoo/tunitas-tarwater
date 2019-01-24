@@ -1,6 +1,9 @@
 // This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
 #divert <fpp>
 namespace tunitas::tarwater::error {
+  //
+  // REMINDER - WATCHOUT - add new enums members at the end.
+  //
   enum class Code {
     SUCCESS = 0,
     NOT_A_NUMBER, //        e.g. in a conversion from a character representation,
@@ -10,6 +13,8 @@ namespace tunitas::tarwater::error {
     BAD_BASE64_ENCODING,
     BAD_JSON_ENCODING,
     BAD_REDIRECT_SPECIFICATION,
+    BAD_MEMBER_STORE, //    a problem with the member secret database
+    BAD_MEMBER_SECRET, //   a problem with the member secret itself
   };
 }
 #import std.is_error_code_enum

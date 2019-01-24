@@ -5,7 +5,9 @@ namespace app::service {
   //
   // run - do that thing
   //
-  // Does not return because httpserver::Webserver::start(...) does not return.
+  // Does return
+  //   FOREGROUND - returns at the end of program
+  //   BACKGROUND - returns because the server is in the background
   //
   // Usage:
   //
@@ -20,16 +22,18 @@ namespace app::service {
 }
 #endiv
 #divert <cpp>
+#import app.exception.Quitting
 #import app.service.constants
 #import app.service.defaults
-#import app.service.exception.Quitting
 #import app.service.drop
+#import autotools.autoconf.Config.tunitas.tarwater.CONFIG
 #import getpid
 #import httpserver.Create_Webserver
 #import httpserver.Webserver
 #import std.cout
 #import std.move
-#import tunitas.tarwater.service.Configuration
+#import tunitas.tarwater.member.load
+#import tunitas.tarwater.member.Storage
 #import tunitas.tarwater.service.Core
 #import tunitas.tarwater.endpoint.Sync
 auto app::service::run(Configuration const &cfg) -> void {
@@ -48,14 +52,24 @@ auto app::service::run(Configuration const &cfg) -> void {
   if (cfg.drop_privileges) {
     drop(cfg);
   }
-  using namespace tunitas;
-  tarwater::service::Configuration core_cfg;
-  core_cfg.member_name = "123";
-  core_cfg.member_secret = "decoder-ring";
+  using namespace tunitas::tarwater;
+  auto store = [&cfg]() -> member::Storage {
+    using ac = autotools::autoconf::Config<CONFIG>;
+    auto const member_storage_filepath = cfg.member_storage.value_or(ac::pkgconfdir(), defaults::MEMBER_STORAGE);
+    auto loaded = member::load(member_storage_filepath);
+    if (!ok(loaded)) {
+      auto &error{::options::error(cfg)};
+      error << "could not load the member secret database "
+	    << member_storage_filepath
+	    << " because " << error_code(loaded).message() << '\n';
+      throw exception::Quitting{cfg.NAME, sys::exits::CONFIG};
+    }
+    return value(std::move(loaded));
+  }();
   //
-  tarwater::service::Core core{core_cfg};
+  Core core{store};
   auto const FAMILY_SENSE = false;
-  tarwater::endpoint::Sync sync{core};
+  endpoint::Sync sync{core};
   ws.register_resource("/sync", &sync, FAMILY_SENSE);   // "our" standard name (same as theirs)
   ws.register_resource("/userid", &sync, FAMILY_SENSE); // "their" standard name
   // There is no 'quit' method.  The service runs forever

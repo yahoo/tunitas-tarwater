@@ -1,0 +1,42 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::exception {
+  //
+  // There was some problem with the configuration of the server.
+  // The service must be aborted immediately.
+  // This exception is for extraordinarily exceptional conditions.
+  //
+  // Following the mandate for service exceptions, the messaging is terse and rudimentary.
+  //
+  // Usage:
+  //
+  //   throw Configuration{"empty secret"};
+  //
+  class [[nodiscard]] Configuration;
+}
+#endiv
+#divert <hpp>
+#import tunitas.tarwater.exception.Generic
+#import std.string
+#import std.runtime_error
+class tunitas::tarwater::exception::Configuration : public Generic, public std::runtime_error {
+  struct ancestors {
+    using Tunitas = Generic;
+    using Exception = std::runtime_error;
+  };
+public:
+  inline explicit Configuration(std::string const &);
+  auto what() const noexcept -> char const * final;
+};
+#endiv
+#divert <ipp>
+tunitas::tarwater::exception::Configuration::Configuration(std::string const &reason)
+  : ancestors::Tunitas{}
+  , ancestors::Exception{reason}
+{ }
+#endiv
+#divert <cpp>
+auto tunitas::tarwater::exception::Configuration::what() const noexcept -> char const * {
+  return ancestors::Exception::what();
+}
+#endiv

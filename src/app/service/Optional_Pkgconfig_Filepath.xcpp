@@ -1,0 +1,41 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace app::service {
+  //
+  // An (optional) pkgconfig filepath
+  //
+  // The filepath, if not a full path, is qualified by the pkgconfigdir()
+  // Whereas std::optional<std::filesystem::path> has a single-argument 'value_or(...)'
+  // this descendant has that and a two-argument variant.
+  //
+  // Usage:
+  //
+  //   Optional_Pkgconfigdir_Filepath opf;
+  //   std::filesystem:;path fp = ofp.value_or(autotools::autoconf::Config<CONFIG>:pkgconfdir(), defaults::MEMBER_STORAGE);
+  //   ...use the filepath...
+  //
+  class Optional_Pkgconfig_Filepath;
+}
+#endiv
+#divert <hpp>
+#import std.optional
+#import std.filesystem.path
+class app::service::Optional_Pkgconfig_Filepath : public std::optional<std::filesystem::path> {
+  using ancestor = std::optional<std::filesystem::path>;
+public:
+  Optional_Pkgconfig_Filepath() = default;
+  using ancestor::optional;
+  using ancestor::value_or;
+  inline auto value_or(std::filesystem::path const &pkgconfigdir, std::string const &filename) const -> std::filesystem::path;
+};
+#endiv
+#divert <ipp>
+auto app::service::Optional_Pkgconfig_Filepath::value_or(std::filesystem::path const &pkgconfigdir, std::string const &filename) const -> std::filesystem::path {
+  ancestor const &self{*this};
+  if (self) {
+    return *self;
+  } else {
+    return pkgconfigdir / filename;
+  }
+}
+#endiv

@@ -1,3 +1,25 @@
+dnl
+dnl WITH_NONSTD_LIBHTTPSERVER
+dnl
+dnl Inputs
+dnl
+dnl   --with-nonstd-libhttpserver=PREFIX
+dnl
+dnl Defaults
+dnl
+dnl   'yes' defaults PREFIX to /opt/nonstd/libhttpserver
+dnl   'no'  the non-standard httpserver will not be used
+dnl
+dnl Postcondition
+dnl
+dnl   If selected, then the related variables are defined
+dnl   nonstd_libhttpserver_prefix
+dnl   nonstd_libhttpserver_includedir
+dnl   nonstd_libhttpserver_libdir
+dnl   nonstd_libhttpserver_CPPFLAGS
+dnl   nonstd_libhttpserver_CXXFLAGS
+dnl   nonstd_libhttpserver_LDFLAGS
+dnl
 dnl WATCHOUT - the "standard build" of libhttpserver is not tested with IPv6 and does not work.
 dnl Observed 2018-Q2 on Fedora 27 with libhttpserver-devel-0.9.0-3.fc24.x86_64
 dnl See the patches nearby.

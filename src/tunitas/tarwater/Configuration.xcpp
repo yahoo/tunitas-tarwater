@@ -1,0 +1,6 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater {
+  using Configuration = configuration::Object;
+}
+#endiv

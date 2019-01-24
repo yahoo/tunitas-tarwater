@@ -1,0 +1,26 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::tarwater::member {
+  //
+  // The member secret storage
+  // Storage filename comes from the command line.
+  //
+  // Usage:
+  //
+  //   Storage sto;
+  //   sto.member_secret =  ...something...
+  //   sto.something_else = ...something-else...
+  //
+  //   Storage sto = load(cfg);
+  //
+  struct Storage;
+}
+#endiv
+#divert <hpp>
+#import tunitas.tarwater.member.Name
+#import tunitas.tarwater.member.Secret
+struct tunitas::tarwater::member::Storage {
+  Name member_name;
+  Secret member_secret;
+};
+#endiv

@@ -1,0 +1,31 @@
+tests_make_XFAIL_TESTS = \
+  $(end)
+tests_make_TESTS = \
+  tests/make/run.usages.test \
+  tests/make/option.V.test \
+  tests/make/option.d.test \
+  tests/make/option.debug.test \
+  tests/make/option.dry-run.test \
+  tests/make/option.dryrun.test \
+  tests/make/option.h.test \
+  tests/make/option.help.test \
+  tests/make/option.q.test \
+  tests/make/option.quiet.test \
+  tests/make/option.usage.test \
+  tests/make/option.v.test \
+  tests/make/option.verbose.test \
+  tests/make/option.version.test \
+  tests/make/option.w.test \
+  tests/make/option.warning.test \
+  tests/make/option.warnings.test \
+  tests/make/option.y.test \
+  \
+  tests/make/run.01.test \
+  \
+  $(tests_make_XFAIL_TESTS) \
+  $(end)
+
+tests_make_TESTS_DECLARED = $(tests_make_TESTS)
+tests_make_TESTS_DISCOVERED = $(wildcard tests/make/*.test)
+tests_make_TESTS_SURPRISING = $(filter-out $(tests_make_TESTS_DECLARED), $(tests_make_TESTS_DISCOVERED))
+$(if $(tests_make_TESTS_SURPRISING),$(error there are unlisted tests $(tests_make_TESTS_SURPRISING)))

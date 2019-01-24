@@ -1,0 +1,8 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.app
+namespace app {
+  // Cascade the namespaces
+  using namespace tunitas::app;
+}
+#endiv

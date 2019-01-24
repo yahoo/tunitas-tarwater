@@ -1,0 +1,10 @@
+#!/bin/sh
+source ${0%/*}/rigging.sh || exit 70
+secret_file_basis=secret.01.db
+if [ -f ${secret_file_basis?} ] ; then
+    secret_file=${secret_file_basis}
+else
+    secret_file="${0%/*}/${secret_file_basis}"
+fi
+${exe?} ${secret_file?}
+test 0 == $?

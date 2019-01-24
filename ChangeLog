@@ -1,3 +1,10 @@
+2019-01-23  Wendell Baker  <wbaker@verizonmedia.com>
+
+	* Version v0.0.0-0.devel, basic infrastructure
+	- tarwater-service can load the "member secret" from a config file
+	- tarwater-secret-dump can dump the secret
+	- tarwater-secret-make is envisioned
+
 2019-01-09  Wendell Baker  <wbaker@oath.com>
 
 	* Version v0.0.0-0.devel, basic infrastructure

@@ -7,12 +7,50 @@ namespace tests::unit::member { class Fixture; }
 #import cppunit.test.Fixture
 class tests::unit::member::Fixture : public cppunit::test::Fixture {
 public:
+  auto test_Storage() -> void;
+  auto test_load_00() -> void;
+  auto test_load_01() -> void;
+  auto test_load_02() -> void;
   auto test_Name() -> void;
   auto test_Secret() -> void;
   static auto suite() -> cppunit::Test *;
 };
 #endiv
 #divert <cpp>
+#import std.string
+#import std.string_literals
+using namespace std::string_literals;
+#import tunitas.tarwater.member.Storage
+auto tests::unit::member::Fixture::test_Storage() -> void {
+  ::tunitas::tarwater::member::Storage store;
+  CPPUNIT_ASSERT(store.member_name.empty());
+  CPPUNIT_ASSERT(store.member_secret.empty());
+}
+#import tunitas.tarwater.member.load
+auto tests::unit::member::Fixture::test_load_00() -> void {
+  namespace member = tunitas::tarwater::member;
+  auto loaded = member::load("/dev/null");
+  CPPUNIT_ASSERT(ok(loaded));
+  auto store = value(std::move(loaded));
+  CPPUNIT_ASSERT(store.member_name.empty());
+  CPPUNIT_ASSERT(store.member_secret.empty());
+}
+auto tests::unit::member::Fixture::test_load_01() -> void {
+  namespace member = tunitas::tarwater::member;
+  auto loaded = member::load("tests/unit/load.01.store");
+  CPPUNIT_ASSERT(ok(loaded));
+  auto store = value(std::move(loaded));
+  CPPUNIT_ASSERT(!store.member_name.empty());
+  CPPUNIT_ASSERT(!store.member_secret.empty());
+}
+auto tests::unit::member::Fixture::test_load_02() -> void {
+  namespace member = tunitas::tarwater::member;
+  auto loaded = member::load("tests/unit/load.02.store");
+  CPPUNIT_ASSERT(ok(loaded));
+  auto store = value(std::move(loaded));
+  CPPUNIT_ASSERT_EQUAL("Animal Ads LLC"s, (std::string)store.member_name);
+  CPPUNIT_ASSERT_EQUAL("double secret probation"s, (std::string)store.member_secret);
+}
 #import tunitas.tarwater.member.Name
 auto tests::unit::member::Fixture::test_Name() -> void {
   ::tunitas::tarwater::member::Name name{"adtech"};
@@ -31,7 +69,15 @@ auto tests::unit::member::Fixture::suite() -> cppunit::Test * {
   Stream series("member");
   series << call("Name", &Fixture::test_Name)
 	 << call("Secret", &Fixture::test_Secret)
+	 << call("Storage", &Fixture::test_Storage)
     ;
+  {
+    Stream loa{"load"};
+    loa << call("00", &Fixture::test_load_00)
+	<< call("01", &Fixture::test_load_01)
+	<< call("02", &Fixture::test_load_02)
+      ;
+  }
   return series.release();
 }
 #endiv

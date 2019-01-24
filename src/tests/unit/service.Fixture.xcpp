@@ -7,6 +7,8 @@ namespace tests::unit::service { class Fixture; }
 #import cppunit.test.Fixture
 class tests::unit::service::Fixture : public cppunit::test::Fixture {
 public:
+  // These test 'namespace app::service as well as 'namespace tunitas::tarwater::service'
+  //
   auto test_Configuration() -> void;
   auto test_exception_Quitting() -> void;
   auto test_options_Specification() -> void;
@@ -37,12 +39,12 @@ auto tests::unit::service::Fixture::test_Usage() -> void {
     CPPUNIT_ASSERT(true);
   }
 }
-#import app.service.exception.Quitting
+#import app.exception.Quitting
 auto tests::unit::service::Fixture::test_exception_Quitting() -> void {
   try {
     ::tunitas::app::Program prg{"a.out"};
     ::app::service::Configuration cfg{prg};
-    throw ::app::service::exception::Quitting{cfg.NAME, sys::exits::FAIL};
+    throw ::app::exception::Quitting{cfg.NAME, sys::exits::FAIL};
   } catch (std::exception const &) {
     CPPUNIT_ASSERT(true);
   }

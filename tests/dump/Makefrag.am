@@ -1,0 +1,31 @@
+tests_dump_XFAIL_TESTS = \
+  $(end)
+tests_dump_TESTS = \
+  tests/dump/run.usages.test \
+  tests/dump/option.V.test \
+  tests/dump/option.d.test \
+  tests/dump/option.debug.test \
+  tests/dump/option.dry-run.test \
+  tests/dump/option.dryrun.test \
+  tests/dump/option.h.test \
+  tests/dump/option.help.test \
+  tests/dump/option.q.test \
+  tests/dump/option.quiet.test \
+  tests/dump/option.usage.test \
+  tests/dump/option.v.test \
+  tests/dump/option.verbose.test \
+  tests/dump/option.version.test \
+  tests/dump/option.w.test \
+  tests/dump/option.warning.test \
+  tests/dump/option.warnings.test \
+  tests/dump/option.y.test \
+  \
+  tests/dump/run.01.test \
+  \
+  $(tests_dump_XFAIL_TESTS) \
+  $(end)
+
+tests_dump_TESTS_DECLARED = $(tests_dump_TESTS)
+tests_dump_TESTS_DISCOVERED = $(wildcard tests/dump/*.test)
+tests_dump_TESTS_SURPRISING = $(filter-out $(tests_dump_TESTS_DECLARED), $(tests_dump_TESTS_DISCOVERED))
+$(if $(tests_dump_TESTS_SURPRISING),$(error there are unlisted tests $(tests_dump_TESTS_SURPRISING)))

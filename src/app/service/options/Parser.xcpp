@@ -45,8 +45,8 @@ app::service::options::Parser::Parser(Configuration &cfg, Specification const &s
 { }
 #endiv
 #divert <cpp>
+#import app.exception.Quitting
 #import app.service.Usage
-#import app.service.exception.Quitting
 #import app.service.options.indicator.constants
 #import options.longish.Getter
 #import options.longish.Step
@@ -56,6 +56,7 @@ app::service::options::Parser::Parser(Configuration &cfg, Specification const &s
 #import std.to_string
 #import sys.exits.constants
 #import tunitas.app.options.get_port
+#import tunitas.app.options.get_filepath
 #import tunitas.app.options.get_identifier
 #import tunitas.tarwater.Version
 using namespace std::literals;
@@ -116,13 +117,17 @@ auto app::service::options::Parser::parse(Args args) -> Result {
       cfg.drop_privileges = true;
       cfg.unprivileged_user = tunitas::app::options::get_identifier<exception::Quitting>(cfg, step);
       break;
+    case oi::CHR_M:
+    case oi::MEMBER_STORAGE:
+      cfg.member_storage = tunitas::app::options::get_filepath<exception::Quitting>(cfg, step);
+      break;
     case oi::CHR_U:
       error(cfg) << "the single letter option for the unprivileged user is -U (capital 'U')\n";
       throw exception::Quitting{cfg.NAME, sys::exits::USAGE};
     case oi::MISSING:
       // [[FIXTHIS,TODO]] -- resolve whether it is a short or long option as ::options::option_in_error(code)
       // [[FIXTHIS]] get a better application-level messaging & logging facility
-      error(cfg) << "missing required value for --" << word_in_error(step) << '\n';
+      error(cfg) << "missing required value for " << word_in_error(step) << '\n';
       throw exception::Quitting{cfg.NAME, sys::exits::USAGE};
     case oi::UNKNOWN:
       // [[FIXTHIS, TODO]] ibidem. use options::option_in_error(code)

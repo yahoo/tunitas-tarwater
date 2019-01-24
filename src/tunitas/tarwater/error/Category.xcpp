@@ -48,6 +48,10 @@ namespace tunitas::tarwater::error {
     switch (Code(code)) {
     case Code::SUCCESS:
       return "success";
+    case Code::BAD_MEMBER_STORE:
+      return "bad member secret database";
+    case Code::BAD_MEMBER_SECRET:
+      return "bad member secret";
     case Code::NOT_A_NUMBER:
       return "not a number";
     case Code::NOT_AN_IDENTIFIER:

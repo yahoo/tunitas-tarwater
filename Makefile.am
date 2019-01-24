@@ -28,12 +28,14 @@ INSTALLATION_AREAS = \
   @std_tunitas_prefix@ \
   $(end)
 
-bin_PROGRAMS = 
+bin_PROGRAMS = bin/tarwater-secret-dump bin/tarwater-secret-make
 sbin_PROGRAMS = sbin/tarwater-service
 lib_LTLIBRARIES = 
 noinst_LTLIBRARIES = \
+  lib/libautotools-autoconf.la \
   lib/libtunitas-tarwater.la \
   lib/libapp-service.la \
+  lib/libapp.la \
   lib/libwant.la \
   $(end)
 check_PROGRAMS = bin/unit
@@ -46,40 +48,50 @@ $(check_PROGRAMS) : $(bin_PROGRAMS) $(sbin_PROGRAMS)
 $(check_PROGRAMS) : $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
 $(check_PROGRAMS) : $(check_LTLIBRARIES)
 
-include src/tunitas/tarwater/Makefrag.am
+include src/app/Makefrag.am
+include src/app/secret/Makefrag.am
 include src/app/service/Makefrag.am
-include src/want/Makefrag.am
+include src/autotools/autoconf/Makefrag.am
 include src/tests/unit/Makefrag.am
+include src/tunitas/tarwater/Makefrag.am
+include src/want/Makefrag.am
 
-MODULES = \
-  $(lib_libtunitas_tarwater_la_MODULES) \
-  $(lib_libwant_la_MODULES) \
-  $(bin_unit_MODULES) \
-  $(src_app_service_MODULES_SET) \
-  $(end)
-$(if $(MODULES),$(__ok),$(error NO MODULES))
-OBJECTS = \
-  $(lib_libtunitas_tarwater_la_OBJECTS) \
-  $(lib_libwant_la_OBJECTS) \
-  $(bin_unit_OBJECTS) \
-  $(src_app_service_OBJECTS) \
-  $(end)
-$(if $(OBJECTS),$(__ok),$(error NO OBJECTS))
-
-# All this does is make every object depend upon every module
-# so any change makes everything recompile. You don't want that.
-# 
+# NO NEED ---> MODULES = \
+# NO NEED --->   $(lib_libtunitas_tarwater_la_MODULES) \
+# NO NEED --->   $(lib_libwant_la_MODULES) \
+# NO NEED --->   $(bin_unit_MODULES) \
+# NO NEED --->   $(src_app_service_MODULES_SET) \
+# NO NEED --->   $(end)
+# NO NEED ---> $(if $(MODULES),$(__ok),$(error NO MODULES))
+# NO NEED ---> OBJECTS = \
+# NO NEED --->   $(lib_libtunitas_tarwater_la_OBJECTS) \
+# NO NEED --->   $(lib_libwant_la_OBJECTS) \
+# NO NEED --->   $(bin_unit_OBJECTS) \
+# NO NEED --->   $(src_app_service_OBJECTS) \
+# NO NEED --->   $(end)
+# NO NEED ---> $(if $(OBJECTS),$(__ok),$(error NO OBJECTS))
+# NO NEED ---> 
+#
+# DO NOT ---> All this does is make every object depend upon every module
+# DO NOT ---> so any change makes everything recompile. You don't want that.
+# DO NOT --->  
 # DO NOT ---> $(OBJECTS) : $(MODULES)
 
 include tests/unit/Makefrag.am
 include tests/service/Makefrag.am
+include tests/dump/Makefrag.am
+include tests/make/Makefrag.am
 TESTS = \
   $(tests_unit_TESTS) \
   $(tests_service_TESTS) \
+  $(tests_dump_TESTS) \
+  $(tests_make_TESTS) \
   $(end)
 XFAIL_TESTS = \
   $(tests_unit_XFAIL_TESTS) \
   $(tests_service_XFAIL_TESTS) \
+  $(tests_dump_XFAIL_TESTS) \
+  $(tests_make_XFAIL_TESTS) \
   $(end)
 
 __DC_SEARCHPATH = $(SEARCHPATH_EXTERNAL_MODULES)

@@ -1,5 +1,6 @@
 // -*- c++ -*- in the SCOLDing style
 #divert <cpp>
+#import tests.unit.app.Fixture
 #import tests.unit.cookie.Fixture
 #import tests.unit.endpoint.Fixture
 #import tests.unit.error.Fixture
@@ -17,7 +18,8 @@
 #import rigging.bench.Main
 auto main(int argc, char *argv[]) -> int {
   using namespace tests::unit;
-  rigging::bench::Main remain(cookie::Fixture::suite(),
+  rigging::bench::Main remain(app::Fixture::suite(),
+			      cookie::Fixture::suite(),
 			      endpoint::Fixture::suite(),
 			      error::Fixture::suite(),
 			      exception::Fixture::suite(),

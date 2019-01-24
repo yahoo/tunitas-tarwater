@@ -32,8 +32,8 @@ namespace app::service {
 }
 #endiv
 #divert <cpp>
+#import app.exception.Quitting
 #import app.service.defaults
-#import app.service.exception.Quitting
 #import want.sys.posix.Endent
 #import want.sys.posix.geteuid
 #import want.sys.posix.getpwname

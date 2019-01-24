@@ -1,6 +1,7 @@
 // This is -*- c++ -*- (as close to C++2a as possible)
 #divert <fpp>
-namespace app::service::exception {
+#import app.exception
+namespace app::exception {
   //
   // That particular quitting exception
   //
@@ -18,7 +19,7 @@ namespace app::service::exception {
 #import tunitas.app.exception.Messaging
 #import std.exception
 #import std.string
-class app::service::exception::Quitting : public tunitas::app::exception::Quitting, tunitas::app::exception::Messaging, public std::exception {
+class app::exception::Quitting : public tunitas::app::exception::Quitting, tunitas::app::exception::Messaging, public std::exception {
   struct ancestors {
     using Quitting = tunitas::app::exception::Quitting;
     using Messaging = tunitas::app::exception::Messaging;
@@ -31,7 +32,7 @@ public:
 };
 #endiv
 #divert <ipp>
-namespace app::service::exception {
+namespace app::exception {
   Quitting::Quitting(std::string const &NAME, std::ostream &o, sys::exits::Code c)
     : ancestors::Quitting{o, c}
     , ancestors::Messaging{NAME + ": quitting"}
@@ -43,7 +44,7 @@ namespace app::service::exception {
 }
 #endiv
 #divert <cpp>
-namespace app::service::exception {
+namespace app::exception {
   auto Quitting::what() const noexcept -> char const * {
     return ancestors::Messaging::what();
   }

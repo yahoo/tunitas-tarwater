@@ -1,0 +1,8 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import tunitas.app.exception
+namespace app::exception {
+  // Cascade the namespaces
+  using namespace tunitas::app::exception;
+}
+#endiv

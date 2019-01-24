@@ -1,0 +1,5 @@
+#!/bin/sh
+source ${0%/*}/rigging.sh || exit 70
+${exe?} -y --port # (MISSING) PORT
+# the port should be there but is missing
+test 0 != $?

@@ -10,5 +10,6 @@ namespace app::service::options::indicator {
   inline constexpr auto SERVICE_PORT = Code::CODE_251;
   inline constexpr auto DROP_PRIVILEGES = Code::CODE_250;
   inline constexpr auto UNPRIVILEGED_USER = Code::CODE_249;
+  inline constexpr auto MEMBER_STORAGE = Code::CODE_248;
 }
 #endiv

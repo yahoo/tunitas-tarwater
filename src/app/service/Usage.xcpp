@@ -46,32 +46,36 @@ auto app::service::Usage::what() const noexcept -> char const * {
 }
 #import std.ostringstream
 #import app.service.defaults
+#import autotools.autoconf.Config.tunitas.tarwater.CONFIG
 auto app::service::Usage::format(std::string const &NAME) -> std::string {
+  using ac = autotools::autoconf::Config<tunitas::tarwater::CONFIG>;
   std::ostringstream buf;
   auto const is_default = [](bool which) { return which ? "yes" : "no"; };
   buf << "usage: " << NAME << " [...options...]\n"
       << "\n"
       << "Service Options\n"
-      << "--foreground, --fg, -f             remain in the foreground, e.g. for systemd\n"
-      << "                                   default " << is_default(defaults::FOREGROUND) << '\n'
-      << "--background, --bg                 daemonize into the background\n"
-      << "                                   default " << is_default(!defaults::FOREGROUND) << '\n'
-      << "--pid, -P                          emit the PID of the running daemon on the standard output\n"
-      << "  alternative: --emit-pid          default " << is_default(defaults::EMIT_PID) << '\n'
-      << "--port=NUMBER, -p NUMBER           use port NUMBER\n"
-      << "--drop                             drop privileges to the unprivileged user\n"
-      << "  alternate: --drop-privileges     default " << is_default(defaults::DROP_PRIVILEGES) << '\n'
-      << "--user=NAME                        the unprivileged user\n"
-      << "  alternate: --unprivileged-user   default " << defaults::UNPRIVILEGED_USER << '\n'
+      << "--foreground, --fg, -f                   remain in the foreground, e.g. for systemd\n"
+      << "                                         default " << is_default(defaults::FOREGROUND) << '\n'
+      << "--background, --bg                       daemonize into the background\n"
+      << "                                         default " << is_default(!defaults::FOREGROUND) << '\n'
+      << "--pid, -P                                emit the PID of the running daemon on the standard output\n"
+      << "  alternative: --emit-pid                default " << is_default(defaults::EMIT_PID) << '\n'
+      << "--port=NUMBER, -p NUMBER                 use port NUMBER\n"
+      << "--drop                                   drop privileges to the unprivileged user\n"
+      << "  alternate: --drop-privileges           default " << is_default(defaults::DROP_PRIVILEGES) << '\n'
+      << "--user=NAME                              the unprivileged user\n"
+      << "  alternate: --unprivileged-user=NAME    default " << defaults::UNPRIVILEGED_USER << '\n'
+      << "--memberstorage=FILENAME                 the location of the member secret databsae\n"
+      << "  alternate: --member-storage=FILENAME   default " << ac::pkgconfdir() / defaults::MEMBER_STORAGE << '\n'
       << '\n'
       << "General Options:\n"
-      << "--usage, --help, -h                emit this message, and exit\n"
-      << "--version, -V                      emit the package version, and exit\n"
-      << "--dry-run, --dryrun, -y            dry run, do not start the server\n"
-      << "--warnings, --warning, -w          emit warnings\n"
-      << "--quiet, -q                        be quiet, emit no notices or warnings\n"
-      << "--verbose, -v                      be verbose (independent of --quiet)\n"
-      << "--debug, -d                        debug output (you should not need this)"; // no '\n'
+      << "--usage, --help, -h                      emit this message, and exit\n"
+      << "--version, -V                            emit the package version, and exit\n"
+      << "--dry-run, --dryrun, -y                  dry run, do not start the server\n"
+      << "--warnings, --warning, -w                emit warnings\n"
+      << "--quiet, -q                              be quiet, emit no notices or warnings\n"
+      << "--verbose, -v                            be verbose (independent of --quiet)\n"
+      << "--debug, -d                              debug output (you should not need this)"; // no '\n'
   return buf.str();
 }
 #endiv

@@ -1,0 +1,20 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+#import autotools.autoconf.Config
+#import tunitas.tarwater // CONFIG
+namespace autotools::autoconf {
+  //
+  // Normally these specializations are synthetic, being derived from config.h
+  // Herein, they are hand-coded.
+  //
+  template<> struct Config<tunitas::tarwater::CONFIG>;
+}
+#endiv
+#divert <hpp>
+#include "config.h" // this is not expected to be published (exported)
+#import std.filesystem.path
+template<> struct autotools::autoconf::Config<tunitas::tarwater::CONFIG> {
+  // like $(sysconfdir), this is $(pkgconfdir) ... not "pkgconfigdir"
+  inline static auto pkgconfdir() -> std::filesystem::path { return TUNITAS_TARWATER_PKGCONFDIR; }
+};
+#endiv

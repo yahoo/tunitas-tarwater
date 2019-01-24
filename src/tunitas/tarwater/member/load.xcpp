@@ -1,0 +1,47 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import std.filesystem.path
+#import tunitas.tarwater.member.Storage
+#import tunitas.Outcome
+namespace tunitas::tarwater::member {
+  //
+  // Load the member secret database.
+  //
+  // Usage:
+  //
+  //   auto some_filepath = std::filesystem:;path{.../something_something.db};
+  //   auto loaded = load(some_filepath);
+  //   if (!ok(loaded)) {
+  //     ...error...
+  //     throw Quitting{...}
+  //   }
+  //   Storage cfg = value(std::move(loaded));
+  //
+  auto load(std::filesystem::path const &) -> Outcome<Storage>;
+}
+#endiv
+#divert <cpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+#import tunitas.tarwater.member.Storage
+#import tunitas.tarwater.error.Code
+#import std.error_code
+auto tunitas::tarwater::member::load(std::filesystem::path const &filepath) -> Outcome<Storage> {
+  using Result = Outcome<Storage>;
+  namespace pt = boost::property_tree;
+  try {
+    pt::ptree tree;
+    pt::read_ini(filepath, tree);
+    Storage store;
+    store.member_name = tree.get<std::string>("member.name");
+    store.member_secret = tree.get<std::string>("member.secret");
+    return Result{std::move(store)};
+  } catch (pt::ini_parser_error const &e) {
+    // The messaging gets lost.
+    return Result{std::error_code{error::Code::BAD_MEMBER_STORE}};
+  } catch (pt::ptree_error const &e) {
+    // Ibidem.
+    return Result{std::error_code{error::Code::BAD_MEMBER_STORE}};
+  }
+}
+#endiv

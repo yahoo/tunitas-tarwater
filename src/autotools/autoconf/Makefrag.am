@@ -1,0 +1,15 @@
+# This is a GNU -*- Makefile -*- fragment which is managed by automake
+
+lib_libautotools_autoconf_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libautotools_autoconf_la_SOURCES))
+lib_libautotools_autoconf_la_SOURCES = \
+  obj/src/autotools/autoconf/namespace.cpp \
+  obj/src/autotools/autoconf/Config.cpp \
+  obj/src/autotools/autoconf/Config.tunitas.tarwater.CONFIG.cpp \
+  $(end)
+$(scold_cxxdir)/src/autotools/autoconf/dependencies.mk:
+	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libautotools_autoconf_la_SOURCES))
+	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(lib_libautotools_autoconf_la_SOURCES))
+	test -e $@
+include $(scold_cxxdir)/src/autotools/autoconf/dependencies.mk
+clean-dependencies::
+	rm -f $(scold_cxxdir)/src/autotools/autoconf/dependencies.mk

@@ -79,4 +79,8 @@ AC_CHECK_LIB([microhttpd], [main])
 AC_CHECK_LIB([gnutls], [main]) 
 AC_CHECK_LIB([jsoncpp], [main]) 
 
+m4_include([ac/with-pkgconfigdir.m4])
+pkgconfdir='${prefix}/tunitas/tarwater'
+AC_DEFINE_UNQUOTED([TUNITAS_TARWATER_PKGCONFDIR], ["$tunitas_tarwater_pkgconfdir"], [directory containing the configuration files, e.g. /etc/tunitas/tarwater])
+
 TF_FINALIZE
