@@ -1,3 +1,11 @@
+2019-02-07  Wendell Baker  <wbaker@verizonmedia.com>
+
+	* Version v0.0.0-0.devel, basic infrastructure
+	- the "want" series around sys.posix has migrated to tunitas-basics 1.7.0-0.devel
+	* src/want/nonstd.uninitialized_zero.xcpp: ibidem.
+	* src/want/sys.posix: modules endent, daemon, endpwent, entry.Buffer, entry.Pointer, entry.required.Entry,
+	- entry, geteuid, getpwnam, getpwname, getpwuid, getuid, packaging.getpw, seteuid, setresuid, setreuid.
+
 2019-01-23  Wendell Baker  <wbaker@verizonmedia.com>
 
 	* Version v0.0.0-0.devel, basic infrastructure

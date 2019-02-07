@@ -8,6 +8,7 @@ namespace tests::unit::want { class Fixture; }
 #include <pwd.h> // [[FIXTHIS]] with module-posix-os #import uid_t
 class tests::unit::want::Fixture : public cppunit::test::Fixture {
 public:
+  // [[REMOVETHIS]] it has already migrated to tunitas-basics
   auto test_nonstd_uninitialized_zero() -> void;
   auto test_sys_posix_getuid() -> void;
   auto test_sys_posix_geteuid() -> void;
