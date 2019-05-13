@@ -1,0 +1,16 @@
+[Unit]
+Description=Tunitas Tarwater (DigiTrust) Identity Service
+After=syslog.target network.target
+
+[Service]
+User=tunitas
+# NOT ---> EnvironmentFile=/etc/sysconfig/tarwater
+# instead move to use /etc/systemd/system/tarwater.d/anything.conf
+ExecStart=@sbindir@/tarwater-service --foreground
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=1s
+
+[Install]
+WantedBy=multi-user.target

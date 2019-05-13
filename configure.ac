@@ -1,6 +1,11 @@
-dnl -*- autoconf -*-
+dnl This is a GNU -*- autoconf -*- specification that is processed by Autoconf.
+dnl Copyright 2018-2019, Oath Inc.
+dnl Licensed under the terms of the Apache-2.0 license.
+dnl See the LICENSE file in https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE for terms.
 dnl
-dnl ./maintenance/e2e
+dnl Build Instructions are in the nearby README.md
+dnl
+dnl ./maintenance/nearby is a developer-centric build recipe; it guesses about nearby source trees
 dnl
 dnl ./buildconf &&
 dnl ./configure --prefix=/opt/tunitas &&
@@ -18,7 +23,7 @@ AM_SILENT_RULES([yes])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile systemd/tarwater.service])
 #
 # To have submodules
 #   configure.ac: TF_CONFIG_SUBMODULES([submodules], [...list...])
@@ -40,6 +45,7 @@ TF_WITH_SUBSYSTEM([temerarious-flagship], [], [The Tunitas Build System])
 TF_WITH_SUBSYSTEM([tunitas-basics], [], [The Tunitas Basics])
 
 # and mention in $(DEVELOPMENT_AREAS) in Makefile.am
+TF_WITH_MODULE([crypto])
 TF_WITH_MODULE([httpserver])
 TF_WITH_MODULE([json])
 TF_WITH_MODULE([nonstd])

@@ -1,11 +1,17 @@
-# This is a GNU -*- Makefile -*- which is managed by automake
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright 2018-2019, Oath Inc.
+# Licensed under the terms of the Apache-2.0 license.
+# See the LICENSE file in https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE for terms.
+#
 
 default:
 ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = no-define subdir-objects foreign
 include @temerarious_flagship_datadir@/am/build.am
 
+# These match with TF_WITH_MODULE in configure.ac
 DEVELOPMENT_AREAS = \
+  @module_crypto_prefix@ \
   @module_httpserver_prefix@ \
   @module_json_prefix@ \
   @module_nonstd_prefix@ \
@@ -27,6 +33,12 @@ INSTALLATION_AREAS = \
   @std_scold_prefix@ \
   @std_tunitas_prefix@ \
   $(end)
+
+# There is no point in defining systemddir to follow $(prefix) because
+# the system's systemd won't look in odd places, e.g. /usr/local/lib/systemd/system
+systemddir = /usr/lib/systemd
+systemd_systemdir = $(systemddir)/system
+systemd_system_DATA = systemd/tarwater.service
 
 bin_PROGRAMS = bin/tarwater-secret-dump bin/tarwater-secret-make
 sbin_PROGRAMS = sbin/tarwater-service
