@@ -50,7 +50,7 @@ auto tunitas::tarwater::identifier::decode(Encoded const &input) -> Outcome<Inte
       // blik
       // byte order within the integer is little endian.
       // bit order within bytes are still big-endian
-      // bytes are decoded in little endian order; but them into the candidate big-into-small.
+      // bytes are decoded in little endian order; put them into the candidate big-into-small.
       auto const SHIFT = 8*(sizeof (Underlying)-1);
       static_assert(56 == SHIFT);
       for (auto i{0lu}, e{sizeof (Underlying)}; e != i; ++i) {
