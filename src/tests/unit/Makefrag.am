@@ -1,4 +1,7 @@
-# This is a GNU -*- Makefile -*- fragment which is managed by automake
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright 2018-2019, Oath Inc.
+# Licensed under the terms of the Apache-2.0 license.
+# See the LICENSE file in https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE for terms.
 
 # WATCHOUT - AM_LDFLAGS is not automatically added to the final link line anywhere (oddly enough...)
 #            and also that LDFLAGS is reserved to the command line.
