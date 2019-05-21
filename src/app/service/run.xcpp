@@ -32,6 +32,7 @@ namespace app::service {
 #import getpid
 #import httpserver.Create_Webserver
 #import httpserver.Webserver
+#import std.boolalpha
 #import std.cout
 #import std.move
 #import tunitas.tarwater.member.load
@@ -75,6 +76,17 @@ auto app::service::run(Configuration const &cfg) -> void {
   ws.register_resource("/sync", &sync, FAMILY_SENSE);   // "our" standard name (same as theirs)
   ws.register_resource("/userid", &sync, FAMILY_SENSE); // "their" standard name
   // There is no 'quit' method.  The service runs forever
-  ws.start(cfg.foreground.value_or(defaults::FOREGROUND));
+  auto foreground_mode = cfg.foreground_mode.value_or(defaults::FOREGROUND_MODE);
+  debug(cfg) << "foreground mode = " << std::boolalpha << foreground_mode << '\n';
+  if (!foreground_mode) {
+    using namespace want::sys::posix;
+    auto ized = daemon(Chdir::YES, Close::YES);
+    if (!ok(ized)) {
+      error(cfg) << "could not daemonize because " << error_code(ized).message() << '\n';
+      throw Quitting{cfg.NAME, sys::exits::UNAVAILABLE};
+    }
+  }
+
+  ws.start(constants::server::BLOCKING);
 }
 #endiv
