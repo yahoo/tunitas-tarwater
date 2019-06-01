@@ -26,7 +26,7 @@ class app::service::Configuration : public tunitas::app::Configuration {
   using ancestor = tunitas::app::Configuration;
 public:
   using ancestor::Configuration;
-  std::optional<bool> foreground;
+  std::optional<bool> foreground_mode;
   std::optional<bool> emit_pid;
   std::optional<std::uint16_t> service_port;
   std::optional<bool> drop_privileges;

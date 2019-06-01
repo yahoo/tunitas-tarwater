@@ -96,11 +96,11 @@ auto app::service::options::Parser::parse(Args args) -> Result {
       break;
     case oi::CHR_b:
     case oi::BACKGROUND_MODE:
-      cfg.foreground = false;
+      cfg.foreground_mode = false;
       break;
     case oi::CHR_f:
     case oi::FOREGROUND_MODE:
-      cfg.foreground = true;
+      cfg.foreground_mode = true;
       break;
     case oi::CHR_P:
     case oi::EMIT_PID:

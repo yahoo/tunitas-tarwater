@@ -39,8 +39,9 @@ namespace app::service {
 #import tunitas.tarwater.member.Storage
 #import tunitas.tarwater.service.Core
 #import tunitas.tarwater.endpoint.Sync
+#import want.sys.posix.daemon
 auto app::service::run(Configuration const &cfg) -> void {
-  using namespace want;
+  namespace sys = want::sys;
   httpserver::Webserver ws{[&cfg]() {
     httpserver::Create_Webserver specification;
     using namespace constants::server;
@@ -82,8 +83,8 @@ auto app::service::run(Configuration const &cfg) -> void {
     using namespace want::sys::posix;
     auto ized = daemon(Chdir::YES, Close::YES);
     if (!ok(ized)) {
-      error(cfg) << "could not daemonize because " << error_code(ized).message() << '\n';
-      throw Quitting{cfg.NAME, sys::exits::UNAVAILABLE};
+      ::options::error(cfg) << "could not daemonize because " << error_code(ized).message() << '\n';
+      throw exception::Quitting{cfg.NAME, sys::exits::UNAVAILABLE};
     }
   }
 

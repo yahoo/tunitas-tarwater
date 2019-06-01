@@ -57,9 +57,9 @@ auto app::service::Usage::format(std::string const &NAME) -> std::string {
       << "\n"
       << "Service Options\n"
       << "--foreground, --fg, -f                   remain in the foreground, e.g. for systemd\n"
-      << "                                         default " << is_default(defaults::FOREGROUND) << '\n'
+      << "                                         default " << is_default(defaults::FOREGROUND_MODE) << '\n'
       << "--background, --bg                       daemonize into the background\n"
-      << "                                         default " << is_default(!defaults::FOREGROUND) << '\n'
+      << "                                         default " << is_default(!defaults::FOREGROUND_MODE) << '\n'
       << "--pid, -P                                emit the PID of the running daemon on the standard output\n"
       << "  alternative: --emit-pid                default " << is_default(defaults::EMIT_PID) << '\n'
       << "--port=NUMBER, -p NUMBER                 use port NUMBER\n"
