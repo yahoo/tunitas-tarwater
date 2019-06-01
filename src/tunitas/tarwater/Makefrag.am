@@ -16,12 +16,21 @@
 #       <= AGE   if no interface change, but any other (source code) change
 #
 lib_libtunitas_tarwater_la_CURRENT = 3
-lib_libtunitas_tarwater_la_REVISION = 0
+lib_libtunitas_tarwater_la_REVISION = 1
 lib_libtunitas_tarwater_la_AGE = 0
 lib_libtunitas_tarwater_la_CRA = $(lib_libtunitas_tarwater_la_CURRENT):$(lib_libtunitas_tarwater_la_REVISION):$(lib_libtunitas_tarwater_la_AGE)
 
-lib_libtunitas_tarwater_la_LDFLAGS = -ltunitas-server -lcryptopp $(PACKAGE_LDFLAGS_SET) -version-info $(lib_libtunitas_tarwater_la_CRA)
-lib_libtunitas_tarwater_la_LIBADD  = lib/libautotools-autoconf.la lib/libwant.la
+lib_libtunitas_tarwater_la_LIBADD  = \
+  lib/libautotools-autoconf.la \
+  lib/libwant.la
+  $(end)
+lib_libtunitas_tarwater_la_LDFLAGS = \
+  -ltunitas-server \
+  -ltunitas-app \
+  -lcryptopp \
+  $(PACKAGE_LDFLAGS_SET) \
+  -version-info $(lib_libtunitas_tarwater_la_CRA) \
+  $(end)
 lib_libtunitas_tarwater_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libtunitas_tarwater_la_SOURCES))
 lib_libtunitas_tarwater_la_SOURCES = \
   obj/src/tunitas/tarwater/namespace.cpp \
