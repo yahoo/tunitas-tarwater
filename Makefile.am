@@ -40,6 +40,17 @@ systemddir = /usr/lib/systemd
 systemd_systemdir = $(systemddir)/system
 systemd_system_DATA = systemd/tarwater.service
 
+default: all
+
+lib_libtunitas_tarwater_la_MODULES_SOURCES_SET = \
+  $(warning module_BB_SOURCE_SET is deprecated, instead use module_SOURCE_SET) \
+  $(lib_libtunitas_tarwater_la_SOURCES) \
+  $(lib_libautotools_autoconf_la_SOURCES) \
+  $(lib_libwant_la_SOURCES) \
+  $(end)
+# The installation here must match the $(lib_LIBRARIES) installation
+module_BB_SOURCE_SET = # NOT YET ---> $(lib_libtunitas_tarwater_la_MODULES_SOURCES_SET)
+
 bin_PROGRAMS = bin/tarwater-secret-dump bin/tarwater-secret-make
 sbin_PROGRAMS = sbin/tarwater-service
 lib_LTLIBRARIES = 
@@ -67,27 +78,6 @@ include src/autotools/autoconf/Makefrag.am
 include src/tests/unit/Makefrag.am
 include src/tunitas/tarwater/Makefrag.am
 include src/want/Makefrag.am
-
-# NO NEED ---> MODULES = \
-# NO NEED --->   $(lib_libtunitas_tarwater_la_MODULES) \
-# NO NEED --->   $(lib_libwant_la_MODULES) \
-# NO NEED --->   $(bin_unit_MODULES) \
-# NO NEED --->   $(src_app_service_MODULES_SET) \
-# NO NEED --->   $(end)
-# NO NEED ---> $(if $(MODULES),$(__ok),$(error NO MODULES))
-# NO NEED ---> OBJECTS = \
-# NO NEED --->   $(lib_libtunitas_tarwater_la_OBJECTS) \
-# NO NEED --->   $(lib_libwant_la_OBJECTS) \
-# NO NEED --->   $(bin_unit_OBJECTS) \
-# NO NEED --->   $(src_app_service_OBJECTS) \
-# NO NEED --->   $(end)
-# NO NEED ---> $(if $(OBJECTS),$(__ok),$(error NO OBJECTS))
-# NO NEED ---> 
-#
-# DO NOT ---> All this does is make every object depend upon every module
-# DO NOT ---> so any change makes everything recompile. You don't want that.
-# DO NOT --->  
-# DO NOT ---> $(OBJECTS) : $(MODULES)
 
 include tests/unit/Makefrag.am
 include tests/service/Makefrag.am

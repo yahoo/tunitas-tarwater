@@ -1,0 +1,12 @@
+Release notes for Tunitas Tarwater
+
+This is a reference implementation of the [http://www.digitru.st Digi-Trust] universal identity system.
+It is an an application hosted within the <em>httpserver</em> surface of [https://www.gnu.org/software/libmicrohttpd/ microhttpd].
+As such, it is a "<em>micro</em>service" approach to delivering the identity linking function.
+
+The documentation language here is closer to that of MediaWiki than it is to <strike>markup</strike> markdown (whatever standard that follows).  You can reasonably expect that <strike>paste</strike> performing this file on [https://wiki.tunitas.technology Tunitas Technologies Wiki].
+
+= Version 0.0-Series =
+
+Contains rudimentary function as a service, including the systemd unit files for the service.
+This is an emergent Minimum-Viable-Product (MVP).

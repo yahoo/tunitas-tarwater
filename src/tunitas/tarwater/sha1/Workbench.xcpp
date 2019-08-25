@@ -68,6 +68,7 @@ protected:
 };
 #endiv
 #divert <ipp>
+#import cryptopp.byte
 #import std.move
 #import tunitas.tarwater.sha1.detail
 namespace tunitas::tarwater {

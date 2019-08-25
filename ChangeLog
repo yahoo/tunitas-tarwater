@@ -1,3 +1,9 @@
+2019-08-25  Wendell Craig Baker  <wbaker@verizonmedia.com>
+
+	* Version v0.0.0, continues for Tunitas, Release 02 (Towering Redwood)
+	- the ChangeLog is deprecating; see the git logs for micro details
+	* NEWS: will contain the release notes of new features & usages
+
 2019-02-07  Wendell Baker  <wbaker@verizonmedia.com>
 
 	* Version v0.0.0-0.devel, basic infrastructure

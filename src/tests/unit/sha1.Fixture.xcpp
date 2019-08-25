@@ -52,6 +52,7 @@ auto tests::unit::sha1::Fixture::test_Workbench() -> void {
 			}();
   CPPUNIT_ASSERT_EQUAL(expected, actual);
 }
+#import std.byte
 #import tunitas.tarwater.sha1.Bytes
 auto tests::unit::sha1::Fixture::test_Bytes() -> void {
   using namespace ::tunitas::tarwater::sha1;
