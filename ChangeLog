@@ -1,5 +1,13 @@
 2019-08-25  Wendell Craig Baker  <wbaker@verizonmedia.com>
 
+	* Version v0.0.4, continues for Tunitas, Release 02 (Towering Redwood)
+	* configure.ac the version of the package is to be found within, not in ChangeLog or NEWS
+	NOTICE IS GIVEN that ChangeLog will disappear in future revisions.
+	See the git log for micro-level changes.
+	Documentation can be expected to be at least at
+	https://wiki.tunitas.technology/page/Project/tunitas-tarwater
+	https://wiki.tunitas.technology/page/Package/tunitas-tarwater
+
 	* Version v0.0.0, continues for Tunitas, Release 02 (Towering Redwood)
 	- the ChangeLog is deprecating; see the git logs for micro details
 	* NEWS: will contain the release notes of new features & usages

@@ -42,14 +42,24 @@ systemd_system_DATA = systemd/tarwater.service
 
 default: all
 
-lib_libtunitas_tarwater_la_MODULES_SOURCES_SET = \
-  $(warning module_BB_SOURCE_SET is deprecated, instead use module_SOURCE_SET) \
+#
+# The following three definitions must be consistent
+#
+# Makefile.am module_SOURCE_SET    (future)         the modules (cut & paste header files)
+# Makefile.am module_BB_SOURCE_SET (deprecating)    them.
+# Makefile.am lib_LTLIBRARIES      (current)        the DSO & static libraries
+# tunitas-tarwater.spec the '%files devel' stanza must list the 
+#
+lib_libtunitas_tarwater_la_MODULE_SOURCES_SET = \
   $(lib_libtunitas_tarwater_la_SOURCES) \
   $(lib_libautotools_autoconf_la_SOURCES) \
   $(lib_libwant_la_SOURCES) \
   $(end)
-# The installation here must match the $(lib_LIBRARIES) installation
-module_BB_SOURCE_SET = # NOT YET ---> $(lib_libtunitas_tarwater_la_MODULES_SOURCES_SET)
+module_SOURCE_SET = # future (not used yet)
+module_BB_SOURCE_SET = \
+  $(warning module_BB_SOURCE_SET is deprecating, instead move to use module_SOURCE_SET, whenever it is ready) \
+  $(NOT YET READY for tunitas-tarwater-devel $(lib_libtunitas_tarwater_la_MODULE_SOURCES_SET)) \
+  $(end)
 
 bin_PROGRAMS = bin/tarwater-secret-dump bin/tarwater-secret-make
 sbin_PROGRAMS = sbin/tarwater-service
