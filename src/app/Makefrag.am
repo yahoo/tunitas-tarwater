@@ -6,13 +6,15 @@
 lib_libapp_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libapp_la_SOURCES))
 lib_libapp_la_SOURCES = \
   obj/src/app/namespace.cpp \
-  obj/src/app/exception.cpp \
-  obj/src/app/exception.Quitting.cpp \
+  obj/src/app/exception/namespace.cpp \
+  obj/src/app/exception/Quitting.cpp \
   $(end)
-$(scold_cxxdir)/src/app/dependencies.mk:
-	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libapp_la_SOURCES))
-	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(lib_libapp_la_SOURCES))
-	test -e $@
-include $(scold_cxxdir)/src/app/dependencies.mk
+$(lib_libapp_la_SOURCES) : obj/src/%.cpp : src/%.xcpp
+	$(TF_V_DIS) $(call TF_DISAGGREGATE_COMPILE, $@)
+	$(TF_V_DONE) test -e $@
+$(scold_cxxdir)/app/dependencies.mk:
+	$(TF_V_COM) $(call TF_COMPILE, $(lib_libapp_la_SOURCES))
+	$(TF_V_DONE) test -e $@
+include $(scold_cxxdir)/app/dependencies.mk
 clean-dependencies::
-	rm -f $(scold_cxxdir)/src/app/dependencies.mk
+	rm -f $(scold_cxxdir)/app/dependencies.mk

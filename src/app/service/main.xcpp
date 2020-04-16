@@ -12,23 +12,26 @@ namespace app::service {
 auto main(int c, char *v[]) -> int {
   return app::service::main(app::service::Args{(unsigned)c, v});
 }
+#import app // cascade the namespace from tunitas.app
 #import app.exception.Quitting
 #import app.service.Configuration
 #import app.service.defaults
 #import app.service.options.Specification
 #import app.service.options.Parser
 #import app.service.run
-#import tunitas.app.exception.Generic
 #import std.move
 #import std.cerr
 #import sys.exits.constants
+#import tunitas.app.Program
+#import tunitas.app.exception.Aspect
 auto app::service::main(Args args) -> int try {
   Configuration cfg{Program{args.front()}};
   options::Specification spec;
   options::Parser pa{cfg, spec};
   auto parsed = pa.parse(std::move(args));
   if (!ok(parsed)) {
-    error(cfg) << "the command line contains errors\n"; // [[FIXTHIS]] return an error indication in the outcome " << error_code(parsed).message() << '\n';
+#warning  [[FIXTHIS]] return an error indication in the outcome << error_code(parsed).message() << '\n';
+    error(cfg) << "the command line contains errors\n";
     throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
   }
   if (cfg.dry_run_mode) {
@@ -38,7 +41,7 @@ auto app::service::main(Args args) -> int try {
     run(cfg);
   }
   return sys::exits::OK;
-} catch (tunitas::app::exception::Generic const &g) {
+} catch (exception::Aspect const &g) {
   g.stream() << g << '\n';
   return g.code();
 } catch (std::exception const &e) {

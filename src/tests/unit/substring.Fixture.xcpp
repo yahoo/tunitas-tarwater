@@ -98,37 +98,40 @@ auto tests::unit::substring::Fixture::test_assignment_move() -> void {
   subject = std::move(specimen);
   CPPUNIT_ASSERT(!subject.empty());
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::substring::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("substring");
-  {
-    Stream over("overload");
-    over << call("abc", &Fixture::test_abc)
-      ;
-    series << add(over.release());
-  } {
-    Stream cons("constructor");
-    cons << call("default", &Fixture::test_constructor_default)
-	 << call("char const *", &Fixture::test_constructor_char_pointer)
-	 << call("copy_ancestor", &Fixture::test_constructor_copy_ancestor)
-	 << call("copy", &Fixture::test_constructor_copy)
-	 << call("move_ancestor", &Fixture::test_constructor_move_ancestor)
-	 << call("move", &Fixture::test_constructor_move)
-      ;
-    series << add(cons.release());
-  } {
-    Stream assn("assignment");
-    assn << call("char const *", &Fixture::test_assignment_char_pointer)
-	 << call("copy_ancestor", &Fixture::test_assignment_copy_ancestor)
-	 << call("copy", &Fixture::test_assignment_copy)
-	 << call("move_ancestor", &Fixture::test_assignment_move_ancestor)
-	 << call("move", &Fixture::test_assignment_move)
-      ;
-    series << add(assn.release());
-  }
-  return series.release();
+  series << []() {
+              Stream over("overload");
+              over << call("abc", &Fixture::test_abc)
+                ;
+              return move(over);
+            }()
+         << []() {
+              Stream cons("constructor");
+              cons << call("default", &Fixture::test_constructor_default)
+                   << call("char const *", &Fixture::test_constructor_char_pointer)
+                   << call("copy_ancestor", &Fixture::test_constructor_copy_ancestor)
+                   << call("copy", &Fixture::test_constructor_copy)
+                   << call("move_ancestor", &Fixture::test_constructor_move_ancestor)
+                   << call("move", &Fixture::test_constructor_move)
+                ;
+              return move(cons);
+            }()
+         << []() {
+              Stream assn("assignment");
+              assn << call("char const *", &Fixture::test_assignment_char_pointer)
+                   << call("copy_ancestor", &Fixture::test_assignment_copy_ancestor)
+                   << call("copy", &Fixture::test_assignment_copy)
+                   << call("move_ancestor", &Fixture::test_assignment_move_ancestor)
+                   << call("move", &Fixture::test_assignment_move)
+                ;
+              return move(assn);
+            }()
+    ;
+  return finalize(series);
 }
 #endiv

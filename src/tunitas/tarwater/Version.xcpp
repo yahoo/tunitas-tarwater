@@ -16,12 +16,17 @@ namespace tunitas::tarwater {
 }
 #endiv
 #divert <hpp>
+#import tunitas.app.exception.Aspect
 #import tunitas.app.exception.Version
 #import tunitas.app.exception.Messaging
 #import std.exception
 #import std.string
-class tunitas::tarwater::Version : public app::exception::Version, public app::exception::Messaging, public std::exception {
+class tunitas::tarwater::Version : public app::exception::Aspect,
+                                   public app::exception::Version,
+                                   public app::exception::Messaging,
+                                   public std::exception {
   struct ancestors {
+    using Aspect = app::exception::Aspect;
     using Version = app::exception::Version;
     using Messaging = app::exception::Messaging;
     using Exception = std::exception;
@@ -29,6 +34,8 @@ class tunitas::tarwater::Version : public app::exception::Version, public app::e
 public:
   inline explicit Version(std::string NAME);
   auto what() const noexcept -> char const * final;
+  auto code() const noexcept -> sys::exits::Code final;
+  auto stream() const noexcept -> std::ostream & final;
 protected:
   static auto format(std::string const &NAME) -> std::string;
 };
@@ -40,8 +47,10 @@ tunitas::tarwater::Version::Version(std::string NAME)
 { }
 #endiv
 #divert <cpp>
-auto tunitas::tarwater::Version::what() const noexcept -> char const * {
-  return ancestors::Messaging::what();
+namespace tunitas::tarwater {
+  auto Version::what() const noexcept -> char const * { return ancestors::Messaging::what(); }
+  auto Version::code() const noexcept -> sys::exits::Code { return ancestors::Version::code(); }
+  auto Version::stream() const noexcept -> std::ostream & { return ancestors::Version::stream(); }
 }
 #import std.ostringstream
 auto tunitas::tarwater::Version::format(std::string const &NAME) -> std::string {

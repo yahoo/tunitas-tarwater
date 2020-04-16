@@ -8,7 +8,9 @@ namespace tunitas::tarwater::cookie {
   //
   // Convert a cookie object to a (JSON) string.
   // With the most cogent formatting option possible.
-  // NOT with the pretty printing option.
+  // We want a canonical form, a one-liner.
+  //
+  // MUST NOT use the pretty printing option.
   //
   // Usage:
   //
@@ -24,10 +26,13 @@ namespace tunitas::tarwater::cookie {
 auto tunitas::tarwater::cookie::to_string(Object const &o) -> String<JSON> {
   std::ostringstream buf;
   buf << o;
-  // Irk! Irk!  Irk! Because the fast writer adds whitespace to the end(!?)
   auto s = buf.str();
-  while (s.size() && std::isspace(s.back())) {
-    s.erase(s.size()-1, 1);
+  if constexpr (true) {
+    // STILL?
+    // Irk! Irk!  Irk! Because the fast writer adds whitespace to the end(!?)
+    while (s.size() && std::isspace(s.back())) {
+      s.erase(s.size()-1, 1);
+    }
   }
   return std::move(s);
 }
@@ -35,9 +40,13 @@ auto tunitas::tarwater::cookie::to_string(Object const &o) -> String<JSON> {
 #divert <cpp>
 // [[FIXTHIS]] #import json.types // json::int64 need Famous Oak, module-json-1:0.6.1-3.0.tu01.fc27.gcc7
 #import json.Value
+#import json.writer.Stream
+#import json.writer.stream.Builder
+#import std.unique_ptr
 #import json.writer.Fast
 #import tunitas.tarwater.constants
 #import std.underlying_type
+#import nonstd.exception.Unreachable
 auto tunitas::tarwater::cookie::operator<<(std::ostream &os, Object const &ob) -> std::ostream & {
   using namespace constants::cookie::v1::attributes;
   json::Value jo;
@@ -47,10 +56,22 @@ auto tunitas::tarwater::cookie::operator<<(std::ostream &os, Object const &ob) -
   jo[PRODUCER] = ob.member;
   jo[PRIVACY][privacy::OPTOUT] = ob.optout;
   if constexpr (false) {
+    // [[DELETEWHEN]] we are satisfied that the stream::Builder idiom is "good enough"
     return os << jo; // too pretty (uses json.writer.stream.Styled (or such)
-  } else {
+  } else if constexpr (true) {
+    // [[DELETEWHEN]] we are satisfied that the stream::Builder idiom is "good enough"
     json::writer::Fast fast;
-    return os << fast.write(jo);
+    return os << fast.write(jo); // WATCHOUT - we expect no gratuitious final newline
+  } else if constexpr (false) {
+    // Because we want to write directly to the ostream without any intervening copy-to-string-and-back
+    // Wow! This is lugubrious and Java-esque.
+    using namespace json::writer;
+    stream::Builder bob;
+    bob["commentStyle"] = "None";
+    std::unique_ptr<Stream> writer(bob.newStreamWriter());
+    writer->write(jo, &os); // WATCHOUT - this is UNUSEABLE because it adds a final unwarranted \n
+    return os;
   }
+  throw nonstd::exception::Unreachable{__FUNCTION__, __FILE__, __LINE__};
 }
 #endiv

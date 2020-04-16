@@ -217,53 +217,56 @@ auto tests::unit::cookie::Encode::test_bad_outcome_u2u() -> void {
   auto const encoded = encode(original);
   CPPUNIT_ASSERT(!ok(encoded));
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::cookie::Encode::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("encode");
-  {
-    Stream beg{"base64-encoding"};
-    beg << call("1", &Encode::test_base64_encoding_1)
-	<< call("2", &Encode::test_base64_encoding_2)
-      ;
-    series << add(beg.release());
-  } {
-    Stream good{"good"};
-    {
-      Stream str{"String"};
-      str << call("JSON", &Encode::test_good_string_j2u)
-	  << call("BASE64", &Encode::test_good_string_b2u)
-	  << call("URLSAFE", &Encode::test_good_string_u2u)
-	;
-      good << add(str.release());
-    }
-    good << call("Object", &Encode::test_good_object_o2u)
-      ;
-    {
-      Stream out{"Outcome"};
-      out << call("JSON", &Encode::test_good_outcome_j2u)
-	  << call("BASE64", &Encode::test_good_outcome_b2u)
-	  << call("URLSAFE", &Encode::test_good_outcome_u2u)
-	;
-      good << add(out.release());
-    }
-    series << add(good.release());
-  } {
-    Stream bad{"bad"};
-    bad << call("generic", &Encode::test_bad_generic)
-      ;
-    {
-      Stream out{"Outcome"};
-      out << call("JSON", &Encode::test_bad_outcome_j2u)
-	  << call("BASE64", &Encode::test_bad_outcome_b2u)
-	  << call("URLSAFE", &Encode::test_bad_outcome_u2u)
-	;
-      bad << add(out.release());
-    }
-    series << add(bad.release());
-  }
-  return series.release();
+  series << []() {
+              Stream beg{"base64-encoding"};
+              beg << call("1", &Encode::test_base64_encoding_1)
+                  << call("2", &Encode::test_base64_encoding_2)
+                ;
+              return move(beg);
+            }()
+         << []() {
+              Stream good{"good"};
+              good << []() {
+                        Stream str{"String"};
+                        str << call("JSON", &Encode::test_good_string_j2u)
+                            << call("BASE64", &Encode::test_good_string_b2u)
+                            << call("URLSAFE", &Encode::test_good_string_u2u)
+                          ;
+                        return move(str);
+                      }()
+                   << call("Object", &Encode::test_good_object_o2u)
+                   << []() {
+                        Stream out{"Outcome"};
+                        out << call("JSON", &Encode::test_good_outcome_j2u)
+                            << call("BASE64", &Encode::test_good_outcome_b2u)
+                            << call("URLSAFE", &Encode::test_good_outcome_u2u)
+                          ;
+                        return move(out);
+                      }()
+                ;
+              return move(good);
+            }()
+         << []() {
+              Stream bad{"bad"};
+              bad << call("generic", &Encode::test_bad_generic)
+                  << []() {
+                       Stream out{"Outcome"};
+                       out << call("JSON", &Encode::test_bad_outcome_j2u)
+                           << call("BASE64", &Encode::test_bad_outcome_b2u)
+                           << call("URLSAFE", &Encode::test_bad_outcome_u2u)
+                         ;
+                       return move(out);
+                     }()
+                ;
+              return move(bad);
+            }()
+    ;
+  return finalize(series);
 }
 #endiv

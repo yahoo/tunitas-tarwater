@@ -58,16 +58,16 @@ auto tests::unit::exception::Fixture::test_Configuration() -> void {
     CPPUNIT_ASSERT(true);
   }
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::exception::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("exception");
   series << call("Generic", &Fixture::test_Generic)
 	 << call("Configuration", &Fixture::test_Configuration)
 	 << call("Conversion", &Fixture::test_Conversion)
     ;
-  return series.release();
+  return finalize(series);
 }
 #endiv

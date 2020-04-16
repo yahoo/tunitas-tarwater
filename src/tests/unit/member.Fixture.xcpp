@@ -10,6 +10,7 @@ namespace tests::unit::member { class Fixture; }
 class tests::unit::member::Fixture : public cppunit::test::Fixture {
 public:
   auto test_Storage() -> void;
+  auto test_load_000() -> void;
   auto test_load_00() -> void;
   auto test_load_01() -> void;
   auto test_load_02() -> void;
@@ -29,29 +30,35 @@ auto tests::unit::member::Fixture::test_Storage() -> void {
   CPPUNIT_ASSERT(store.member_secret.empty());
 }
 #import tunitas.tarwater.member.load
+auto tests::unit::member::Fixture::test_load_000() -> void {
+  namespace member = tunitas::tarwater::member;
+  auto loaded = member::load("/no/such/file/or/directory/at/all");
+  CPPUNIT_ASSERT(!ok(loaded));
+}
 auto tests::unit::member::Fixture::test_load_00() -> void {
   namespace member = tunitas::tarwater::member;
   auto loaded = member::load("/dev/null");
-  CPPUNIT_ASSERT(ok(loaded));
-  auto store = value(std::move(loaded));
-  CPPUNIT_ASSERT(store.member_name.empty());
-  CPPUNIT_ASSERT(store.member_secret.empty());
+  CPPUNIT_ASSERT(!ok(loaded));
 }
 auto tests::unit::member::Fixture::test_load_01() -> void {
   namespace member = tunitas::tarwater::member;
+  // [[FIXTHIS]] unless this test is run from the top ${srcdir} this will fail
   auto loaded = member::load("tests/unit/load.01.store");
   CPPUNIT_ASSERT(ok(loaded));
   auto store = value(std::move(loaded));
   CPPUNIT_ASSERT(!store.member_name.empty());
   CPPUNIT_ASSERT(!store.member_secret.empty());
+  CPPUNIT_ASSERT_EQUAL("Animal Print Pants L.L.C."s, (std::string)store.member_name);
+  CPPUNIT_ASSERT_EQUAL("Out Of Control!"s, (std::string)store.member_secret);
 }
 auto tests::unit::member::Fixture::test_load_02() -> void {
   namespace member = tunitas::tarwater::member;
+  // [[FIXTHIS]] unless this test is run from the top ${srcdir} this will fail
   auto loaded = member::load("tests/unit/load.02.store");
   CPPUNIT_ASSERT(ok(loaded));
   auto store = value(std::move(loaded));
-  CPPUNIT_ASSERT_EQUAL("Animal Ads LLC"s, (std::string)store.member_name);
-  CPPUNIT_ASSERT_EQUAL("double secret probation"s, (std::string)store.member_secret);
+  CPPUNIT_ASSERT_EQUAL("Very Serious Agency Trading Desk"s, (std::string)store.member_name);
+  CPPUNIT_ASSERT_EQUAL("Not. Joking. At. All.{space}{space}Really."s, (std::string)store.member_secret);
 }
 #import tunitas.tarwater.member.Name
 auto tests::unit::member::Fixture::test_Name() -> void {
@@ -63,23 +70,25 @@ auto tests::unit::member::Fixture::test_Secret() -> void {
   ::tunitas::tarwater::member::Secret secret{"decoder-ring"};
   CPPUNIT_ASSERT(!secret.empty());
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::member::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("member");
   series << call("Name", &Fixture::test_Name)
 	 << call("Secret", &Fixture::test_Secret)
 	 << call("Storage", &Fixture::test_Storage)
+         << []() {
+              Stream loa{"load"};
+              loa << call("000", &Fixture::test_load_000)
+                  << call("00", &Fixture::test_load_00)
+                  << call("01", &Fixture::test_load_01)
+                  << call("02", &Fixture::test_load_02)
+                ;
+              return move(loa);
+            }()
     ;
-  {
-    Stream loa{"load"};
-    loa << call("00", &Fixture::test_load_00)
-	<< call("01", &Fixture::test_load_01)
-	<< call("02", &Fixture::test_load_02)
-      ;
-  }
-  return series.release();
+  return finalize(series);
 }
 #endiv

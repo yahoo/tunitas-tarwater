@@ -30,8 +30,8 @@ namespace app::service {
 #import app.service.drop
 #import autotools.autoconf.Config.tunitas.tarwater.CONFIG
 #import getpid
-#import httpserver.Create_Webserver
-#import httpserver.Webserver
+#import httpserver.service.Create // httpserver >= 0.5.0
+#import httpserver.Service
 #import std.boolalpha
 #import std.cout
 #import std.move
@@ -42,8 +42,8 @@ namespace app::service {
 #import want.sys.posix.daemon
 auto app::service::run(Configuration const &cfg) -> void {
   namespace sys = want::sys;
-  httpserver::Webserver ws{[&cfg]() {
-    httpserver::Create_Webserver specification;
+  httpserver::Service ws{[&cfg]() {
+    httpserver::service::Create specification;
     using namespace constants::server;
     specification.debug();
     specification.use_ipv6().start_method(METHOD).max_threads(THREADS);

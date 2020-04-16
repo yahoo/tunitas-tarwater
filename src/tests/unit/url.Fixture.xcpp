@@ -101,26 +101,25 @@ auto tests::unit::url::Fixture::test_format() -> void {
     throw;
   }
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::url::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("url");
   series << call("Decoded", &Fixture::test_Decoded)
 	 << call("Encoded", &Fixture::test_Encoded)
 	 << call("Pattern", &Fixture::test_Pattern)
-    ;
-  {
-    Stream fmt("formatting");
-    fmt << call("Variables", &Fixture::test_formatting_Variables)
-      ;
-    series << add(fmt.release());
-  }
-  series << call("encode", &Fixture::test_encode)
+         << []() {
+              Stream fmt("formatting");
+              fmt << call("Variables", &Fixture::test_formatting_Variables)
+                ;
+              return move(fmt);
+            }()
+         << call("encode", &Fixture::test_encode)
 	 << call("decode", &Fixture::test_decode)
 	 << call("format", &Fixture::test_format)
     ;
-  return series.release();
+  return finalize(series);
 }
 #endiv

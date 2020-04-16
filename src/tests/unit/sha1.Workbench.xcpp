@@ -249,54 +249,55 @@ auto tests::unit::sha1::Workbench::test_operator_insert_As_Dope_vector_char() ->
   auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
   CPPUNIT_ASSERT(equal(expected, actual));
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::sha1::Workbench::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("Workbench");
   series << call("constructor", &Workbench::test_constructor)
 	 << call("Bytes", &Workbench::test_bytes)
 	 << call("Hexstring", &Workbench::test_hexstring)
-    ;
-  {
-    Stream det("operator<<");
-    det << call("char *", &Workbench::test_operator_insert_char_star)
-        << call("char const *", &Workbench::test_operator_insert_char_const_star)
-        << call("string-literal", &Workbench::test_operator_insert_string_literal)
-        << call("Character_Array_Zero", &Workbench::test_operator_insert_Character_Array_Zero)
-        << call("Element", &Workbench::test_operator_insert_Element)
-        << call("char", &Workbench::test_operator_insert_char)
-        << call("int", &Workbench::test_operator_insert_int)
-        << call("double", &Workbench::test_operator_insert_double)
-        << call("Dopable", &Workbench::test_operator_insert_Dopable)
-        << call("Container", &Workbench::test_operator_insert_Container)
-      ;
-      ;
-    {
-      Stream man("manifest-array");
-      man << call("Element", &Workbench::test_operator_insert_manifest_array_Element)
-          << call("Dopable", &Workbench::test_operator_insert_manifest_array_Dopable)
-          << call("Container", &Workbench::test_operator_insert_manifest_array_Container)
-        ;
-      det << add(man.release());
-    } {
-      Stream ass("As_String");
-      ass << call("int", &Workbench::test_operator_insert_As_String_int)
-          << call("double", &Workbench::test_operator_insert_As_String_double)
-        ;
-      det << add(ass.release());
-    } {
-      Stream asd("As_Dope");
-      asd << call("string", &Workbench::test_operator_insert_As_Dope_string)
-          << call("string_view", &Workbench::test_operator_insert_As_Dope_string_view)
-          << call("array<char,4>", &Workbench::test_operator_insert_As_Dope_array_char)
-          << call("vector<char>", &Workbench::test_operator_insert_As_Dope_vector_char)
-        ;
-      det << add(asd.release());
-    }
-    series << add(std::move(det.release()));
-  }
-  return series.release();
+         << []() {
+              Stream det("operator<<");
+              det << call("char *", &Workbench::test_operator_insert_char_star)
+                  << call("char const *", &Workbench::test_operator_insert_char_const_star)
+                  << call("string-literal", &Workbench::test_operator_insert_string_literal)
+                  << call("Character_Array_Zero", &Workbench::test_operator_insert_Character_Array_Zero)
+                  << call("Element", &Workbench::test_operator_insert_Element)
+                  << call("char", &Workbench::test_operator_insert_char)
+                  << call("int", &Workbench::test_operator_insert_int)
+                  << call("double", &Workbench::test_operator_insert_double)
+                  << call("Dopable", &Workbench::test_operator_insert_Dopable)
+                  << call("Container", &Workbench::test_operator_insert_Container)
+                  << []() {
+                       Stream man("manifest-array");
+                       man << call("Element", &Workbench::test_operator_insert_manifest_array_Element)
+                           << call("Dopable", &Workbench::test_operator_insert_manifest_array_Dopable)
+                           << call("Container", &Workbench::test_operator_insert_manifest_array_Container)
+                         ;
+                       return move(man);
+                     }()
+                  << []() {
+                       Stream ass("As_String");
+                       ass << call("int", &Workbench::test_operator_insert_As_String_int)
+                           << call("double", &Workbench::test_operator_insert_As_String_double)
+                         ;
+                       return move(ass);
+                     }()
+                  << []() {
+                       Stream asd("As_Dope");
+                       asd << call("string", &Workbench::test_operator_insert_As_Dope_string)
+                           << call("string_view", &Workbench::test_operator_insert_As_Dope_string_view)
+                           << call("array<char,4>", &Workbench::test_operator_insert_As_Dope_array_char)
+                           << call("vector<char>", &Workbench::test_operator_insert_As_Dope_vector_char)
+                         ;
+                       return move(asd);
+                     }()
+                ;
+              return move(det);
+            }()
+     ;
+  return finalize(series);
 }
 #endiv

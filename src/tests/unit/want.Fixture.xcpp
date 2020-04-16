@@ -108,40 +108,43 @@ auto tests::unit::want::Fixture::test_sys_posix_Endent() -> void {
     CPPUNIT_ASSERT(false);
   }
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::want::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("want");
-  {
-    Stream non("non");
-    non << call("uninitialized_zero", &Fixture::test_nonstd_uninitialized_zero)
-      ;
-    series << add(non.release());
-  } {
-    Stream sys("sys");
-    {
-      Stream pos("posix");
-      pos << call("getuid", &Fixture::test_sys_posix_getuid)
-	  << call("geteuid", &Fixture::test_sys_posix_geteuid)
-	  << call("seteuid", &Fixture::test_sys_posix_seteuid)
-	  << call("setreuid", &Fixture::test_sys_posix_setreuid)
-	  << call("setresuid", &Fixture::test_sys_posix_setresuid)
-	  << call("getpwuid", &Fixture::test_sys_posix_getpwuid)
-	  << call("getpwname", &Fixture::test_sys_posix_getpwname)
-	;
-      {
-	Stream last{"last"};
-	last << call("endpwent", &Fixture::test_sys_posix_endpwent)
-	       << call("Endent", &Fixture::test_sys_posix_Endent)
-	    ;
-	pos << add(last.release());
-      }
-      sys << add(pos.release());
-    }
-    series << add(sys.release());
-  }
-  return series.release();
+  series << []() {
+              Stream non("non");
+              non << call("uninitialized_zero", &Fixture::test_nonstd_uninitialized_zero)
+                ;
+              return move(non);
+            }()
+         << []() {
+              Stream sys("sys");
+              sys << []() {
+                       Stream pos("posix");
+                       pos << call("getuid", &Fixture::test_sys_posix_getuid)
+                           << call("geteuid", &Fixture::test_sys_posix_geteuid)
+                           << call("seteuid", &Fixture::test_sys_posix_seteuid)
+                           << call("setreuid", &Fixture::test_sys_posix_setreuid)
+                           << call("setresuid", &Fixture::test_sys_posix_setresuid)
+                           << call("getpwuid", &Fixture::test_sys_posix_getpwuid)
+                           << call("getpwname", &Fixture::test_sys_posix_getpwname)
+                           << []() {
+                                Stream last{"last"};
+                                last << call("endpwent", &Fixture::test_sys_posix_endpwent)
+                                     << call("Endent", &Fixture::test_sys_posix_Endent)
+                                  ;
+                                return move(last);
+                              }()
+                         ;
+                       return move(pos);
+                     }()
+                ;
+              return move(sys);
+            }()
+    ;
+  return finalize(series);
 }
 #endiv

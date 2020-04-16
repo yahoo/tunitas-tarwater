@@ -94,28 +94,28 @@ auto tests::unit::redirect::Fixture::test_Specification() -> void {
 		 return ret;
 	       }();
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::redirect::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("redirect");
-  {
-    Stream ide("identifier");
-    {
-      Stream con("Identifier");
-      con << call("Integer", &Fixture::test_Identifier_Integer)
-	  << call("State", &Fixture::test_Identifier_State)
-	;
-      ide << add(con.release());
-    }
-    ide << call("burst", &Fixture::test_identifier_burst)
-	<< call("Visitor", &Fixture::test_identifier_Visitor)
-      ;
-    series << add(ide.release());
-  }
-  series << call("Specification", &Fixture::test_Specification)
+  series << []() {
+              Stream ide("identifier");
+              ide << []() {
+                       Stream con("Identifier");
+                       con << call("Integer", &Fixture::test_Identifier_Integer)
+                           << call("State", &Fixture::test_Identifier_State)
+                         ;
+                       return move(con);
+                     }()
+                  << call("burst", &Fixture::test_identifier_burst)
+                  << call("Visitor", &Fixture::test_identifier_Visitor)
+                ;
+              return move(ide);
+            }()
+         << call("Specification", &Fixture::test_Specification)
     ;
-  return series.release();
+  return finalize(series);
 }
 #endiv

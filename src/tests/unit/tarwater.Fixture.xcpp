@@ -24,31 +24,36 @@ auto tests::unit::tarwater::Fixture::test_Version_constructor() -> void {
 #import std.cerr
 auto tests::unit::tarwater::Fixture::test_Version_what() -> void {
   ::tunitas::tarwater::Version subject{"a.out"};
-  std::cerr << subject << '\n';
+  std::cerr << subject.what() << '\n';
   CPPUNIT_ASSERT(true);
 }
+#import tunitas.app.exception.Aspect
 auto tests::unit::tarwater::Fixture::test_Version_throwing() -> void {
   try {
     throw ::tunitas::tarwater::Version{"a.out"};
-  } catch (::tunitas::app::exception::Generic const &g) {
+  } catch (::tunitas::app::exception::Aspect const &g) {
     g.stream() << g << '\n';
     CPPUNIT_ASSERT(sys::exits::OK == g.code());
+  } catch (...) {
+    // We wanted to catch with a tunitas::app::exception::Aspect, but that failed.  This is a surprise.
+    CPPUNIT_ASSERT(false);
   }
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::tarwater::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("tarwater");
-  {
-    Stream ver("Version");
-    ver << call("constructor", &Fixture::test_Version_constructor)
-        << call("what", &Fixture::test_Version_what)
-        << call("throwing", &Fixture::test_Version_throwing)
-      ;
-    series << add(ver.release());
-  }
-  return series.release();
+  series << []() {
+              Stream ver("Version");
+              ver << call("constructor", &Fixture::test_Version_constructor)
+                  << call("what", &Fixture::test_Version_what)
+                  << call("throwing", &Fixture::test_Version_throwing)
+                ;
+              return move(ver);
+            }()
+    ;
+  return finalize(series);
 }
 #endiv

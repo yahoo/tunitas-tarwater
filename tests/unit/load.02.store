@@ -1,0 +1,4 @@
+[member]
+# WATCHOUT - these strings are hard-coded into the tester in .../src/tests/unit/member.Fixture.xcpp
+name = Very Serious Agency Trading Desk
+secret = Not. Joking. At. All.{space}{space}Really.

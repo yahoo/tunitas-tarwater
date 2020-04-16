@@ -117,35 +117,36 @@ auto tests::unit::service::Fixture::test_run() -> void {
   // Not testable here in unit testing
     CPPUNIT_ASSERT(true);
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::service::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("service");
   series << call("Configuration", &Fixture::test_Configuration)
 	 << call("Usage", &Fixture::test_Usage)
 	 << call("drop", &Fixture::test_drop)
 	 << call("run", &Fixture::test_run)
+         << []() {
+              Stream exc("exception");
+              exc << call("Quitting", &Fixture::test_exception_Quitting)
+                ;
+              return move(exc);
+            }()
+         << []() {
+              Stream opt("options");
+              opt << call("Specification", &Fixture::test_options_Specification)
+                  << call("Parser", &Fixture::test_options_Parser)
+                  << []() {
+                       Stream par("parser");
+                       par << call("Result", &Fixture::test_options_parser_Result)
+                         ;
+                       return move(par);
+                     }()
+                ;
+              return move(opt);
+            }()
     ;
-  {
-    Stream exc("exception");
-    exc << call("Quitting", &Fixture::test_exception_Quitting)
-      ;
-    series << add(exc.release());
-  } {
-    Stream opt("options");
-    opt << call("Specification", &Fixture::test_options_Specification)
-	<< call("Parser", &Fixture::test_options_Parser)
-      ;
-    {
-      Stream par("parser");
-      par << call("Result", &Fixture::test_options_parser_Result)
-	;
-      opt << add(par.release());
-    }
-    series << add(opt.release());
-  }
-  return series.release();
+  return finalize(series);
 }
 #endiv

@@ -19,9 +19,13 @@
 #   with_temerarious_flagship=/opt/tunitas \
 #   ./maintenance/nearby
 # 
-# to build without submodules
+# To debug the buildconf and configure steps
 #
-#  with_submodules=no ./maintenance/nearby       (this works because --with-THING=no is --without-THING)
+#   enable_dependency_tracking=no ./maintenance/nearby  (no options)
+#
+# To build without submodules
+#
+#   with_submodules=no ./maintenance/nearby       (this works because --with-THING=no is --without-THING)
 #
 # The scold module "with" variables will naturally default to /opt/scold
 # The tunitas "with" variables would be expected to be in /opt/tunitas

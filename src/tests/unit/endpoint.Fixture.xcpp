@@ -18,14 +18,14 @@ auto tests::unit::endpoint::Fixture::test_something() -> void {
 #warning WRITETHIS auto tests::unit::endpoint::Fixture::test_something() -> void 
   CPPUNIT_ASSERT(true);
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::endpoint::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("endpoint");
   series << call("something", &Fixture::test_something)
     ;
-  return series.release();
+  return finalize(series);
 }
 #endiv

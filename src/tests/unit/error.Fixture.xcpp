@@ -65,25 +65,25 @@ auto tests::unit::error::Fixture::test_category_message() -> void {
     CPPUNIT_ASSERT(!message.empty());
   }
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::error::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("error");
   series << call("make_error_code", &Fixture::test_make_error_code)
          << call("make_error_condition", &Fixture::test_make_error_condition)
+         << []() {
+              Stream cat("category");
+              cat << call("name", &Fixture::test_category_name)
+                  << call("default_error_condition", &Fixture::test_category_default_error_condition)
+                  << call("equivalent-code", &Fixture::test_category_equivalent_code)
+                  << call("equivalent-condition", &Fixture::test_category_equivalent_condition)
+                  << call("message", &Fixture::test_category_message)
+                ;
+              return move(cat);
+            }()
     ;
-  {
-    Stream cat("category");
-    cat << call("name", &Fixture::test_category_name)
-        << call("default_error_condition", &Fixture::test_category_default_error_condition)
-        << call("equivalent-code", &Fixture::test_category_equivalent_code)
-        << call("equivalent-condition", &Fixture::test_category_equivalent_condition)
-        << call("message", &Fixture::test_category_message)
-      ;
-    series << add(cat.release());
-  }
-  return series.release();
+  return finalize(series);
 }
 #endiv

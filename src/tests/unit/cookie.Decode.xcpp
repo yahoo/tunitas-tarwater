@@ -112,44 +112,48 @@ auto tests::unit::cookie::Decode::test_bad_outcome_j2j() -> void {
   auto const decoded = decode(original);
   CPPUNIT_ASSERT(!ok(decoded));
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::cookie::Decode::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("decode");
-  {
-    Stream good{"good"};
-    {
-      Stream str{"String"};
-      str << call("JSON", &Decode::test_good_string_j2j)
-	  << call("BASE64", &Decode::test_good_string_b2j)
-	  << call("URLSAFE", &Decode::test_good_string_j2j)
-	;
-      good << add(str.release());
-    } {
-      Stream out{"Outcome"};
-      out << call("JSON", &Decode::test_good_outcome_j2j)
-	  << call("BASE64", &Decode::test_good_outcome_b2j)
-	  << call("URLSAFE", &Decode::test_good_outcome_j2j)
-	;
-      good << add(out.release());
-    }
-    series << add(good.release());
-  } {
-    Stream bad{"bad"};
-    bad << call("generic", &Decode::test_bad_generic)
-      ;
-    {
-      Stream out{"Outcome"};
-      out << call("JSON", &Decode::test_bad_outcome_j2j)
-	  << call("BASE64", &Decode::test_bad_outcome_b2j)
-	  << call("URLSAFE", &Decode::test_bad_outcome_u2j)
-	;
-      bad << add(out.release());
-    }
-    series << add(bad.release());
-  }
-  return series.release();
+  series << []() {
+              Stream good{"good"};
+              good << []() {
+                        Stream str{"String"};
+                        str << call("JSON", &Decode::test_good_string_j2j)
+                            << call("BASE64", &Decode::test_good_string_b2j)
+                            << call("URLSAFE", &Decode::test_good_string_j2j)
+                          ;
+                        return move(str);
+                      }()
+                   << []() {
+                        Stream out{"Outcome"};
+                        out << call("JSON", &Decode::test_good_outcome_j2j)
+                            << call("BASE64", &Decode::test_good_outcome_b2j)
+                            << call("URLSAFE", &Decode::test_good_outcome_j2j)
+                          ;
+                        return move(out);
+                      }()
+                ;
+              return move(good);
+            }()
+         << []() {
+              Stream bad{"bad"};
+              bad << call("generic", &Decode::test_bad_generic)
+                  << []() {
+                       Stream out{"Outcome"};
+                       out << call("JSON", &Decode::test_bad_outcome_j2j)
+                           << call("BASE64", &Decode::test_bad_outcome_b2j)
+                           << call("URLSAFE", &Decode::test_bad_outcome_u2j)
+                         ;
+                       return move(out);
+                     }()
+                ;
+              return move(bad);
+            }()
+    ;
+  return finalize(series);
 }
 #endiv

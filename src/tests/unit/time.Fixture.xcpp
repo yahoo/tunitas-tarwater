@@ -71,6 +71,6 @@ auto tests::unit::time::Fixture::suite() -> cppunit::Test * {
 	 << call("now", &Fixture::test_now)
 	 << call("since_epoch", &Fixture::test_since_epoch)
     ;
-  return series.release();
+  return finalize(series);
 }
 #endiv

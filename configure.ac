@@ -14,7 +14,7 @@ dnl make check &&
 dnl make install &&
 dnl echo OK DONE
 dnl
-AC_INIT([tarwater], [0.0.0], [/dev/null@verizonmedia.com])
+AC_INIT([tarwater], [0.1.0], [tunitas@verizonmedia.com])
 TF_INIT(AC_PACKAGE_NAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
 
 dnl These options are also in the Makefile.am in AUTOMAKE_OPTIONS
@@ -36,6 +36,7 @@ TF_COMPONENT_METADIRECTORY_TIERS
 TF_ENABLE_GNU
 TF_ENABLE_GDB
 TF_ENABLE_GCC
+TF_ENABLE_LIBTOOL_NO_INSTALL
 TF_ENABLE_MOCK_BUILD dnl [[deprecating]] but creates mk/configured.mk and nothing else (yet) does that
 
 TF_WITH_STD([scold])
@@ -77,6 +78,9 @@ TF_CHECK_JSONCPP
 
 m4_include([ac/with-nonstd-libhttpserver.m4])
 WITH_NONSTD_LIBHTTPSERVER
+
+# module-httpserver-devel >= 0.5.0-0.devel contains httpserver.Service and httpserver.service.Create
+TF_CHECK_PACKAGES([httpserver.Service httpserver.service.Create], [module-httpserver-devel])
 
 dnl https://www.gnu.org/software/autoconf/manual/autoconf-2.66/html_node/Libraries.html
 dnl https://www.gnu.org/software/gnulib/manual/html_node/Searching-for-Libraries.html

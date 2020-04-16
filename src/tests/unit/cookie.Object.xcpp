@@ -83,23 +83,23 @@ auto tests::unit::cookie::Object::test_operator_insert() -> void {
   CPPUNIT_ASSERT_EQUAL(expected.size(), actual.size());
   CPPUNIT_ASSERT_EQUAL(expected, actual);
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::cookie::Object::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("Object");
-  {
-    Stream con{"constructor"};
-    con << call("default", &Object::test_constructor_default)
-	<< call("2-arg", &Object::test_constructor_2arg)
-	<< call("3-arg", &Object::test_constructor_3arg)
-      ;
-    series << add(con.release());
-  }
-  series << call("to_string", &Object::test_to_string)
+  series << [] {
+              Stream con{"constructor"};
+              con << call("default", &Object::test_constructor_default)
+                  << call("2-arg", &Object::test_constructor_2arg)
+                  << call("3-arg", &Object::test_constructor_3arg)
+                ;
+              return move(con);
+            }()
+         << call("to_string", &Object::test_to_string)
 	 << call("operator<<", &Object::test_operator_insert)
     ;
-  return series.release();
+  return finalize(series);
 }
 #endiv

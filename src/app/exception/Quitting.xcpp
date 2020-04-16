@@ -2,7 +2,6 @@
 // Copyright 2018-2019, Oath Inc.
 // Licensed under the terms of the Apache-2.0 license. See the LICENSE file in https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE for terms.
 #divert <fpp>
-#import app.exception
 namespace app::exception {
   //
   // That particular quitting exception
@@ -17,19 +16,25 @@ namespace app::exception {
 }
 #endiv
 #divert <hpp>
-#import tunitas.app.exception.Quitting
-#import tunitas.app.exception.Messaging
+#import tunitas.app.exception.Aspect
+#import tunitas.app.exception.feature.Quitting
+#import tunitas.exception.feature.Messaging
 #import std.exception
 #import std.string
-class app::exception::Quitting : public tunitas::app::exception::Quitting, tunitas::app::exception::Messaging, public std::exception {
+class app::exception::Quitting : public tunitas::app::exception::Aspect,
+                                 public tunitas::app::exception::feature::Quitting,
+                                 public tunitas::exception::feature::Messaging,
+                                 public std::exception {
   struct ancestors {
-    using Quitting = tunitas::app::exception::Quitting;
-    using Messaging = tunitas::app::exception::Messaging;
+    using Quitting = tunitas::app::exception::feature::Quitting;
+    using Messaging = tunitas::exception::feature::Messaging;
     using Exception = std::exception;
   };
 public:
   inline Quitting(std::string const &NAME, std::ostream &, sys::exits::Code);
   inline Quitting(std::string const &NAME, sys::exits::Code);
+  auto code() const noexcept -> sys::exits::Code final;
+  auto stream() const noexcept -> std::ostream & final;
   auto what() const noexcept -> char const * final;
 };
 #endiv
@@ -47,6 +52,12 @@ namespace app::exception {
 #endiv
 #divert <cpp>
 namespace app::exception {
+  auto Quitting::code() const noexcept -> sys::exits::Code {
+    return ancestors::Quitting::code();
+  }
+  auto Quitting::stream() const noexcept -> std::ostream & {
+    return ancestors::Quitting::stream();
+  }
   auto Quitting::what() const noexcept -> char const * {
     return ancestors::Messaging::what();
   }

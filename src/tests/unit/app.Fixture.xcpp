@@ -20,26 +20,32 @@ using namespace std::string_literals;
 #import sys.exits.constants
 #import std.exception
 #import app.exception.Quitting
+#import tunitas.app.exception.Aspect
 auto tests::unit::app::Fixture::test_exception_Quitting() -> void {
   try {
     auto const NAME = "NAME"s;
     throw ::app::exception::Quitting{NAME, sys::exits::FAIL};
+  } catch (::tunitas::app::exception::Aspect const &q) {
+    q.stream() << q << '\n';
+    CPPUNIT_ASSERT(q.code() == sys::exits::FAIL);
   } catch (std::exception const &) {
-    CPPUNIT_ASSERT(true);
+    // This is a surprise
+    CPPUNIT_ASSERT(false);
   }
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::app::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("app");
-  {
-    Stream exc("exception");
-    exc << call("Quitting", &Fixture::test_exception_Quitting)
-      ;
-    series << add(exc.release());
-  }
-  return series.release();
+  series << []() {
+              Stream exc("exception");
+              exc << call("Quitting", &Fixture::test_exception_Quitting)
+                ;
+              return move(exc);
+            }()
+    ;
+  return finalize(series);
 }
 #endiv

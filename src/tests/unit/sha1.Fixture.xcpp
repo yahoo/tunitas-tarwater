@@ -149,33 +149,33 @@ auto tests::unit::sha1::Fixture::test_detail_hexpair() -> void {
 }
 #import tests.unit.sha1.Required
 #import tests.unit.sha1.Workbench
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::sha1::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("sha1");
   series << call("function", &Fixture::test_function)
 	 << call("Workbench", &Fixture::test_Workbench)
 	 << call("Bytes", &Fixture::test_Bytes)
 	 << call("Hexstring", &Fixture::test_Hexstring)
+         << []() {
+              Stream tos("to_string");
+              tos << call("upcasing", &Fixture::test_to_string_upcasing)
+                  << call("nocasing", &Fixture::test_to_string_nocasing)
+                ;
+              return move(tos);
+            }()
+         << []() {
+              Stream det("detail");
+              det << call("hexchar", &Fixture::test_detail_hexchar)
+                  << call("hexpair", &Fixture::test_detail_hexpair)
+                ;
+              return move(det);
+            }()
+         << add<Required>()
+	 << add<Workbench>()
     ;
-  {
-    Stream tos("to_string");
-    tos << call("upcasing", &Fixture::test_to_string_upcasing)
-	<< call("nocasing", &Fixture::test_to_string_nocasing)
-      ;
-    series << add(tos.release());
-  } {
-    Stream det("detail");
-    det << call("hexchar", &Fixture::test_detail_hexchar)
-        << call("hexpair", &Fixture::test_detail_hexpair)
-      ;
-    series << add(std::move(det.release()));
-  }
-  series << add(Required::suite())
-	 << add(Workbench::suite())
-    ;
-  return series.release();
+  return finalize(series);
 }
 #endiv

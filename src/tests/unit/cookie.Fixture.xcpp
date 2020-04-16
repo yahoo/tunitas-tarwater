@@ -37,24 +37,24 @@ auto tests::unit::cookie::Fixture::test_URLSAFE() -> void {
 #import tests.unit.cookie.Object
 #import tests.unit.cookie.Encode
 #import tests.unit.cookie.Decode
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::cookie::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("cookie");
-  {
-    Stream str("String");
-    str << call("JSON", &Fixture::test_JSON)
-	<< call("BASE64", &Fixture::test_BASE64)
-	<< call("URLSAFE", &Fixture::test_URLSAFE)
-      ;
-    series << add(str.release());
-  }
-  series << add(Object::suite())
-	 << add(Decode::suite())
-	 << add(Encode::suite())
+  series << []() {
+              Stream str("String");
+              str << call("JSON", &Fixture::test_JSON)
+                  << call("BASE64", &Fixture::test_BASE64)
+                  << call("URLSAFE", &Fixture::test_URLSAFE)
+                ;
+              return move(str);
+            }()
+         << add<Object>()
+	 << add<Decode>()
+	 << add<Encode>()
     ;
-  return series.release();
+  return finalize(series);
 }
 #endiv

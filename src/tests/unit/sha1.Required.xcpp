@@ -201,14 +201,13 @@ auto tests::unit::sha1::Required::test_As_Stringable() -> void {
   static_assert(!As_Stringable<std::byte const *>);
   static_assert(!As_Stringable<std::string_view>);
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
+#import rigging.suite.Stream
+#import rigging.suite.call
+#import rigging.suite.add
 auto tests::unit::sha1::Required::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace ::rigging::suite;
   Stream series("required");
-  series 
-	 << call("Byte_Traits", &Required::test_Byte_Traits)
+  series << call("Byte_Traits", &Required::test_Byte_Traits)
 	 << call("Byte", &Required::test_Byte)
 	 << call("Character_Traits", &Required::test_Character_Traits)
 	 << call("Character", &Required::test_Character)
@@ -219,6 +218,6 @@ auto tests::unit::sha1::Required::suite() -> cppunit::Test * {
 	 << call("As_Dopable", &Required::test_As_Dopable)
 	 << call("As_Stringable", &Required::test_As_Stringable)
     ;
-  return series.release();
+  return finalize(series);
 }
 #endiv
