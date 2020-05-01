@@ -32,7 +32,7 @@ auto tests::unit::tarwater::Fixture::test_Version_throwing() -> void {
   try {
     throw ::tunitas::tarwater::Version{"a.out"};
   } catch (::tunitas::app::exception::Aspect const &g) {
-    g.stream() << g << '\n';
+    g.stream() << g.what() << '\n';
     CPPUNIT_ASSERT(sys::exits::OK == g.code());
   } catch (...) {
     // We wanted to catch with a tunitas::app::exception::Aspect, but that failed.  This is a surprise.

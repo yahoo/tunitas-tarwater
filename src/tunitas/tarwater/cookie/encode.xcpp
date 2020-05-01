@@ -76,18 +76,18 @@ auto tunitas::tarwater::cookie::encode(String<URLSAFE> input) -> Superposition<U
   return std::move(input);
 }
 #import tunitas.tarwater.substring.Visitor
-#import std.visit
+#import tunitas.outcome.visit
 auto tunitas::tarwater::cookie::encode(Superposition<JSON> const &input) -> Superposition<URLSAFE> {
   using Result = Superposition<URLSAFE>;
   auto visitor = substring::Visitor{[](String<JSON> const &s) -> Result { return encode(s); },
 				    [](std::error_code const &e) -> Result { return Result{e}; }};
-  return encode(encode(visit(visitor, input)));
+  return encode(encode(outcome::visit(visitor, input)));
 }
 auto tunitas::tarwater::cookie::encode(Superposition<BASE64> const &input) -> Superposition<URLSAFE> {
   using Result = Superposition<URLSAFE>;
   auto visitor = substring::Visitor{[](String<BASE64> const &s) -> Result { return encode(s); },
 				    [](std::error_code const &e) -> Result { return Result{e}; }};
-  return encode(std::visit(visitor, input));
+  return encode(outcome::visit(visitor, input));
 }
 auto tunitas::tarwater::cookie::encode(Superposition<URLSAFE> input) -> Superposition<URLSAFE> {
   return std::move(input);

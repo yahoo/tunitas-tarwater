@@ -26,7 +26,7 @@ auto tests::unit::app::Fixture::test_exception_Quitting() -> void {
     auto const NAME = "NAME"s;
     throw ::app::exception::Quitting{NAME, sys::exits::FAIL};
   } catch (::tunitas::app::exception::Aspect const &q) {
-    q.stream() << q << '\n';
+    q.stream() << q.what() << '\n';
     CPPUNIT_ASSERT(q.code() == sys::exits::FAIL);
   } catch (std::exception const &) {
     // This is a surprise

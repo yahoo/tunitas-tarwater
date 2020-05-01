@@ -48,7 +48,7 @@ auto app::service::run(Configuration const &cfg) -> void {
     specification.debug();
     specification.use_ipv6().start_method(METHOD).max_threads(THREADS);
     specification.port(cfg.service_port.value_or(defaults::SERVICE_PORT));
-    return std::move(specification);
+    return specification;
   }()};
   if (cfg.emit_pid) {
     std::cout << getpid() << std::flush;

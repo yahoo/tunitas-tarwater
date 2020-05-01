@@ -55,7 +55,7 @@ noinst_LTLIBRARIES = \
   lib/libapp.la \
   lib/libwant.la \
   $(end)
-check_PROGRAMS = bin/unit
+check_PROGRAMS = check/bin/unit
 check_LTLIBRARIES = 
 
 $(bin_PROGRAMS) : $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)

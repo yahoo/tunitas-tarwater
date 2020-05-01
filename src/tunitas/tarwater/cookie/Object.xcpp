@@ -19,6 +19,7 @@ namespace tunitas::tarwater::cookie {
 #import std.ostream
 #import tunitas.tarwater.cookie.String
 namespace tunitas::tarwater::cookie {
+#warning FIXTHIS auto operator<<(std::ostream &, Object const &) -> std::ostream & is declared but not defined (and no test exercises it)
   auto operator<<(std::ostream &, Object const &) -> std::ostream &;
 }
 #import tunitas.tarwater.identifier.Integer

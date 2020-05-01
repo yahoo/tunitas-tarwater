@@ -84,13 +84,12 @@ auto tunitas::tarwater::cookie::decode(Superposition<BASE64> const &input) -> Su
   using Result = Superposition<JSON>;
   auto visitor = Visitor{[](String<BASE64> const &s) -> Result { return decode(s); },
                          [](std::error_code const &e) -> Result { return Result{e}; }};
-  using tunitas::outcome::visit;
-  return decode(tunitas::outcome::visit(visitor, input));
+  return decode(outcome::visit(visitor, input));
 }
 auto tunitas::tarwater::cookie::decode(Superposition<URLSAFE> const &input) -> Superposition<JSON> {
   using Result = Superposition<JSON>;
   auto visitor = outcome::Visitor{[](String<URLSAFE> const &s) -> Result { return decode(s); },
 				  [](std::error_code const &e) -> Result { return Result{e}; }};
-  return decode(std::visit(visitor, input));
+  return decode(outcome::visit(visitor, input));
 }
 #endiv

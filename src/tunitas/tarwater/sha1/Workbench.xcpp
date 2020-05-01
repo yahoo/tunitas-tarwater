@@ -74,7 +74,7 @@ namespace tunitas::tarwater {
   auto sha1::bytes(Workbench &wb) -> Bytes {
     Bytes ret;
     wb.state.Final(reinterpret_cast<cryptopp::byte *>(ret.data()));
-    return std::move(ret);
+    return ret;
   }
   auto sha1::hexstring(Workbench &wb) -> Hexstring {
     cryptopp::byte digest[cryptopp::SHA1::DIGESTSIZE];
@@ -85,7 +85,7 @@ namespace tunitas::tarwater {
       ret[h0] = hi;
       ret[h1] = lo;
     }
-    return std::move(ret);
+    return ret;
   }
 }
 #import std.to_string

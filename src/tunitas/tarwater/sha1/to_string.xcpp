@@ -24,7 +24,7 @@ auto tunitas::tarwater::sha1::to_string(Bytes const &bs) -> std::string {
     re.push_back(hi);
     re.push_back(lo);
   }
-  return std::move(re);
+  return re;
 }
 auto tunitas::tarwater::sha1::to_string(Hexstring const &hs) -> std::string {
   return std::string{hs.begin(), hs.end()};
