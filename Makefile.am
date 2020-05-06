@@ -138,11 +138,16 @@ Makefile_nonstd_CHECK_CFLAGS_SET   =
 Makefile_nonstd_CHECK_CXXFLAGS_SET = 
 Makefile_nonstd_CHECK_LDFLAGS_SET  = 
 
-# The @LDFLAGS_no_install@ is from TF_ENABLE_LIBTOOL_NO_INSTALL in temerarious-flagship >= 1.9.0-0.devel
-Makefile_CHECK_CPPFLAGS_SET = @CPPFLAGS_cppunit@ @CPPFLAGS_no_install@
-Makefile_CHECK_CFLAGS_SET   = @CFLAGS_cppunit@   @CFLAGS_no_install@
-Makefile_CHECK_CXXFLAGS_SET = @CXXFLAGS_cppunit@ @CXXFLAGS_no_install@
-Makefile_CHECK_LDFLAGS_SET  = @LDFLAGS_cppunit@  @LDFLAGS_no_install@
+#                                                  if    did not substitute away                      then use this
+#                                                  |           |                                      |            else use the substitution
+#                                                  |           |              @CPPFLAGS_no_install@   |            |
+#                                                  |           |              |                       |            |
+#                                                  |           |              |                       |            |
+#                                                  v           v              v                       v            v
+Makefile_CHECK_CPPFLAGS_SET = @CPPFLAGS_cppunit@ $(if $(filter %_no_install@, @CPPFLAGS_no_install@), $(empty),    @CPPFLAGS_no_install@)
+Makefile_CHECK_CFLAGS_SET   =   @CFLAGS_cppunit@ $(if $(filter %_no_install@, @CFLAGS_no_install@),   $(empty),    @CFLAGS_no_install@)
+Makefile_CHECK_CXXFLAGS_SET = @CXXFLAGS_cppunit@ $(if $(filter %_no_install@, @CXXFLAGS_no_install@), $(empty),    @CXXFLAGS_no_install@)
+Makefile_CHECK_LDFLAGS_SET  =  @LDFLAGS_cppunit@ $(if $(filter %_no_install@, @LDFLAGS_no_install@),  -no-install, @LDFLAGS_no_install@)
 
 # These are assembled by .../toolflags.mk in hypogal-twilight >= 0.45.0
 AM_CPPFLAGS = $(PACKAGE_CPPFLAGS_SET)
