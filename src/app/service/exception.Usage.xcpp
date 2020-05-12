@@ -4,7 +4,9 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
 #divert <fpp>
-namespace app::service {
+#import app.exception
+namespace app::service::exception {
+  using namespace app::exception; // cascade the namespaces until such time as there are multiple denizens of this namespace
   //
   // The usage string, as a throwable exception.
   // Throwing the usage exception may or may not signal success or an error depending
@@ -26,10 +28,10 @@ namespace app::service {
 #import std.exception
 #import std.string
 #import sys.exits.constants
-class app::service::Usage : public tunitas::app::exception::Aspect,
-                            public tunitas::app::exception::feature::Usage,
-                            public tunitas::exception::feature::Messaging,
-                            public std::exception {
+class app::service::exception::Usage : public tunitas::app::exception::Aspect,
+                                       public tunitas::app::exception::feature::Usage,
+                                       public tunitas::exception::feature::Messaging,
+                                       public std::exception {
   struct ancestors {
     using Aspect = tunitas::app::exception::Aspect;
     using Usage = tunitas::app::exception::feature::Usage;
@@ -46,13 +48,13 @@ protected:
 };
 #endiv
 #divert <ipp>
-app::service::Usage::Usage(std::string name, sys::exits::Code code)
+app::service::exception::Usage::Usage(std::string name, sys::exits::Code code)
   : ancestors::Usage{code}
   , ancestors::Messaging{format(name)}
 { }
 #endiv
 #divert <cpp>
-namespace app::service {
+namespace app::service::exception {
   auto Usage::what() const noexcept -> char const * { return ancestors::Messaging::what(); }
   auto Usage::stream() const noexcept -> std::ostream & { return ancestors::Usage::stream(); }
   auto Usage::code() const noexcept -> sys::exits::Code { return ancestors::Usage::code(); }
@@ -60,7 +62,7 @@ namespace app::service {
 #import std.ostringstream
 #import app.service.defaults
 #import autotools.autoconf.Config.tunitas.tarwater.CONFIG
-auto app::service::Usage::format(std::string const &NAME) -> std::string {
+auto app::service::exception::Usage::format(std::string const &NAME) -> std::string {
   using ac = autotools::autoconf::Config<tunitas::tarwater::CONFIG>;
   std::ostringstream buf;
   auto const is_default = [](bool which) { return which ? "yes" : "no"; };

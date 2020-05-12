@@ -11,35 +11,24 @@ namespace tests::unit::tarwater { class Fixture; }
 #import cppunit.test.Fixture
 class tests::unit::tarwater::Fixture : public cppunit::test::Fixture {
 public:
-  auto test_Version_constructor() -> void;
-  auto test_Version_what() -> void;
-  auto test_Version_throwing() -> void;
+  auto test_version_String() -> void;
+  auto test_time_Point() -> void; // but see time::Fixture, nearby
   static auto suite() -> cppunit::Test *;
 };
 #endiv
 #divert <cpp>
-#import tunitas.tarwater.Version
-auto tests::unit::tarwater::Fixture::test_Version_constructor() -> void {
-  ::tunitas::tarwater::Version subject{"a.out"};
-  CPPUNIT_ASSERT(true);
-}
 #import std.cerr
-auto tests::unit::tarwater::Fixture::test_Version_what() -> void {
-  ::tunitas::tarwater::Version subject{"a.out"};
-  std::cerr << subject.what() << '\n';
+#import tunitas.tarwater.version.String
+auto tests::unit::tarwater::Fixture::test_version_String() -> void {
+  auto subject = ::tunitas::tarwater::version::String{};
+  std::cerr << subject << '\n';
   CPPUNIT_ASSERT(true);
 }
-#import tunitas.app.exception.Aspect
-auto tests::unit::tarwater::Fixture::test_Version_throwing() -> void {
-  try {
-    throw ::tunitas::tarwater::Version{"a.out"};
-  } catch (::tunitas::app::exception::Aspect const &g) {
-    g.stream() << g.what() << '\n';
-    CPPUNIT_ASSERT(sys::exits::OK == g.code());
-  } catch (...) {
-    // We wanted to catch with a tunitas::app::exception::Aspect, but that failed.  This is a surprise.
-    CPPUNIT_ASSERT(false);
-  }
+#import tunitas.tarwater.time.Point
+auto tests::unit::tarwater::Fixture::test_time_Point() -> void {
+  // but see time::Fixture, nearby
+  auto subject = ::tunitas::tarwater::time::Point{};
+  CPPUNIT_ASSERT(sizeof (subject));
 }
 #import rigging.suite.Stream
 #import rigging.suite.call
@@ -48,10 +37,14 @@ auto tests::unit::tarwater::Fixture::suite() -> cppunit::Test * {
   using namespace ::rigging::suite;
   Stream series("tarwater");
   series << []() {
-              Stream ver("Version");
-              ver << call("constructor", &Fixture::test_Version_constructor)
-                  << call("what", &Fixture::test_Version_what)
-                  << call("throwing", &Fixture::test_Version_throwing)
+              Stream ver("version");
+              ver << call("String", &Fixture::test_version_String)
+                ;
+              return move(ver);
+            }()
+         << []() {
+              Stream ver("time");
+              ver << call("Point", &Fixture::test_time_Point)
                 ;
               return move(ver);
             }()

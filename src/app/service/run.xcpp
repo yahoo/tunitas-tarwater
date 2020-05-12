@@ -32,7 +32,7 @@ namespace app::service {
 #import app.service.drop
 #import autotools.autoconf.Config.tunitas.tarwater.CONFIG
 #import getpid
-#import httpserver.service.Create // httpserver >= 0.5.0
+#import httpserver.service.Create // module-httpserver >= 0.5.0
 #import httpserver.Service
 #import std.boolalpha
 #import std.cout

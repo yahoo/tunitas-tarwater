@@ -35,8 +35,8 @@ lib_libtunitas_tarwater_la_LDFLAGS = \
 lib_libtunitas_tarwater_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libtunitas_tarwater_la_SOURCES))
 lib_libtunitas_tarwater_la_SOURCES = \
   obj/src/tunitas/tarwater/namespace.cpp \
-  obj/src/tunitas/tarwater/Version.cpp \
   obj/src/tunitas/tarwater/constants.cpp \
+  obj/src/tunitas/tarwater/version.String.cpp \
   \
   obj/src/tunitas/tarwater/cookie/namespace.cpp \
   obj/src/tunitas/tarwater/cookie/Object.cpp \

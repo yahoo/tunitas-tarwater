@@ -10,10 +10,12 @@ lib_libautotools_autoconf_la_SOURCES = \
   obj/src/autotools/autoconf/Config.cpp \
   obj/src/autotools/autoconf/Config.tunitas.tarwater.CONFIG.cpp \
   $(end)
+$(lib_libautotools_autoconf_la_SOURCES) : obj/src/%.cpp : src/%.xcpp
+	$(TF_V_DIS) $(call TF_DISAGGREGATE_COMPILE, $@)
+	$(TF_V_DUN) test -e $@
 $(scold_cxxdir)/src/autotools/autoconf/dependencies.mk:
-	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libautotools_autoconf_la_SOURCES))
-	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(lib_libautotools_autoconf_la_SOURCES))
-	test -e $@
+	$(TF_V_COM) $(call TF_COMPILE, $(lib_libautotools_autoconf_la_SOURCES))
+	$(TF_V_DUN) test -e $@
 include $(scold_cxxdir)/src/autotools/autoconf/dependencies.mk
 clean-dependencies::
 	rm -f $(scold_cxxdir)/src/autotools/autoconf/dependencies.mk

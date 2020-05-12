@@ -1,0 +1,69 @@
+// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
+#divert <fpp>
+namespace app::exception {
+  //
+  // The version string, as a throwable exception.
+  // Throwing the version exception is always a success signal because the user
+  // requested it via the --version option.  The class has no other utility.
+  //
+  // Usage:
+  //
+  //   throw Version{};
+  //
+  class [[nodiscard]] Version;
+}
+#endiv
+#divert <hpp>
+#import tunitas.app.exception.Aspect
+#import tunitas.app.exception.feature.Version
+#import tunitas.exception.feature.Messaging
+#import std.exception
+#import std.string
+#import tunitas.tarwater.version.String
+class app::exception::Version : public tunitas::app::exception::Aspect,
+                                public tunitas::app::exception::feature::Version,
+                                public tunitas::exception::feature::Messaging,
+                                public std::exception {
+  struct Ancestors {
+    using Aspect = tunitas::app::exception::Aspect;
+    using Feature = tunitas::app::exception::feature::Version;
+    using Messaging = tunitas::exception::feature::Messaging;
+    using Exception = std::exception;
+  };
+public:
+  inline explicit Version(std::string NAME);
+  auto what() const noexcept -> char const * final;
+  auto code() const noexcept -> sys::exits::Code final;
+  auto stream() const noexcept -> std::ostream & final;
+  using String = tunitas::tarwater::version::String;
+  inline auto version() const -> String;
+protected:
+  static auto format(std::string const &NAME) -> std::string;
+};
+#endiv
+#divert <ipp>
+app::exception::Version::Version(std::string NAME)
+  : Ancestors::Feature{}
+  , Ancestors::Messaging{format(NAME)}
+{ }
+auto app::exception::Version::version() const -> String {
+  return String{};
+}
+#endiv
+#divert <cpp>
+namespace app::exception {
+  auto Version::what() const noexcept -> char const * { return Ancestors::Messaging::what(); }
+  auto Version::code() const noexcept -> sys::exits::Code { return Ancestors::Feature::code(); }
+  auto Version::stream() const noexcept -> std::ostream & { return Ancestors::Feature::stream(); }
+}
+#import std.ostringstream
+auto app::exception::Version::format(std::string const &NAME) -> std::string {
+  std::ostringstream buf;
+  buf << NAME << ": version " << String{} << '\n';
+  return buf.str();
+}
+#endiv

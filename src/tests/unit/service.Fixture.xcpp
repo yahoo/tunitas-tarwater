@@ -34,11 +34,11 @@ auto tests::unit::service::Fixture::test_Configuration() -> void {
   CPPUNIT_ASSERT(true);
 }
 #import std.exception
-#import app.service.Usage
+#import app.service.exception.Usage
 auto tests::unit::service::Fixture::test_Usage() -> void {
   try {
     ::tunitas::app::Program prg{"a.out"};
-    throw ::app::service::Usage{prg, sys::exits::OK};
+    throw ::app::service::exception::Usage{prg, sys::exits::OK};
   } catch (std::exception const &) {
     CPPUNIT_ASSERT(true);
   }

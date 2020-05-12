@@ -11,6 +11,9 @@ namespace tests::unit::app { class Fixture; }
 #import cppunit.test.Fixture
 class tests::unit::app::Fixture : public cppunit::test::Fixture {
 public:
+  auto test_exception_Version_constructor() -> void;
+  auto test_exception_Version_what() -> void;
+  auto test_exception_Version_throwing() -> void;
   auto test_exception_Quitting() -> void;
   static auto suite() -> cppunit::Test *;
 };
@@ -35,6 +38,29 @@ auto tests::unit::app::Fixture::test_exception_Quitting() -> void {
     CPPUNIT_ASSERT(false);
   }
 }
+#import app.exception.Version
+auto tests::unit::app::Fixture::test_exception_Version_constructor() -> void {
+  ::app::exception::Version subject{"a.out"};
+  CPPUNIT_ASSERT(sizeof (subject));
+}
+#import std.cerr
+auto tests::unit::app::Fixture::test_exception_Version_what() -> void {
+  ::app::exception::Version subject{"a.out"};
+  std::cerr << subject.what() << '\n';
+}
+#import app.exception.Version
+#import tunitas.app.exception.Aspect
+auto tests::unit::app::Fixture::test_exception_Version_throwing() -> void {
+  try {
+    throw ::app::exception::Version{"a.out"};
+  } catch (::tunitas::app::exception::Aspect const &g) {
+    g.stream() << g.what() << '\n';
+    CPPUNIT_ASSERT(sys::exits::OK == g.code());
+  } catch (...) {
+    // We wanted to catch with a tunitas::app::exception::Aspect, but that failed.  This is a surprise.
+    CPPUNIT_ASSERT(false);
+  }
+}
 #import rigging.suite.Stream
 #import rigging.suite.call
 #import rigging.suite.add
@@ -44,10 +70,18 @@ auto tests::unit::app::Fixture::suite() -> cppunit::Test * {
   series << []() {
               Stream exc("exception");
               exc << call("Quitting", &Fixture::test_exception_Quitting)
+                  << []() {
+                       Stream ver("Version");
+                       ver << call("constructor", &Fixture::test_exception_Version_constructor)
+                           << call("what", &Fixture::test_exception_Version_what)
+                           << call("throwing", &Fixture::test_exception_Version_throwing)
+                         ;
+                       return move(ver);
+                     }()
                 ;
               return move(exc);
             }()
-    ;
+    ;    ;
   return finalize(series);
 }
 #endiv

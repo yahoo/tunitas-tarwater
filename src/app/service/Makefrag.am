@@ -37,7 +37,7 @@ lib_libapp_service_la_SOURCES = \
   obj/src/app/service/drop.cpp \
   obj/src/app/service/Configuration.cpp \
   obj/src/app/service/Optional_Pkgconfig_Filepath.cpp \
-  obj/src/app/service/Usage.cpp \
+  obj/src/app/service/exception.Usage.cpp \
   obj/src/app/service/constants.cpp \
   obj/src/app/service/defaults.cpp \
   obj/src/app/service/options/Parser.cpp \

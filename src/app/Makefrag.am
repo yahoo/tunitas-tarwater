@@ -9,6 +9,7 @@ lib_libapp_la_SOURCES = \
   obj/src/app/namespace.cpp \
   obj/src/app/exception/namespace.cpp \
   obj/src/app/exception/Quitting.cpp \
+  obj/src/app/exception/Version.cpp \
   $(end)
 $(lib_libapp_la_SOURCES) : obj/src/%.cpp : src/%.xcpp
 	$(TF_V_DIS) $(call TF_DISAGGREGATE_COMPILE, $@)

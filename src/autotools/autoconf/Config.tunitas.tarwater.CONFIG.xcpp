@@ -17,7 +17,15 @@ namespace autotools::autoconf {
 #divert <hpp>
 #include "config.h" // this is not expected to be published (exported)
 #import std.filesystem.path
+#import std.uint8_t
 template<> struct autotools::autoconf::Config<tunitas::tarwater::CONFIG> {
+  //
+  // [[FIXTHIS]] use the automated means to transform the config.h into the C++ class.
+  // [[FIXTHIS]] Pick a few that we care about and implement them manually
+  inline static auto package_major() -> std::uint8_t { return PACKAGE_MAJOR; }
+  inline static auto package_minor() -> std::uint8_t { return PACKAGE_MINOR; }
+  inline static auto package_patch() -> std::uint8_t { return PACKAGE_PATCHLEVEL; }
+  //
   // like $(sysconfdir), this is $(pkgconfdir) ... not "pkgconfigdir"
   inline static auto pkgconfdir() -> std::filesystem::path { return TUNITAS_TARWATER_PKGCONFDIR; }
 };
