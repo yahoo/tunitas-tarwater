@@ -32,7 +32,7 @@ namespace tunitas::tarwater::endpoint {
 #import tunitas.tarwater.service.Aspect
 #import tunitas.tarwater.service.Core
 class tunitas::tarwater::endpoint::Sync : public Resource<Sync>, service::Aspect {
-  struct ancestors {
+  struct Ancestors {
     using Webserver = Resource<Sync>;
     using DigiTrust = service::Aspect;
   };
@@ -45,8 +45,8 @@ public: // though we wish it was private and even more so we wish that it did no
 #endiv
 #divert <ipp>
 tunitas::tarwater::endpoint::Sync::Sync(service::Core &core)
-  : ancestors::Webserver{}
-  , ancestors::DigiTrust{core}
+  : Ancestors::Webserver{}
+  , Ancestors::DigiTrust{core}
 { }
 #endiv
 #divert <cpp>
@@ -64,7 +64,7 @@ auto tunitas::tarwater::endpoint::Sync::render_GET(Request const &request, Respo
     // enforce something?
     //   filters::enforce_no_query_parameters(request, fill);
     if (nullptr == fill) {
-      auto specified = ancestors::DigiTrust::get_redirect_specification(request);
+      auto specified = Ancestors::DigiTrust::get_redirect_specification(request);
       if (!ok(specified)) {
 	server::responses::bad_request(fill, error_code(specified).message());
       } else {
@@ -78,7 +78,7 @@ auto tunitas::tarwater::endpoint::Sync::render_GET(Request const &request, Respo
 	    server::responses::bad_request(fill, error_code(decoded).message());
 	  } else {
 	    auto pattern = value(std::move(decoded));
-	    auto identified = ancestors::DigiTrust::get_identifier(request);
+	    auto identified = Ancestors::DigiTrust::get_identifier(request);
 	    if (!ok(identified)) {
 	      server::responses::bad_request(fill, error_code(identified).message());
 	    } else {

@@ -12,7 +12,7 @@ namespace tunitas::tarwater::service {
   // Usage:
   //
   //   class endpoint::Something : Resource<Something>, service::Aspect {
-  //     struct ancestors {
+  //     struct Ancestors {
   //       using Webserver = Resource<Something>;
   //       using DigiTrust = service::Aspect;
   //     };

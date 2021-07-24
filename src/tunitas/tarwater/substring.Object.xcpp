@@ -29,18 +29,18 @@ namespace tunitas::tarwater::substring {
 #divert <hpp>
 #import std.string
 template<typename TAG> class tunitas::tarwater::substring::Object : public std::string {
-  using ancestor = std::string;
+  using Ancestor = std::string;
   // declaring robust subclasses of std::string is laborious
 public:
   Object() = default;
-  inline Object(ancestor const &);
-  inline Object(ancestor &&);
-  using ancestor::basic_string;
+  inline Object(Ancestor const &);
+  inline Object(Ancestor &&);
+  using Ancestor::basic_string;
   inline Object(Object const &) = default; // required because of the nonstandard operator=
   inline Object(Object &&) = default; // ibidem.
-  using ancestor::operator=;
-  auto operator=(ancestor const &) -> Object &;
-  auto operator=(ancestor &&) -> Object &;
+  using Ancestor::operator=;
+  auto operator=(Ancestor const &) -> Object &;
+  auto operator=(Ancestor &&) -> Object &;
   auto operator=(Object const &) -> Object & = default; // required because of the other nonstandard operator=
   auto operator=(Object &&) -> Object & = default; // ibidem.
 };
@@ -48,16 +48,16 @@ public:
 #divert <ipp>
 #import std.forward
 namespace tunitas::tarwater::substring {
-  template<typename _> Object<_>::Object(ancestor const &other)
-    : ancestor{other} { }
-  template<typename _> Object<_>::Object(ancestor &&other)
-    : ancestor{std::forward<ancestor>(other)} { }
-  template<typename _> auto Object<_>::operator=(ancestor const &other) -> Object & {
-    ancestor::operator=(other);
+  template<typename _> Object<_>::Object(Ancestor const &other)
+    : Ancestor{other} { }
+  template<typename _> Object<_>::Object(Ancestor &&other)
+    : Ancestor{std::forward<Ancestor>(other)} { }
+  template<typename _> auto Object<_>::operator=(Ancestor const &other) -> Object & {
+    Ancestor::operator=(other);
     return *this;
   }
-  template<typename _> auto Object<_>::operator=(ancestor &&other) -> Object & {
-    ancestor::operator=(std::forward<ancestor>(other));
+  template<typename _> auto Object<_>::operator=(Ancestor &&other) -> Object & {
+    Ancestor::operator=(std::forward<Ancestor>(other));
     return *this;
   }
 }

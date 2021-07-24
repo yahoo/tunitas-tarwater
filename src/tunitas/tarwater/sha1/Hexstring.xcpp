@@ -28,10 +28,10 @@ namespace tunitas::tarwater::sha1 {
 }
 #import std.array
 class tunitas::tarwater::sha1::Hexstring : public std::array<char, 40> {
-  using ancestor = std::array<char, 40>;
+  using Ancestor = std::array<char, 40>;
 public:
   Hexstring() = default;
-  using ancestor::array;
+  using Ancestor::array;
 };
 #endiv
 #divert <ipp>

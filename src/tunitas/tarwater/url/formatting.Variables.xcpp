@@ -26,9 +26,9 @@ namespace tunitas::tarwater::url::formatting {
 #import std.map
 #import std.string
 class tunitas::tarwater::url::formatting::Variables : public std::map<std::string, std::string> {
-  using ancestor = std::map<std::string, std::string>;
+  using Ancestor = std::map<std::string, std::string>;
 public:
   Variables() = default;
-  using ancestor::map;
+  using Ancestor::map;
 };
 #endiv

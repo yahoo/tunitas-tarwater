@@ -29,14 +29,14 @@ namespace tunitas::tarwater::url {
 #divert <hpp>
 #import tunitas.tarwater.url.Decoded
 class tunitas::tarwater::url::Pattern : public Decoded {
-  using ancestor = Decoded;
+  using Ancestor = Decoded;
 public:
   Pattern() = default;
-  using ancestor::Object; // back through all the type aliases 
-  inline Pattern(ancestor const &);
-  inline Pattern(ancestor &&);
-  inline auto operator=(ancestor const &) -> Pattern &;
-  inline auto operator=(ancestor &&) -> Pattern &;
+  using Ancestor::Object; // back through all the type aliases 
+  inline Pattern(Ancestor const &);
+  inline Pattern(Ancestor &&);
+  inline auto operator=(Ancestor const &) -> Pattern &;
+  inline auto operator=(Ancestor &&) -> Pattern &;
   // Because of the nonstandard operator=
   auto operator=(Pattern const &) -> Pattern & = default;
   auto operator=(Pattern &&) -> Pattern & = default;
@@ -46,9 +46,9 @@ public:
 #endiv
 #divert <ipp>
 namespace tunitas::tarwater::url {
-  Pattern::Pattern(ancestor const &other) : ancestor{other} { }
-  Pattern::Pattern(ancestor &&other) : ancestor{std::forward<ancestor>(other)} { }
-  auto Pattern::operator=(ancestor const &other) -> Pattern & { ancestor::operator=(other); return *this; }
-  auto Pattern::operator=(ancestor &&other) -> Pattern & { ancestor::operator=(std::forward<ancestor>(other)); return *this; }
+  Pattern::Pattern(Ancestor const &other) : Ancestor{other} { }
+  Pattern::Pattern(Ancestor &&other) : Ancestor{std::forward<Ancestor>(other)} { }
+  auto Pattern::operator=(Ancestor const &other) -> Pattern & { Ancestor::operator=(other); return *this; }
+  auto Pattern::operator=(Ancestor &&other) -> Pattern & { Ancestor::operator=(std::forward<Ancestor>(other)); return *this; }
 }
 #endiv

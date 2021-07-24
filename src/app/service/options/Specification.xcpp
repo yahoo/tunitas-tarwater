@@ -19,7 +19,7 @@ namespace app::service::options {
 #divert <hpp>
 #import tunitas.app.options.Specification
 class app::service::options::Specification : public tunitas::app::options::Specification {
-  using ancestor = tunitas::app::options::Specification;
+  using Ancestor = tunitas::app::options::Specification;
 public:
   Specification();
 };
@@ -42,7 +42,7 @@ app::service::options::Specification::Specification()
   //          /------------------ this [read carefully getopt(3)]
   //          |
   //          v
-  : ancestor{":hVdvqwybfPp:Du:M:",
+  : Ancestor{":hVdvqwybfPp:Du:M:",
              {{"usage", oa::NO, oi::USAGE_SUBCOMMAND},
               {"help", oa::NO, oi::USAGE_SUBCOMMAND},
               {"version", oa::NO, oi::VERSION_SUBCOMMAND},

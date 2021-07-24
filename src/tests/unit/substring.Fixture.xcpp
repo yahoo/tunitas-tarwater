@@ -17,14 +17,14 @@ public:
   auto test_abc() -> void;
   auto test_constructor_default() -> void;
   auto test_constructor_char_pointer() -> void;
-  auto test_constructor_copy_ancestor() -> void;
+  auto test_constructor_copy_Ancestor() -> void;
   auto test_constructor_copy() -> void;
-  auto test_constructor_move_ancestor() -> void;
+  auto test_constructor_move_Ancestor() -> void;
   auto test_constructor_move() -> void;
   auto test_assignment_char_pointer() -> void;
-  auto test_assignment_copy_ancestor() -> void;
+  auto test_assignment_copy_Ancestor() -> void;
   auto test_assignment_copy() -> void;
-  auto test_assignment_move_ancestor() -> void;
+  auto test_assignment_move_Ancestor() -> void;
   auto test_assignment_move() -> void;
   static auto suite() -> cppunit::Test *;
 };
@@ -50,7 +50,7 @@ auto tests::unit::substring::Fixture::test_constructor_char_pointer() -> void {
   auto subject = Subject{specimen};
   CPPUNIT_ASSERT(!subject.empty());
 }
-auto tests::unit::substring::Fixture::test_constructor_copy_ancestor() -> void {
+auto tests::unit::substring::Fixture::test_constructor_copy_Ancestor() -> void {
   auto specimen = "that"s;
   auto subject = Subject{specimen};
   CPPUNIT_ASSERT(!subject.empty());
@@ -60,7 +60,7 @@ auto tests::unit::substring::Fixture::test_constructor_copy() -> void {
   auto subject = Subject{specimen};
   CPPUNIT_ASSERT(!subject.empty());
 }
-auto tests::unit::substring::Fixture::test_constructor_move_ancestor() -> void {
+auto tests::unit::substring::Fixture::test_constructor_move_Ancestor() -> void {
   auto specimen = "that"s;
   auto subject = Subject{std::move(specimen)};
   CPPUNIT_ASSERT(!subject.empty());
@@ -76,7 +76,7 @@ auto tests::unit::substring::Fixture::test_assignment_char_pointer() -> void {
   subject = specimen;
   CPPUNIT_ASSERT(!subject.empty());
 }
-auto tests::unit::substring::Fixture::test_assignment_copy_ancestor() -> void {
+auto tests::unit::substring::Fixture::test_assignment_copy_Ancestor() -> void {
   Subject subject;
   auto specimen = "that"s;
   subject = specimen;
@@ -88,7 +88,7 @@ auto tests::unit::substring::Fixture::test_assignment_copy() -> void {
   subject = specimen;
   CPPUNIT_ASSERT(!subject.empty());
 }
-auto tests::unit::substring::Fixture::test_assignment_move_ancestor() -> void {
+auto tests::unit::substring::Fixture::test_assignment_move_Ancestor() -> void {
   auto specimen = "that"s;
   Subject subject;
   subject = std::move(specimen);
@@ -116,9 +116,9 @@ auto tests::unit::substring::Fixture::suite() -> cppunit::Test * {
               Stream cons("constructor");
               cons << call("default", &Fixture::test_constructor_default)
                    << call("char const *", &Fixture::test_constructor_char_pointer)
-                   << call("copy_ancestor", &Fixture::test_constructor_copy_ancestor)
+                   << call("copy_Ancestor", &Fixture::test_constructor_copy_Ancestor)
                    << call("copy", &Fixture::test_constructor_copy)
-                   << call("move_ancestor", &Fixture::test_constructor_move_ancestor)
+                   << call("move_Ancestor", &Fixture::test_constructor_move_Ancestor)
                    << call("move", &Fixture::test_constructor_move)
                 ;
               return move(cons);
@@ -126,9 +126,9 @@ auto tests::unit::substring::Fixture::suite() -> cppunit::Test * {
          << []() {
               Stream assn("assignment");
               assn << call("char const *", &Fixture::test_assignment_char_pointer)
-                   << call("copy_ancestor", &Fixture::test_assignment_copy_ancestor)
+                   << call("copy_Ancestor", &Fixture::test_assignment_copy_Ancestor)
                    << call("copy", &Fixture::test_assignment_copy)
-                   << call("move_ancestor", &Fixture::test_assignment_move_ancestor)
+                   << call("move_Ancestor", &Fixture::test_assignment_move_Ancestor)
                    << call("move", &Fixture::test_assignment_move)
                 ;
               return move(assn);
