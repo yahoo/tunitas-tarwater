@@ -35,9 +35,10 @@ class app::exception::Quitting : public tunitas::app::exception::Aspect,
 public:
   inline Quitting(std::string const &NAME, std::ostream &, sys::exits::Code);
   inline Quitting(std::string const &NAME, sys::exits::Code);
-  auto code() const noexcept -> sys::exits::Code final;
-  auto stream() const noexcept -> std::ostream & final;
-  auto what() const noexcept -> char const * final;
+  auto exit() const noexcept -> sys::exits::Code override final;
+  auto code() const noexcept -> sys::exits::Code override final;
+  auto stream() const noexcept -> std::ostream & override final;
+  auto what() const noexcept -> char const * override final;
 };
 #endiv
 #divert <ipp>
@@ -54,14 +55,9 @@ namespace app::exception {
 #endiv
 #divert <cpp>
 namespace app::exception {
-  auto Quitting::code() const noexcept -> sys::exits::Code {
-    return ancestors::Quitting::code();
-  }
-  auto Quitting::stream() const noexcept -> std::ostream & {
-    return ancestors::Quitting::stream();
-  }
-  auto Quitting::what() const noexcept -> char const * {
-    return ancestors::Messaging::what();
-  }
+  auto Quitting::exit() const noexcept -> sys::exits::Code { return ancestors::Quitting::code(); }
+  auto Quitting::code() const noexcept -> sys::exits::Code { return ancestors::Quitting::code(); }
+  auto Quitting::stream() const noexcept -> std::ostream & { return ancestors::Quitting::stream(); }
+  auto Quitting::what() const noexcept -> char const * { return ancestors::Messaging::what(); }
 }
 #endiv
