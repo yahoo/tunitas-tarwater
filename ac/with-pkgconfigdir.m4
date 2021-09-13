@@ -1,5 +1,5 @@
 dnl This is -*- m4 -*- to be consumed by configure.ac
-dnl Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+dnl Yahoo Inc. 2021
 dnl Licensed under the terms of the Apache-2.0 license.
 dnl For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 dnl For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
