@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -20,9 +20,11 @@ namespace app::service {
 }
 #endiv
 #divert <hpp>
+#import microhttpd.ip.Port
 #import tunitas.app.Configuration
 #import std.optional
 #import std.string
+#import std.filesystem.path
 #import app.service.Optional_Pkgconfig_Filepath
 class app::service::Configuration : public tunitas::app::Configuration {
   using ancestor = tunitas::app::Configuration;
@@ -30,9 +32,11 @@ public:
   using ancestor::Configuration;
   std::optional<bool> foreground_mode;
   std::optional<bool> emit_pid;
-  std::optional<std::uint16_t> service_port;
+  std::optional<std::filesystem::path> pid_filepath;
+  std::optional<microhttpd::ip::Port> service_port;
   std::optional<bool> drop_privileges;
   std::optional<std::string> unprivileged_user;
+  std::optional<std::string> unprivileged_group;
   Optional_Pkgconfig_Filepath member_storage;
 };
 #endiv

@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -18,7 +18,7 @@ namespace tunitas::tarwater::sha1::traits {
     template<typename CONTAINER, typename ITERATOR = typename CONTAINER::iterator> struct Base_IsA;
     template<typename CONTAINER> struct IsA;
     template<typename CONTAINER> struct NotA;
-    template<typename CONTAINER> concept bool Maybe = requires(CONTAINER) { typename CONTAINER::iterator; };
+    template<typename CONTAINER> concept Maybe = requires(CONTAINER) { typename CONTAINER::iterator; };
   }
   template<typename CONTAINER> struct Container;
   template<typename CONTAINER> struct Container<CONTAINER const>;

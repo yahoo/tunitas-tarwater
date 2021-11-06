@@ -1,0 +1,12 @@
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright Yahoo Inc, 2021.
+# Licensed under the terms of the Apache-2.0 license.
+# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
+# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
+#
+tunitas_tarwater_endpoint_SUBSOURCES = \
+  obj/src/tunitas/tarwater/endpoint/namespace.cpp \
+  obj/src/tunitas/tarwater/endpoint/Locator.cpp \
+  obj/src/tunitas/tarwater/endpoint/Registration.cpp \
+  obj/src/tunitas/tarwater/endpoint/make.cpp \
+  $(end)

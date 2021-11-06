@@ -1,5 +1,5 @@
 # This is a GNU -*- Makefile -*- fragment that is included by Automake
-# Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+# Copyright Yahoo Inc, 2021.
 # Licensed under the terms of the Apache-2.0 license.
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -20,7 +20,6 @@ src_app_service_OBJECTS_SET = \
 sbin_tarwater_service = sbin/tarwater-service
 # WATCHOUT - AM_LDFLAGS is not automatically added to the final link line anywhere (oddly enough...)
 #            and also that LDFLAGS is reserved to the command line.
-# if --with-nonstd-libhttpserver=yes (or similar) then we must link appropriately with -L, -Wl,-rpath=
 sbin_tarwater_service_LDFLAGS = 
 sbin_tarwater_service_LDADD = lib/libapp-service.la
 sbin_tarwater_service_MODULES = $(call TF_SOURCEStoMODULES, $(sbin_tarwater_service_SOURCES))
@@ -29,7 +28,7 @@ sbin_tarwater_service_SOURCES = \
   obj/src/app/service/run.cpp \
   $(end)
 # separated out as a library to make it testable
-lib_libapp_service_la_LDFLAGS = $(PACKAGE_LDFLAGS_SET) -lhttpserver -loptions-module
+lib_libapp_service_la_LDFLAGS = $(PACKAGE_LDFLAGS_SET) -lmicrohttpd++ -loptions-module
 lib_libapp_service_la_LIBADD = lib/libtunitas-tarwater.la lib/libapp.la lib/libwant.la
 lib_libapp_service_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libapp_service_la_SOURCES))
 lib_libapp_service_la_SOURCES = \
@@ -50,7 +49,7 @@ lib_libapp_service_la_SOURCES = \
 #
 $(scold_cxxdir)/app/service/dependencies.mk: $(src_app_service_SOURCES_SET)
 $(src_app_service_SOURCES_SET) : obj/src/%.cpp : src/%.xcpp
-	$(TF_V_DIS) $(call TF_XCPP2CPP, $^)
+	$(TF_V_DIS) $(call TF_XCPP2CPP, $<)
 	$(TF_V_DONE) test -e $@
 $(scold_cxxdir)/app/service/dependencies.mk:
 	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)

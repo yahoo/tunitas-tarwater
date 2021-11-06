@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -7,11 +7,8 @@
 namespace tests::unit::substring { class Fixture; }
 #endiv
 #divert <hpp>
-#import cppunit.Test
-#import cppunit.test.Fixture
 #import tunitas.tarwater.substring.Object
-class tests::unit::substring::Fixture : public cppunit::test::Fixture {
-public:
+struct tests::unit::substring::Fixture : public cppunit::test::Fixture {
   enum TAG { };
   using Subject = ::tunitas::tarwater::substring::Object<TAG>;
   auto test_abc() -> void;
@@ -100,17 +97,14 @@ auto tests::unit::substring::Fixture::test_assignment_move() -> void {
   subject = std::move(specimen);
   CPPUNIT_ASSERT(!subject.empty());
 }
-#import rigging.suite.Stream
-#import rigging.suite.call
-#import rigging.suite.add
 auto tests::unit::substring::Fixture::suite() -> cppunit::Test * {
-  using namespace ::rigging::suite;
+  using namespace rigging::suite;
   Stream series("substring");
   series << []() {
               Stream over("overload");
               over << call("abc", &Fixture::test_abc)
-                ;
-              return move(over);
+                   << END;
+              return over;
             }()
          << []() {
               Stream cons("constructor");
@@ -120,8 +114,8 @@ auto tests::unit::substring::Fixture::suite() -> cppunit::Test * {
                    << call("copy", &Fixture::test_constructor_copy)
                    << call("move_ancestor", &Fixture::test_constructor_move_ancestor)
                    << call("move", &Fixture::test_constructor_move)
-                ;
-              return move(cons);
+                   << END;
+              return cons;
             }()
          << []() {
               Stream assn("assignment");
@@ -130,10 +124,10 @@ auto tests::unit::substring::Fixture::suite() -> cppunit::Test * {
                    << call("copy", &Fixture::test_assignment_copy)
                    << call("move_ancestor", &Fixture::test_assignment_move_ancestor)
                    << call("move", &Fixture::test_assignment_move)
-                ;
-              return move(assn);
+                   << END;
+              return assn;
             }()
-    ;
+         << END;
   return finalize(series);
 }
 #endiv

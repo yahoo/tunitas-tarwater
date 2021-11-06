@@ -1,0 +1,23 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
+#divert <fpp>
+#import tunitas.tarwater.service.Core
+#include <hpp/tunitas.tarwater.service.Core>
+namespace tunitas::tarwater::required {
+  //
+  // Each of the genres has a subengine.
+  // Ahem ... there is only one genre right now, and thus only one subengine.
+  //
+  // Whereas there is no existential quantification in the conscepts system...
+  // East to enumerate the allowed subengines.
+  //
+  // The complete type of STORAGE must be available.
+  //
+  template<typename STORAGE> concept Storage = (derived_from<STORAGE, service::Core> ||
+                                                // ... blah blah blah and more ...
+                                                false);
+}
+#endiv

@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -23,11 +23,11 @@ namespace app::exception {
 #import tunitas.exception.feature.Messaging
 #import std.exception
 #import std.string
-class app::exception::Quitting : public tunitas::app::exception::Aspect,
-                                 public tunitas::app::exception::feature::Quitting,
-                                 public tunitas::exception::feature::Messaging,
-                                 public std::exception {
-  struct ancestors {
+class app::exception::Quitting final : public tunitas::app::exception::Aspect,
+                                       public tunitas::app::exception::feature::Quitting,
+                                       public tunitas::exception::feature::Messaging,
+                                       public std::exception {
+  struct Ancestors {
     using Quitting = tunitas::app::exception::feature::Quitting;
     using Messaging = tunitas::exception::feature::Messaging;
     using Exception = std::exception;
@@ -35,33 +35,32 @@ class app::exception::Quitting : public tunitas::app::exception::Aspect,
 public:
   inline Quitting(std::string const &NAME, std::ostream &, sys::exits::Code);
   inline Quitting(std::string const &NAME, sys::exits::Code);
-  auto code() const noexcept -> sys::exits::Code final;
-  auto stream() const noexcept -> std::ostream & final;
-  auto what() const noexcept -> char const * final;
+  auto what() const noexcept -> char const * override;
+  auto stream() const noexcept -> std::ostream & override;
+  auto exit() const noexcept -> sys::exits::Code override;
+  [[deprecated("instead prefer Quitting::exit()")]] auto code() const noexcept -> sys::exits::Code override;
 };
 #endiv
 #divert <ipp>
 namespace app::exception {
   Quitting::Quitting(std::string const &NAME, std::ostream &o, sys::exits::Code c)
-    : ancestors::Quitting{o, c}
-    , ancestors::Messaging{NAME + ": quitting"}
+    : Ancestors::Quitting{o, c}
+    , Ancestors::Messaging{NAME + ": quitting"}
   { }
   Quitting::Quitting(std::string const &NAME, sys::exits::Code c)
-    : ancestors::Quitting{c}
-    , ancestors::Messaging{NAME + ": quitting"}
+    : Ancestors::Quitting{c}
+    , Ancestors::Messaging{NAME + ": quitting"}
   { }
 }
 #endiv
 #divert <cpp>
 namespace app::exception {
-  auto Quitting::code() const noexcept -> sys::exits::Code {
-    return ancestors::Quitting::code();
-  }
-  auto Quitting::stream() const noexcept -> std::ostream & {
-    return ancestors::Quitting::stream();
-  }
-  auto Quitting::what() const noexcept -> char const * {
-    return ancestors::Messaging::what();
-  }
+  auto Quitting::what() const noexcept -> char const *     { return Ancestors::Messaging::what(); }
+  auto Quitting::stream() const noexcept -> std::ostream & { return Ancestors::Quitting::stream(); }
+  auto Quitting::exit() const noexcept -> sys::exits::Code { return Ancestors::Quitting::exit(); }
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  auto Quitting::code() const noexcept -> sys::exits::Code { return Ancestors::Quitting::code(); }
+#pragma GCC diagnostic pop
 }
 #endiv

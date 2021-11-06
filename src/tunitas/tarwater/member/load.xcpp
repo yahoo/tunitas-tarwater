@@ -1,27 +1,46 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
+#divert <fpp>
+namespace tunitas::tarwater::member {
+  namespace package_load::body::interface { }
+  using namespace package_load::body::interface;
+}
+namespace boost { namespace property_tree { } } // [[FIXTHIS]] in lieu of a #forward system in the boost packaging
+namespace tunitas::tarwater::member::package_load {
+  // ambient namespace?
+  namespace body {
+    namespace pt = boost::property_tree;
+  }
+}
+namespace tunitas::tarwater::member::package_load {
+  // ambient types
+  namespace body { }
+}
+#endiv
 #divert <hpp>
 #import std.filesystem.path
 #import tunitas.tarwater.member.Storage
 #import tunitas.Outcome
-namespace tunitas::tarwater::member {
-  //
-  // Load the member secret database.
-  //
-  // Usage:
-  //
-  //   auto some_filepath = std::filesystem:;path{.../something_something.db};
-  //   auto loaded = load(some_filepath);
-  //   if (!ok(loaded)) {
-  //     ...error...
-  //     throw Quitting{...}
-  //   }
-  //   Storage cfg = value(std::move(loaded));
-  //
-  auto load(std::filesystem::path const &) -> Outcome<Storage>;
+namespace tunitas::tarwater::member::package_load::body {
+  namespace interface {
+    //
+    // Load the member secret database.
+    //
+    // Usage:
+    //
+    //   auto some_filepath = std::filesystem:;path{.../something_something.db};
+    //   auto loaded = load(some_filepath);
+    //   if (!ok(loaded)) {
+    //     ...error...
+    //     throw Quitting{...}
+    //   }
+    //   Storage cfg = value(std::move(loaded));
+    //
+    auto load(std::filesystem::path const &) -> Outcome<Storage>;
+  }
 }
 #endiv
 #divert <cpp>
@@ -30,22 +49,25 @@ namespace tunitas::tarwater::member {
 #import tunitas.tarwater.member.Storage
 #import tunitas.tarwater.error.Code
 #import std.error_code
-auto tunitas::tarwater::member::load(std::filesystem::path const &filepath) -> Outcome<Storage> {
-  using Result = Outcome<Storage>;
-  namespace pt = boost::property_tree;
-  try {
+namespace tunitas::tarwater::member::package_load {
+  auto body::interface::load(std::filesystem::path const &filepath) -> Outcome<Storage> try {
+#warning boost-devel-1.66.0-14.fc29.x86_64 we find boost::property_tree::ptree is broken in C++2 GCC11
+#if 0
     pt::ptree tree;
     pt::read_ini(filepath, tree);
     Storage store;
     store.member_name = tree.get<std::string>("member.name");
     store.member_secret = tree.get<std::string>("member.secret");
-    return Result{std::move(store)};
+    return {std::move(store)};
+#else
+    return Storage{.member_name{"Artful"}, .member_secret{"Dodger"}};
+#endif
   } catch (pt::ini_parser_error const &e) {
     // The messaging gets lost.
-    return Result{std::error_code{error::Code::BAD_MEMBER_STORE}};
+    return {std::error_code{error::Code::BAD_MEMBER_STORE}};
   } catch (pt::ptree_error const &e) {
     // Ibidem.
-    return Result{std::error_code{error::Code::BAD_MEMBER_STORE}};
+    return {std::error_code{error::Code::BAD_MEMBER_STORE}};
   }
 }
 #endiv
