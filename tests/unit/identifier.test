@@ -2,4 +2,4 @@
 __topdir="${0%/*}/../.."
 export PATH="${__topdir?}/check/bin:${__topdir?}/bin:$PATH"
 # NOT .../identifier (that is a different test)
-unit /$(basename "$0" .test)
+unit /unit/$(basename "$0" .test)

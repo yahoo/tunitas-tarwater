@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -7,10 +7,7 @@
 namespace tests::unit::cookie { class Fixture; }
 #endiv
 #divert <hpp>
-#import cppunit.Test
-#import cppunit.test.Fixture
-class tests::unit::cookie::Fixture : public cppunit::test::Fixture {
-public:
+struct tests::unit::cookie::Fixture : public cppunit::test::Fixture {
   auto test_JSON() -> void;
   auto test_BASE64() -> void;
   auto test_URLSAFE() -> void;
@@ -39,24 +36,21 @@ auto tests::unit::cookie::Fixture::test_URLSAFE() -> void {
 #import tests.unit.cookie.Object
 #import tests.unit.cookie.Encode
 #import tests.unit.cookie.Decode
-#import rigging.suite.Stream
-#import rigging.suite.call
-#import rigging.suite.add
 auto tests::unit::cookie::Fixture::suite() -> cppunit::Test * {
-  using namespace ::rigging::suite;
+  using namespace rigging::suite;
   Stream series("cookie");
   series << []() {
               Stream str("String");
               str << call("JSON", &Fixture::test_JSON)
                   << call("BASE64", &Fixture::test_BASE64)
                   << call("URLSAFE", &Fixture::test_URLSAFE)
-                ;
-              return move(str);
+                  << END;
+              return str;
             }()
          << add<Object>()
 	 << add<Decode>()
 	 << add<Encode>()
-    ;
+         << END;
   return finalize(series);
 }
 #endiv

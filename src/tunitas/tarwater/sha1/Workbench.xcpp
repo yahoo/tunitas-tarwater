@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -52,8 +52,8 @@ public:
   //   ~~~^~~~~~~~~~
   //
   template<required::Character_Array_Zero TYPE> inline auto operator<<(TYPE const *) -> Workbench &;
-  template<required::dope::Element TYPE> inline auto operator<<(TYPE const &) -> Workbench & requires !std::is_pointer<TYPE>::value && !std::is_array<TYPE>::value;
-  template<required::dope::Element TYPE, std::size_t N> inline auto operator<<(TYPE const (&)[N]) -> Workbench & requires !std::is_same<TYPE, char>::value;
+  template<required::dope::Element TYPE> inline auto operator<<(TYPE const &) -> Workbench & requires (!std::is_pointer<TYPE>::value && !std::is_array<TYPE>::value);
+  template<required::dope::Element TYPE, std::size_t N> inline auto operator<<(TYPE const (&)[N]) -> Workbench & requires (!std::is_same<TYPE, char>::value);
   //
   // These are are unambiguous
   template<required::container::Contiguous TYPE> inline auto operator<<(TYPE const &) -> Workbench &;
@@ -102,7 +102,7 @@ namespace tunitas::tarwater::sha1 {
     return *this;
   }
   template<required::dope::Element TYPE> auto Workbench::operator<<(TYPE const &value) -> Workbench &
-    requires !std::is_pointer<TYPE>::value && !std::is_array<TYPE>::value { 
+    requires (!std::is_pointer<TYPE>::value && !std::is_array<TYPE>::value) { 
     state.Update(reinterpret_cast<cryptopp::byte const *>(&value), sizeof (value));
     return *this;
   }
@@ -117,7 +117,7 @@ namespace tunitas::tarwater::sha1 {
     }
     return *this;
   }
-  template<required::dope::Element TYPE, std::size_t N> auto Workbench::operator<<(TYPE const (&value)[N]) -> Workbench & requires !std::is_same<TYPE, char>::value {
+  template<required::dope::Element TYPE, std::size_t N> auto Workbench::operator<<(TYPE const (&value)[N]) -> Workbench & requires (!std::is_same<TYPE, char>::value) {
     state.Update(reinterpret_cast<cryptopp::byte const *>(&value[0]), N * sizeof (value));
     return *this;
   }

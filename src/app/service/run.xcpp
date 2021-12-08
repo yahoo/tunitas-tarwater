@@ -1,67 +1,127 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
+#divert <fpp>
+namespace app::service {
+  namespace package_run::body::interface { }
+  using namespace package_run::body::interface;
+}
+#import cli.exits.constants
+#import langu.age
+#import sys.posix
+#import tunitas.tarwater.member
+#import tunitas.tarwater.service
+#import tunitas.tarwater.resource.Sync
+namespace app::service::package_run {
+  // (no) ambient namespaces?
+  namespace body {
+    using namespace langu::age;
+    using namespace cli::exits::constants;
+    using namespace sys::posix;
+    namespace member = tunitas::tarwater::member;
+    namespace service = tunitas::tarwater::service;
+    namespace resource = tunitas::tarwater::resource;
+  }
+}
+#import microhttpd.feature.Switch
+#import microhttpd.Service
+#import tunitas.tarwater.member.Storage
+#import tunitas.tarwater.service.Core
+#import tunitas.application.Pidfile
+#import sys.posix.SIG
+namespace app::service::package_run {
+  // any? ambient types (for the interface)?
+  namespace body {
+    using microhttpd::feature::Switch;
+    using Secrets = member::Storage;
+    using Engine = service::Core;
+    using Service = microhttpd::Service;
+    using tunitas::application::Pidfile;
+    using sys::posix::SIG;
+  }
+}
+#endiv
 #divert <hpp>
 #import app.service.Configuration
-namespace app::service {
-  //
-  // run - do that thing
-  //
-  // Does return
-  //   FOREGROUND - returns at the end of program
-  //   BACKGROUND - returns because the server is in the background
-  //
-  // Usage:
-  //
-  //   try {
-  //     Configuration cfg{...};
-  //     run(cfg);
-  //   } catch (std::exception const &) {
-  //     ...report the problem...
-  //   }
-  //
-  auto run(Configuration const &) -> void;
+namespace app::service::package_run::body {
+  namespace interface {
+    //
+    // run - do that thing
+    //
+    // Can return, when the service is exhausted.
+    //   FOREGROUND - returns at the end of program
+    //   BACKGROUND - returns because the server is in the background
+    //
+    // Usage:
+    //
+    //   try {
+    //     Configuration cfg{...};
+    //     run(cfg);
+    //   } catch (std::exception const &) {
+    //     ...report the problem...
+    //   }
+    //
+    auto run(Configuration const &) -> void;
+  }
+  auto get_secrets(Configuration const &) -> Secrets;
+  auto get_service(Configuration const &) -> Service;
+  auto drop_privileges(Configuration const &) -> void;
+  auto write_pidfile(Configuration const &) -> void;
+  auto load_service([[inout]] Service &, [[inout]] Engine &) -> void;
+  auto fly_service(Configuration const &, [[inout]] Service &) -> void;
 }
 #endiv
 #divert <cpp>
 #import app.exception.Quitting
 #import app.service.constants
 #import app.service.defaults
-#import app.service.drop
-#import autotools.autoconf.Config.tunitas.tarwater.CONFIG
-#import getpid
-#import httpserver.service.Create // module-httpserver >= 0.5.0
-#import httpserver.Service
+#import langu.age.q
+#import microhttpd.ip.format
+#import microhttpd.sys.drop_privileges
+#import microhttpd.Service
+#import microhttpd.service.Specification
 #import std.boolalpha
 #import std.cout
-#import std.move
+#import std.cerr
+#import std.exception
+#import tunitas.application.exception.Aspect
 #import tunitas.tarwater.member.load
-#import tunitas.tarwater.member.Storage
-#import tunitas.tarwater.service.Core
-#import tunitas.tarwater.endpoint.Sync
-#import want.sys.posix.daemon
-auto app::service::run(Configuration const &cfg) -> void {
-  namespace sys = want::sys;
-  httpserver::Service ws{[&cfg]() {
-    httpserver::service::Create specification;
-    using namespace constants::server;
-    specification.debug();
-    specification.use_ipv6().start_method(METHOD).max_threads(THREADS);
-    specification.port(cfg.service_port.value_or(defaults::SERVICE_PORT));
-    return specification;
-  }()};
-  if (cfg.emit_pid) {
-    std::cout << getpid() << std::flush;
+#import tunitas.tarwater.resource.Sync
+#import sys.posix.daemon
+#import sys.posix.signal
+#import sys.posix.SIG
+namespace app::service::package_run {
+  auto body::interface::run(Configuration const &cfg) -> void {
+    // https://blog.erratasec.com/2018/10/tcpip-sockets-and-sigpipe.html (tl;dr discursive; the essay is more about how smart the authors are; they are "above this")
+    signal(SIG::PIPE, SIG::IGNORE); // not checking the return code ... hope it worked
+    //
+    auto service = get_service(cfg);
+    auto secrets = get_secrets(cfg);
+    auto engine = Engine{secrets};
+    drop_privileges(cfg);
+    write_pidfile(cfg);
+    load_service(service, engine);
+    fly_service(cfg, service);
   }
-  if (cfg.drop_privileges) {
-    drop(cfg);
+  auto body::get_service(Configuration const &cfg) -> Service {
+    auto specification = microhttpd::service::Specification{};
+    auto with_port = cfg.service_port.value_or(defaults::SERVICE_PORT);
+    debug(cfg) << "port=" << microhttpd::ip::format(with_port) << '\n';
+    specification.set_debug(Switch::ON);
+    specification.set_use_ipv4(Switch::ON).set_use_ipv6(Switch::ON); // this is already the default
+#if 0
+    specification.set_concurrency(METHOD);
+    // WATCHOUT - thread-per-connection and max-threads conflict and the server will be unstartable
+    // specification.set_max_threads(THREADS);
+#endif
+    specification.set_regex_checking(Switch::ON);
+    specification.set_port(with_port);
+    return Service{move(specification)};
   }
-  using namespace tunitas::tarwater;
-  auto store = [&cfg]() -> member::Storage {
-    using ac = autotools::autoconf::Config<CONFIG>;
-    auto const member_storage_filepath = cfg.member_storage.value_or(ac::pkgconfdir(), defaults::MEMBER_STORAGE);
+  auto body::get_secrets(Configuration const &cfg) -> Secrets {
+    auto const member_storage_filepath = cfg.member_storage.value_or(defaults::MEMBER_STORAGE_FILEPATH);
     auto loaded = member::load(member_storage_filepath);
     if (!ok(loaded)) {
       auto &error{::options::error(cfg)};
@@ -70,26 +130,82 @@ auto app::service::run(Configuration const &cfg) -> void {
 	    << " because " << error_code(loaded).message() << '\n';
       throw exception::Quitting{cfg.NAME, sys::exits::CONFIG};
     }
-    return value(std::move(loaded));
-  }();
-  //
-  Core core{store};
-  auto const FAMILY_SENSE = false;
-  endpoint::Sync sync{core};
-  ws.register_resource("/sync", &sync, FAMILY_SENSE);   // "our" standard name (same as theirs)
-  ws.register_resource("/userid", &sync, FAMILY_SENSE); // "their" standard name
-  // There is no 'quit' method.  The service runs forever
-  auto foreground_mode = cfg.foreground_mode.value_or(defaults::FOREGROUND_MODE);
-  debug(cfg) << "foreground mode = " << std::boolalpha << foreground_mode << '\n';
-  if (!foreground_mode) {
-    using namespace want::sys::posix;
-    auto ized = daemon(Chdir::YES, Close::YES);
-    if (!ok(ized)) {
-      ::options::error(cfg) << "could not daemonize because " << error_code(ized).message() << '\n';
-      throw exception::Quitting{cfg.NAME, sys::exits::UNAVAILABLE};
+    return value(move(loaded));
+  }
+  auto body::drop_privileges(Configuration const &cfg) -> void {
+    if (cfg.drop_privileges.value_or(defaults::DROP_PRIVILEGES)) {
+#warning [[FIXTHIS]] when implemented, convert to the use of the two-argument microhttpd::sys::drop privileges(user, group)
+      auto const UNIMPLEMENTED_TWO_ARGUMENT_DROP_PRIVILEGES_USER_GROUP = true;
+      auto daemon_user = cfg.unprivileged_user.value_or(defaults::UNPRIVILEGED_USER);
+      auto daemon_group = cfg.unprivileged_group.value_or(defaults::UNPRIVILEGED_GROUP);
+      auto dropped = [&cfg, daemon_user, daemon_group]{
+                       using microhttpd::sys::drop_privileges;  // NOT using tunitas::application::drop(...) which does basically the same thing, sortof.
+                       if (cfg.unprivileged_group) {
+                         if (UNIMPLEMENTED_TWO_ARGUMENT_DROP_PRIVILEGES_USER_GROUP) {
+                           warning(cfg) << "the daemon group will be ignored  [[FIXTHAT]] in --daemon-group=" << q(*cfg.unprivileged_group) << '\n';
+                           notice(cfg) << "only daemon user concept is implemented\n";
+                           notice(cfg) << "acting as if only --daemon-user=" << q(daemon_user) << '\n';
+                         }
+                         return drop_privileges(daemon_user /*daemon_group*/); // [[FIXTHIS]] ... when available call drop_privileges(daemon_user, daemon_group);
+                       } else {
+                         return drop_privileges(daemon_user);
+                       }
+                     }();
+      if (fail(dropped)) {
+        if (!cfg.unprivileged_group || UNIMPLEMENTED_TWO_ARGUMENT_DROP_PRIVILEGES_USER_GROUP) {
+          error(cfg) << "could not drop privileges to " << q(daemon_user) << '\n';
+        } else {
+          error(cfg) << "could not drop privileges to " << q(daemon_user) << '.' << q(daemon_group) << '\n';
+        }
+        throw exception::Quitting{cfg.NAME, FAIL};
+      }
     }
   }
-
-  ws.start(constants::server::BLOCKING);
+  auto body::write_pidfile(Configuration const &cfg) -> void try {
+    Pidfile pidfile{cfg.pid_filepath, cfg.emit_pid.value_or(defaults::EMIT_PID)};
+    pidfile.manual();
+    auto foreground_mode = cfg.foreground_mode.value_or(defaults::FOREGROUND_MODE);
+    debug(cfg) << "foreground mode = " << std::boolalpha << foreground_mode << '\n';
+    if (!foreground_mode) {
+      auto ized = daemon(CHDIR, CLOSE);
+      if (!ok(ized)) {
+        error(cfg) << "could not daemonize because " << error_code(ized).message() << '\n';
+        throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
+      }
+    }
+    pidfile.emit();
+    pidfile.close();
+  } catch (tunitas::application::exception::Aspect const &e) {
+    throw;
+  } catch (std::exception const &e) {
+    error(cfg) << "failed to write the pid file " << cfg.pid_filepath.value_or("stderr") << " because " << e.what() << '\n';
+    throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
+  }
+  auto body::load_service(Service &service, Engine &engine) -> void {
+    auto r10n = resource::Sync::registration(engine);
+    auto also = r10n.destination;
+    service.enregister(move(r10n));
+    service.enregister({resource::Sync::locator_alternate(), move(also)});
+  }
+  auto body::fly_service(Configuration const &cfg, Service &service) -> void {
+    // There is no 'quit' method.  The service runs forever.
+    // To stop it, you have to kill it, e.g., systemctl stop montara
+    auto complain = [&cfg](microhttpd::Success result, microhttpd::string::Sequencez verb) {
+                      auto ec = error_code(result);
+                      error(cfg) << "could not " << verb << " the service because " << ec.message() << '\n';
+                      notice(cfg) << "this unexpected, the error code will only provide a rudimentary explanation\n"; // good luck.
+                      throw exception::Quitting{cfg.NAME, FAIL};
+                    };
+    if (auto launched = service.launch(service.prepare()); !good(launched)) {
+      return complain(launched, "launch");
+    }
+    debug(cfg) << "running...\n";
+    service.run();
+    debug(cfg) << "waiting...\n";
+    service.wait();
+    debug(cfg) << "stopping...\n";
+    service.stop();
+    // If the wait returns then it means that the server is gracefully quitting..  Go with it.
+  }
 }
 #endiv

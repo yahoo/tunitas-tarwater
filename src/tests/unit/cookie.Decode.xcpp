@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -7,10 +7,7 @@
 namespace tests::unit::cookie { class Decode; }
 #endiv
 #divert <hpp>
-#import cppunit.Test
-#import cppunit.test.Fixture
-class tests::unit::cookie::Decode : public cppunit::test::Fixture {
-public:
+struct tests::unit::cookie::Decode : public cppunit::test::Fixture {
   auto test_good_string_u2j() -> void;
   auto test_good_string_b2j() -> void;
   auto test_good_string_j2j() -> void;
@@ -114,11 +111,8 @@ auto tests::unit::cookie::Decode::test_bad_outcome_j2j() -> void {
   auto const decoded = decode(original);
   CPPUNIT_ASSERT(!ok(decoded));
 }
-#import rigging.suite.Stream
-#import rigging.suite.call
-#import rigging.suite.add
 auto tests::unit::cookie::Decode::suite() -> cppunit::Test * {
-  using namespace ::rigging::suite;
+  using namespace rigging::suite;
   Stream series("decode");
   series << []() {
               Stream good{"good"};
@@ -127,19 +121,19 @@ auto tests::unit::cookie::Decode::suite() -> cppunit::Test * {
                         str << call("JSON", &Decode::test_good_string_j2j)
                             << call("BASE64", &Decode::test_good_string_b2j)
                             << call("URLSAFE", &Decode::test_good_string_j2j)
-                          ;
-                        return move(str);
+                            << END;
+                        return str;
                       }()
                    << []() {
                         Stream out{"Outcome"};
                         out << call("JSON", &Decode::test_good_outcome_j2j)
                             << call("BASE64", &Decode::test_good_outcome_b2j)
                             << call("URLSAFE", &Decode::test_good_outcome_j2j)
-                          ;
-                        return move(out);
+                            << END;
+                        return out;
                       }()
-                ;
-              return move(good);
+                   << END;
+              return good;
             }()
          << []() {
               Stream bad{"bad"};
@@ -149,13 +143,13 @@ auto tests::unit::cookie::Decode::suite() -> cppunit::Test * {
                        out << call("JSON", &Decode::test_bad_outcome_j2j)
                            << call("BASE64", &Decode::test_bad_outcome_b2j)
                            << call("URLSAFE", &Decode::test_bad_outcome_u2j)
-                         ;
-                       return move(out);
+                           << END;
+                       return out;
                      }()
-                ;
-              return move(bad);
+                  << END;
+              return bad;
             }()
-    ;
+         << END;
   return finalize(series);
 }
 #endiv

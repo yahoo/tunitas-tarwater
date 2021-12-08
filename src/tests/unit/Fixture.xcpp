@@ -1,0 +1,51 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
+#divert <fpp>
+namespace tests::unit { struct Fixture; }
+#endiv
+#divert <hpp>
+struct tests::unit::Fixture : public cppunit::test::Fixture {
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import tests.unit.app.Fixture
+#import tests.unit.cookie.Fixture
+#import tests.unit.endpoint.Fixture
+#import tests.unit.error.Fixture
+#import tests.unit.exception.Fixture
+#import tests.unit.identifier.Fixture
+#import tests.unit.member.Fixture
+#import tests.unit.redirect.Fixture
+#import tests.unit.service.Fixture
+#import tests.unit.sha1.Fixture
+#import tests.unit.substring.Fixture
+#import tests.unit.tarwater.Fixture
+#import tests.unit.time.Fixture
+#import tests.unit.url.Fixture
+#import tests.unit.want.Fixture
+auto tests::unit::Fixture::suite() -> cppunit::Test * {
+  using namespace rigging::suite;
+  auto series = Stream{"unit"};
+  series << add<app::Fixture>()
+	 << add<cookie::Fixture>()
+	 << add<endpoint::Fixture>()
+	 << add<error::Fixture>()
+	 << add<exception::Fixture>()
+	 << add<identifier::Fixture>()
+	 << add<member::Fixture>()
+	 << add<redirect::Fixture>()
+	 << add<service::Fixture>()
+	 << add<sha1::Fixture>()
+	 << add<substring::Fixture>()
+	 << add<tarwater::Fixture>()
+	 << add<time::Fixture>()
+	 << add<url::Fixture>()
+	 << add<want::Fixture>()
+	 << END;
+  return finalize(series);
+}
+#endiv

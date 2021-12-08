@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -18,9 +18,9 @@ namespace tunitas::tarwater::cookie {
     //
     // The concept of a cookie (string) Tag.
     //
-    template<typename TAG> concept bool Tag = (std::is_same<TAG, JSON>::value ||
-					       std::is_same<TAG, BASE64>::value ||
-					       std::is_same<TAG, URLSAFE>::value);
+    template<typename TAG> concept Tag = (std::is_same<TAG, JSON>::value ||
+                                          std::is_same<TAG, BASE64>::value ||
+                                          std::is_same<TAG, URLSAFE>::value);
   }
 }
 #endiv

@@ -1,5 +1,5 @@
 # This is a GNU -*- Makefile -*- fragment that is included by Automake
-# Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+# Copyright Yahoo Inc, 2021.
 # Licensed under the terms of the Apache-2.0 license.
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -17,14 +17,16 @@ default: all
 # These match with TF_WITH_MODULE in configure.ac
 DEVELOPMENT_AREAS = \
   $(module_crypto_prefix) \
-  $(module_httpserver_prefix) \
+  $(module_ip_prefix) \
   $(module_json_prefix) \
+  $(module_langu_prefix) \
   $(module_nonstd_prefix) \
   $(module_options_prefix) \
   $(module_posix_prefix) \
   $(module_std_prefix) \
   $(module_string_prefix) \
   $(module_sys_prefix) \
+  $(microhttpd___prefix) \
   $(tunitas_basics_prefix) \
   $(end)
 TESTING_AREAS = \
@@ -34,7 +36,6 @@ TESTING_AREAS = \
 INSTALLATION_AREAS = \
   $(nonstd_cppunit_prefix) \
   $(nonstd_gcc_prefix) \
-  $(nonstd_libhttpserver_prefix) \
   $(std_scold_prefix) \
   $(std_tunitas_prefix) \
   $(end)
@@ -123,10 +124,11 @@ Makefile_COMPILER_CFLAGS_SET   = -Wall @CFLAGS_gcc@   @CFLAGS_gdb@
 Makefile_COMPILER_CXXFLAGS_SET = -Wall @CXXFLAGS_gcc@ @CXXFLAGS_gdb@
 Makefile_COMPILER_LDFLAGS_SET  = -Wall @LDFLAGS_gcc@  @LDFLAGS_gdb@
 
-Makefile_nonstd_PACKAGE_CPPFLAGS_SET = @nonstd_libhttpserver_CPPFLAGS@
-Makefile_nonstd_PACKAGE_CFLAGS_SET   = @nonstd_libhttpserver_CFLAGS@
-Makefile_nonstd_PACKAGE_CXXFLAGS_SET = @nonstd_libhttpserver_CXXFLAGS@
-Makefile_nonstd_PACKAGE_LDFLAGS_SET  = @nonstd_libhttpserver_LDFLAGS@
+# configure.ac: TF_WITH_NONSTD([something-something])
+Makefile_nonstd_PACKAGE_CPPFLAGS_SET = 
+Makefile_nonstd_PACKAGE_CFLAGS_SET   = 
+Makefile_nonstd_PACKAGE_CXXFLAGS_SET = 
+Makefile_nonstd_PACKAGE_LDFLAGS_SET  = 
 
 Makefile_PACKAGE_CPPFLAGS_SET = 
 Makefile_PACKAGE_CFLAGS_SET   = 

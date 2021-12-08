@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -28,10 +28,10 @@ namespace app::service::exception {
 #import std.exception
 #import std.string
 #import sys.exits.constants
-class app::service::exception::Usage : public tunitas::app::exception::Aspect,
-                                       public tunitas::app::exception::feature::Usage,
-                                       public tunitas::exception::feature::Messaging,
-                                       public std::exception {
+class app::service::exception::Usage final : public tunitas::app::exception::Aspect,
+                                             public tunitas::app::exception::feature::Usage,
+                                             public tunitas::exception::feature::Messaging,
+                                             public std::exception {
   struct Ancestors {
     using Aspect = tunitas::app::exception::Aspect;
     using Usage = tunitas::app::exception::feature::Usage;
@@ -40,10 +40,10 @@ class app::service::exception::Usage : public tunitas::app::exception::Aspect,
   };
 public:
   inline explicit Usage(std::string name, sys::exits::Code = sys::exits::OK);
-  auto what() const noexcept -> char const * override final;
-  auto stream() const noexcept -> std::ostream & override final;
-  auto code() const noexcept -> sys::exits::Code override final;
-  auto exit() const noexcept -> sys::exits::Code override final;
+  auto what() const noexcept -> char const * override;
+  auto stream() const noexcept -> std::ostream & override;
+  auto exit() const noexcept -> sys::exits::Code override;
+  [[deprecated("instead prefer Usage::exit()")]] auto code() const noexcept -> sys::exits::Code override;
 protected:
   static auto format(std::string const &name) -> std::string;
 };
@@ -56,16 +56,17 @@ app::service::exception::Usage::Usage(std::string name, sys::exits::Code code)
 #endiv
 #divert <cpp>
 namespace app::service::exception {
-  auto Usage::what() const noexcept -> char const * { return Ancestors::Messaging::what(); }
+  auto Usage::what() const noexcept -> char const *     { return Ancestors::Messaging::what(); }
   auto Usage::stream() const noexcept -> std::ostream & { return Ancestors::Usage::stream(); }
+  auto Usage::exit() const noexcept -> sys::exits::Code { return Ancestors::Usage::exit(); }
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   auto Usage::code() const noexcept -> sys::exits::Code { return Ancestors::Usage::code(); }
-  auto Usage::exit() const noexcept -> sys::exits::Code { return Ancestors::Usage::code(); }
+#pragma GCC diagnostic pop
 }
 #import std.ostringstream
 #import app.service.defaults
-#import autotools.autoconf.Config.tunitas.tarwater.CONFIG
 auto app::service::exception::Usage::format(std::string const &NAME) -> std::string {
-  using ac = autotools::autoconf::Config<tunitas::tarwater::CONFIG>;
   std::ostringstream buf;
   auto const is_default = [](bool which) { return which ? "yes" : "no"; };
   buf << "usage: " << NAME << " [...options...]\n"
@@ -83,7 +84,7 @@ auto app::service::exception::Usage::format(std::string const &NAME) -> std::str
       << "--user=NAME                              the unprivileged user\n"
       << "  alternate: --unprivileged-user=NAME    default " << defaults::UNPRIVILEGED_USER << '\n'
       << "--memberstorage=FILENAME                 the location of the member secret databsae\n"
-      << "  alternate: --member-storage=FILENAME   default " << ac::pkgconfdir() / defaults::MEMBER_STORAGE << '\n'
+      << "  alternate: --member-storage=FILENAME   default " << defaults::MEMBER_STORAGE_FILEPATH << '\n'
       << '\n'
       << "General Options:\n"
       << "--usage, --help, -h                      emit this message, and exit\n"
