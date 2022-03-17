@@ -5,15 +5,15 @@
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
 #divert <fpp>
 namespace app::service {
-  namespace package_run::body::interface { }
-  using namespace package_run::body::interface;
+  namespace package_run::body::exported { }
+  using namespace package_run::body::exported;
 }
 #import cli.exits.constants
 #import langu.age
 #import sys.posix
 #import tunitas.tarwater.member
 #import tunitas.tarwater.service
-#import tunitas.tarwater.resource.Sync
+#import tunitas.tarwater.resource
 namespace app::service::package_run {
   // (no) ambient namespaces?
   namespace body {
@@ -32,7 +32,7 @@ namespace app::service::package_run {
 #import tunitas.application.Pidfile
 #import sys.posix.SIG
 namespace app::service::package_run {
-  // any? ambient types (for the interface)?
+  // any? ambient types (for the exported)?
   namespace body {
     using microhttpd::feature::Switch;
     using Secrets = member::Storage;
@@ -46,7 +46,7 @@ namespace app::service::package_run {
 #divert <hpp>
 #import app.service.Configuration
 namespace app::service::package_run::body {
-  namespace interface {
+  namespace exported {
     //
     // run - do that thing
     //
@@ -80,11 +80,8 @@ namespace app::service::package_run::body {
 #import langu.age.q
 #import microhttpd.ip.format
 #import microhttpd.sys.drop_privileges
-#import microhttpd.Service
 #import microhttpd.service.Specification
 #import std.boolalpha
-#import std.cout
-#import std.cerr
 #import std.exception
 #import tunitas.application.exception.Aspect
 #import tunitas.tarwater.member.load
@@ -93,7 +90,7 @@ namespace app::service::package_run::body {
 #import sys.posix.signal
 #import sys.posix.SIG
 namespace app::service::package_run {
-  auto body::interface::run(Configuration const &cfg) -> void {
+  auto body::exported::run(Configuration const &cfg) -> void {
     // https://blog.erratasec.com/2018/10/tcpip-sockets-and-sigpipe.html (tl;dr discursive; the essay is more about how smart the authors are; they are "above this")
     signal(SIG::PIPE, SIG::IGNORE); // not checking the return code ... hope it worked
     //
@@ -132,17 +129,24 @@ namespace app::service::package_run {
     }
     return value(move(loaded));
   }
+  auto body::load_service(Service &service, Engine &engine) -> void {
+    auto r10n = resource::Sync::registration(engine);
+    auto also = r10n.destination;
+    service.enregister(move(r10n));
+    service.enregister({resource::Sync::locator_alternate(), move(also)});
+  }
+  // [[FIXTHIS]] this is copy-pasta among montara, tarwater & rockaway
   auto body::drop_privileges(Configuration const &cfg) -> void {
     if (cfg.drop_privileges.value_or(defaults::DROP_PRIVILEGES)) {
 #warning [[FIXTHIS]] when implemented, convert to the use of the two-argument microhttpd::sys::drop privileges(user, group)
       auto const UNIMPLEMENTED_TWO_ARGUMENT_DROP_PRIVILEGES_USER_GROUP = true;
-      auto daemon_user = cfg.unprivileged_user.value_or(defaults::UNPRIVILEGED_USER);
-      auto daemon_group = cfg.unprivileged_group.value_or(defaults::UNPRIVILEGED_GROUP);
+      auto daemon_user = cfg.daemon_user.value_or(defaults::DAEMON_USER);
+      auto daemon_group = cfg.daemon_group.value_or(defaults::DAEMON_GROUP);
       auto dropped = [&cfg, daemon_user, daemon_group]{
                        using microhttpd::sys::drop_privileges;  // NOT using tunitas::application::drop(...) which does basically the same thing, sortof.
-                       if (cfg.unprivileged_group) {
+                       if (cfg.daemon_group) {
                          if (UNIMPLEMENTED_TWO_ARGUMENT_DROP_PRIVILEGES_USER_GROUP) {
-                           warning(cfg) << "the daemon group will be ignored  [[FIXTHAT]] in --daemon-group=" << q(*cfg.unprivileged_group) << '\n';
+                           warning(cfg) << "the daemon group will be ignored  [[FIXTHAT]] in --daemon-group=" << q(*cfg.daemon_group) << '\n';
                            notice(cfg) << "only daemon user concept is implemented\n";
                            notice(cfg) << "acting as if only --daemon-user=" << q(daemon_user) << '\n';
                          }
@@ -152,7 +156,7 @@ namespace app::service::package_run {
                        }
                      }();
       if (fail(dropped)) {
-        if (!cfg.unprivileged_group || UNIMPLEMENTED_TWO_ARGUMENT_DROP_PRIVILEGES_USER_GROUP) {
+        if (!cfg.daemon_group || UNIMPLEMENTED_TWO_ARGUMENT_DROP_PRIVILEGES_USER_GROUP) {
           error(cfg) << "could not drop privileges to " << q(daemon_user) << '\n';
         } else {
           error(cfg) << "could not drop privileges to " << q(daemon_user) << '.' << q(daemon_group) << '\n';
@@ -161,6 +165,7 @@ namespace app::service::package_run {
       }
     }
   }
+  // [[FIXTHIS]] this is copy-pasta among montara, tarwater & rockaway
   auto body::write_pidfile(Configuration const &cfg) -> void try {
     Pidfile pidfile{cfg.pid_filepath, cfg.emit_pid.value_or(defaults::EMIT_PID)};
     pidfile.manual();
@@ -181,15 +186,10 @@ namespace app::service::package_run {
     error(cfg) << "failed to write the pid file " << cfg.pid_filepath.value_or("stderr") << " because " << e.what() << '\n';
     throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
   }
-  auto body::load_service(Service &service, Engine &engine) -> void {
-    auto r10n = resource::Sync::registration(engine);
-    auto also = r10n.destination;
-    service.enregister(move(r10n));
-    service.enregister({resource::Sync::locator_alternate(), move(also)});
-  }
+  // [[FIXTHIS]] this is copy-pasta among montara, tarwater & rockaway
   auto body::fly_service(Configuration const &cfg, Service &service) -> void {
     // There is no 'quit' method.  The service runs forever.
-    // To stop it, you have to kill it, e.g., systemctl stop montara
+    // To stop it, you have to kill it, e.g., systemctl stop tarwater
     auto complain = [&cfg](microhttpd::Success result, microhttpd::string::Sequencez verb) {
                       auto ec = error_code(result);
                       error(cfg) << "could not " << verb << " the service because " << ec.message() << '\n';

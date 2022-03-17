@@ -91,7 +91,7 @@ AC_CHECK_LIB([jsoncpp], [main])
 
 m4_include([ac/with-pkgconfigdir.m4])
 TARWATER_WITH_PKGCONFIGDIR
-pkgconfdir='${prefix}/tunitas/tarwater'
+tunitas_tarwater_pkgconfdir='${prefix}/etc/tunitas/tarwater'
 AC_DEFINE_UNQUOTED([TUNITAS_TARWATER_PKGCONFDIR], ["$tunitas_tarwater_pkgconfdir"], [directory containing the configuration files, e.g. /etc/tunitas/tarwater])
 
 TF_FINALIZE

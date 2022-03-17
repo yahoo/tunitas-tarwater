@@ -54,7 +54,7 @@ namespace tunitas::tarwater::resource {
   Sync::Sync(service::Core &core) : Ancestors::Service{core} { resources::initialize_only_get(*this); }
   auto Sync::locator_primary() -> endpoint::Locator   { return endpoint::Locator{"/sync"}; }
   auto Sync::locator_alternate() -> endpoint::Locator { return endpoint::Locator{"/userid"}; }
-  template<required::Storage STORAGE> auto Sync::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Sync>("/sync"s, storage); }
+  template<required::Storage STORAGE> auto Sync::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Sync>(locator_primary(), storage); }
 }
 #endiv
 #divert <cpp>
@@ -93,7 +93,7 @@ auto tunitas::tarwater::resource::Sync::GET(Request const &request) -> Transport
             auto [set_cookie, identifier, status] = core.finalize_identifier(std::move(identified));
             url::formatting::Variables const variables{{"id", to_string(identifier)}, {"status", to_string(status)}};
             auto redirect = url::format(pattern, variables);
-            auto const &content_body = R"text(move the identity pairing over there where they will log the co-occurrence)text";
+            auto const &content_body = R"text(move the identity pairing over there where they will log the co-occurrence)text"s;
             auto const code = http::R302_FOUND;
             auto const &content_type = mime::TEXT_PLAIN;
             auto bob = microhttpd::render::Builder{};

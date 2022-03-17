@@ -4,9 +4,10 @@
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
 
-default:
 ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = no-define subdir-objects foreign
+default:
+include tests/Makefrag.am
 include @temerarious_flagship_datadir@/am/build.am
 
 # WATCHOUT - if you utter 'clean' then that becomes the clean rule; automake won't synthesize one
@@ -14,30 +15,28 @@ include @temerarious_flagship_datadir@/am/build.am
 clean-local:: clean-dependencies
 default: all
 
-# These match with TF_WITH_MODULE in configure.ac
+# These MUST match with TF_WITH_MODULE in configure.ac
 DEVELOPMENT_AREAS = \
+  $(module_cli_core_prefix) \
   $(module_crypto_prefix) \
-  $(module_ip_prefix) \
   $(module_json_prefix) \
   $(module_langu_prefix) \
   $(module_nonstd_prefix) \
-  $(module_options_prefix) \
-  $(module_posix_prefix) \
-  $(module_std_prefix) \
-  $(module_string_prefix) \
   $(module_sys_prefix) \
   $(microhttpd___prefix) \
   $(tunitas_basics_prefix) \
+  $(deprecated_DEVELOPMENT_AREAS) \
   $(end)
 TESTING_AREAS = \
-  $(module_cppunit_prefix) \
-  $(module_rigging_prefix) \
+  $(module_rigging_app_prefix) \
+  $(module_rigging_core_prefix) \
+  $(deprecated_TESTING_AREAS) \
   $(end)
 INSTALLATION_AREAS = \
-  $(nonstd_cppunit_prefix) \
   $(nonstd_gcc_prefix) \
   $(std_scold_prefix) \
   $(std_tunitas_prefix) \
+  $(deprecated_INSTALLATION_AREAS) \
   $(end)
 
 # There is no point in defining systemddir to follow $(prefix) because
@@ -48,81 +47,46 @@ systemd_system_DATA = systemd/tarwater.service
 
 bin_PROGRAMS = bin/tarwater-secret-dump bin/tarwater-secret-make
 sbin_PROGRAMS = sbin/tarwater-service
-lib_LTLIBRARIES = 
+lib_LTLIBRARIES = lib/libtunitas-tarwater.la
 noinst_LTLIBRARIES = \
-  lib/libautotools-autoconf.la \
-  lib/libtunitas-tarwater.la \
-  lib/libapp-service.la \
-  lib/libapp.la \
-  lib/libwant.la \
+  noinst/lib/libautotools-autoconf+tunitas-tarwater.la \
+  noinst/lib/libtunitas-tarwater.la \
+  noinst/lib/libapp-service.la \
+  noinst/lib/libapp-secret-dump.la \
+  noinst/lib/libapp-secret-make.la \
+  noinst/lib/libapp.la \
+  noinst/lib/libwant.la \
   $(end)
 check_PROGRAMS = check/bin/unit
 check_LTLIBRARIES = 
 
-$(bin_PROGRAMS) : $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
-$(sbin_PROGRAMS) : $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
-$(lib_LTLIBRARIES) : $(noinst_LTLIBRARIES)
-$(check_PROGRAMS) : $(bin_PROGRAMS) $(sbin_PROGRAMS)
-$(check_PROGRAMS) : $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
-$(check_PROGRAMS) : $(check_LTLIBRARIES)
-
-include src/app/Makefrag.am
-include src/app/secret/Makefrag.am
-include src/app/service/Makefrag.am
-include src/autotools/autoconf/Makefrag.am
-include src/tests/unit/Makefrag.am
-include src/tunitas/tarwater/Makefrag.am
-include src/want/Makefrag.am
-
-# NO NEED ---> MODULES = \
-# NO NEED --->   $(lib_libtunitas_tarwater_la_MODULES) \
-# NO NEED --->   $(lib_libwant_la_MODULES) \
-# NO NEED --->   $(bin_unit_MODULES) \
-# NO NEED --->   $(src_app_service_MODULES_SET) \
-# NO NEED --->   $(end)
-# NO NEED ---> $(if $(MODULES),$(__ok),$(error NO MODULES))
-# NO NEED ---> OBJECTS = \
-# NO NEED --->   $(lib_libtunitas_tarwater_la_OBJECTS) \
-# NO NEED --->   $(lib_libwant_la_OBJECTS) \
-# NO NEED --->   $(bin_unit_OBJECTS) \
-# NO NEED --->   $(src_app_service_OBJECTS) \
-# NO NEED --->   $(end)
-# NO NEED ---> $(if $(OBJECTS),$(__ok),$(error NO OBJECTS))
-# NO NEED ---> 
-#
-# DO NOT ---> All this does is make every object depend upon every module
-# DO NOT ---> so any change makes everything recompile. You don't want that.
-# DO NOT --->  
-# DO NOT ---> $(OBJECTS) : $(MODULES)
-
-include tests/unit/Makefrag.am
-include tests/service/Makefrag.am
-include tests/dump/Makefrag.am
-include tests/make/Makefrag.am
-TESTS = \
-  $(tests_unit_TESTS) \
-  $(tests_service_TESTS) \
-  $(tests_dump_TESTS) \
-  $(tests_make_TESTS) \
-  $(end)
-XFAIL_TESTS = \
-  $(tests_unit_XFAIL_TESTS) \
-  $(tests_service_XFAIL_TESTS) \
-  $(tests_dump_XFAIL_TESTS) \
-  $(tests_make_XFAIL_TESTS) \
-  $(end)
+include bin/tarwater-secret-dump.am
+include bin/tarwater-secret-make.am
+include check/bin/unit.am
+include lib/libtunitas-tarwater.am
+include noinst/lib/libapp.am
+include noinst/lib/libapp-secret-dump.am
+include noinst/lib/libapp-secret-make.am
+include noinst/lib/libapp-service.am
+include noinst/lib/libautotools-autoconf+tunitas-tarwater.am
+include noinst/lib/libtunitas-tarwater.am
+include noinst/lib/libwant.am
+include sbin/tarwater-service.am
 
 # --- Mostly boilerplate beyond here
 #
 # -Wall      ... the language isn't complete without it
 # -std=c++1y ... as close to C++14 and beyond as we can get
 # -std=c++1z ... as close to C++17 and beyond as we can get
+# -std=c++2a ... as close to C++20 and beyond as we can get
+# -std=c++2b ... as close to C++23 and beyond as we can get
+# -std=c++2c ... as close to C++26 and beyond as we can get
 # -ggdb      ... and recall that -ggdb and -O2 don't play well together
 
-Makefile_COMPILER_CPPFLAGS_SET =
-Makefile_COMPILER_CFLAGS_SET   = -Wall @CFLAGS_gcc@   @CFLAGS_gdb@
+Makefile_COMPILER_CPPFLAGS_SET =       @CPPFLAGS_gcc@ @CPPFLAGS_gdb@
+Makefile_COMPILER_CFLAGS_SET   = -Wall   @CFLAGS_gcc@   @CFLAGS_gdb@
 Makefile_COMPILER_CXXFLAGS_SET = -Wall @CXXFLAGS_gcc@ @CXXFLAGS_gdb@
-Makefile_COMPILER_LDFLAGS_SET  = -Wall @LDFLAGS_gcc@  @LDFLAGS_gdb@
+Makefile_COMPILER_LDFLAGS_SET  = -Wall  @LDFLAGS_gcc@  @LDFLAGS_gdb@
 
 # configure.ac: TF_WITH_NONSTD([something-something])
 Makefile_nonstd_PACKAGE_CPPFLAGS_SET = 
@@ -157,3 +121,19 @@ AM_CFLAGS   = $(PACKAGE_CFLAGS_SET)
 AM_CXXFLAGS = $(PACKAGE_CXXFLAGS_SET)
 AM_LDFLAGS  = $(PACKAGE_LDFLAGS_SET) $(V_LDFLAGS_avoid.VERBOSE_Veq$(V))
 AM_LIBTOOLFLAGS = $(V_LIBTOOLFLAGS_VERBOSE_Veq$(V))
+
+deprecated_DEVELOPMENT_AREAS = \
+  $(module_cli_prefix) \
+  $(module_ip_prefix) \
+  $(module_options_prefix) \
+  $(module_posix_prefix) \
+  $(module_std_prefix) \
+  $(module_string_prefix) \
+  $(end)
+deprecated_TESTING_AREAS = \
+  $(module_cppunit_prefix) \
+  $(module_rigging_prefix) \
+  $(end)
+deprecated_INSTALLATION_AREAS = \
+  $(nonstd_cppunit_prefix) \
+  $(end)

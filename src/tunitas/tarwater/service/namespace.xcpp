@@ -10,3 +10,19 @@ namespace tunitas::tarwater::service {
   using namespace tunitas::server::service;
 }
 #endiv
+#divert <cpp>
+// Of course, this is test code
+namespace {
+  namespace testate {
+    using namespace tunitas::tarwater::service;
+    struct Resourceful : public Resource {
+      auto otherwise(Request const &) -> Transport;
+    };
+    static_assert(sizeof (Resource));
+    static_assert(sizeof (Request));
+    static_assert(sizeof (Response));
+    static_assert(sizeof (Transport));
+    static_assert(sizeof (render::Builder));
+  }
+}
+#endiv

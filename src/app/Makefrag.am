@@ -3,22 +3,10 @@
 # Licensed under the terms of the Apache-2.0 license.
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
-
-lib_libapp_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libapp_la_SOURCES))
-lib_libapp_la_SOURCES = \
-  obj/src/app/namespace.cpp \
-  obj/src/app/exception/namespace.cpp \
-  obj/src/app/exception/Quitting.cpp \
-  obj/src/app/exception/Version.cpp \
-  $(end)
 #
-$(scold_cxxdir)/app/dependencies.mk: $(lib_libapp_la_SOURCES)
-$(lib_libapp_la_SOURCES) : obj/src/%.cpp : src/%.xcpp
-	$(TF_V_DIS) $(call TF_XCPP2CPP, $<)
-	$(TF_V_DONE) test -e $@
-$(scold_cxxdir)/app/dependencies.mk:
-	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)
-	$(TF_V_DONE) test -e $@
-include $(scold_cxxdir)/app/dependencies.mk
-clean-dependencies::
-	rm -f $(scold_cxxdir)/app/dependencies.mk
+app_SUBSOURCES = \
+  noinst/obj/src/app/namespace.cpp \
+  noinst/obj/src/app/exception/namespace.cpp \
+  noinst/obj/src/app/exception/Quitting.cpp \
+  noinst/obj/src/app/exception/Version.cpp \
+  $(end)

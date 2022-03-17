@@ -82,7 +82,8 @@ auto app::service::exception::Usage::format(std::string const &NAME) -> std::str
       << "--drop                                   drop privileges to the unprivileged user\n"
       << "  alternate: --drop-privileges           default " << is_default(defaults::DROP_PRIVILEGES) << '\n'
       << "--user=NAME                              the unprivileged user\n"
-      << "  alternate: --unprivileged-user=NAME    default " << defaults::UNPRIVILEGED_USER << '\n'
+      << "  alternate: --daemon-user=NAME          default " << defaults::DAEMON_USER << '\n'
+      << "  alternate: --unprivileged-user=NAME\n"
       << "--memberstorage=FILENAME                 the location of the member secret databsae\n"
       << "  alternate: --member-storage=FILENAME   default " << defaults::MEMBER_STORAGE_FILEPATH << '\n'
       << '\n'

@@ -4,9 +4,9 @@
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
 #
-tests_dump_XFAIL_TESTS = \
-  $(end)
-tests_dump_TESTS = \
+tests_dump_TESTS = $(tests_dump_XGOOD_TESTS) $(tests_dump_XFAIL_TESTS)
+tests_dump_XFAIL_TESTS = $(end)
+tests_dump_XGOOD_TESTS = \
   tests/dump/run.usages.test \
   tests/dump/option.V.test \
   tests/dump/option.d.test \
@@ -27,8 +27,6 @@ tests_dump_TESTS = \
   tests/dump/option.y.test \
   \
   tests/dump/run.01.test \
-  \
-  $(tests_dump_XFAIL_TESTS) \
   $(end)
 
 tests_dump_TESTS_DECLARED = $(tests_dump_TESTS)

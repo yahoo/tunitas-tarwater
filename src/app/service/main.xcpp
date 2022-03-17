@@ -3,18 +3,29 @@
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
-#divert <hpp>
-#import tunitas.app.options.Args
+#divert <fpp>
 namespace app::service {
+  namespace package_main {
+    namespace body::exported { }
+    namespace interface = body::exported;
+  }
+  using namespace package_main::interface;
+}
+#import tunitas.app.options.Args
+namespace app::service::package_main {
   using tunitas::app::options::Args;
-  auto main(Args) -> int;
+  namespace body { }
+}
+#endiv
+#divert <hpp>
+namespace app::service::package_main::body {
+  namespace exported {
+    auto main(Args) -> int;
+    inline auto main(int c, char *v[]) -> int { return main(Args(c, v)); }
+  }
 }
 #endiv
 #divert <cpp>
-auto main(int c, char *v[]) -> int {
-  return app::service::main(app::service::Args{(unsigned)c, v});
-}
-#import app // cascade the namespace from tunitas.app
 #import app.exception.Quitting
 #import app.service.Configuration
 #import app.service.defaults
@@ -26,28 +37,30 @@ auto main(int c, char *v[]) -> int {
 #import sys.exits.constants
 #import tunitas.app.Program
 #import tunitas.app.exception.Aspect
-auto app::service::main(Args args) -> int try {
-  Configuration cfg{Program{args.front()}};
-  options::Specification spec;
-  options::Parser pa{cfg, spec};
-  auto parsed = pa.parse(std::move(args));
-  if (!ok(parsed)) {
+namespace app::service::package_main {
+  auto interface::main(Args args) -> int try {
+    Configuration cfg{Program{args.front()}};
+    options::Specification spec;
+    options::Parser pa{cfg, spec};
+    auto parsed = pa.parse(std::move(args));
+    if (!ok(parsed)) {
 #warning  [[FIXTHIS]] return an error indication in the outcome << error_code(parsed).message() << '\n';
-    error(cfg) << "the command line contains errors\n";
-    throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
+      error(cfg) << "the command line contains errors\n";
+      throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
+    }
+    if (cfg.dry_run_mode) {
+      notice(cfg) << "nothing to do in dry-run mode\n";
+    } else {
+      // This will never return
+      run(cfg);
+    }
+    return sys::exits::OK;
+  } catch (exception::Aspect const &g) {
+    g.stream() << g.what() << '\n';
+    return g.code();
+  } catch (std::exception const &e) {
+    std::cerr << defaults::NAME << ": fatal, an unexpected error - " << e.what() << '\n';
+    return sys::exits::SOFTWARE;
   }
-  if (cfg.dry_run_mode) {
-    verbose(cfg) << "nothing to do in dry-run mode\n";
-  } else {
-    // This will never return
-    run(cfg);
-  }
-  return sys::exits::OK;
-} catch (exception::Aspect const &g) {
-  g.stream() << g.what() << '\n';
-  return g.code();
-} catch (std::exception const &e) {
-  std::cerr << defaults::NAME << ": fatal, an unexpected error - " << e.what() << '\n';
-  return sys::exits::SOFTWARE;
 }
 #endiv

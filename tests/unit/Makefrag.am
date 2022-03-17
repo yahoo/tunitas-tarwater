@@ -4,10 +4,11 @@
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
 #
+tests_unit_TESTS = $(tests_unit_XGOOD_TESTS) $(tests_unit_XFAIL_TESTS)
 tests_unit_XFAIL_TESTS = $(none)
 tests_unit_XPASS_TESTS = $(none)
 # These are ordered by complexity, but can be ordered by alpha
-tests_unit_TESTS = \
+tests_unit_XGOOD_TESTS = \
   tests/unit/list.test \
   \
   tests/unit/want.test \
@@ -26,5 +27,4 @@ tests_unit_TESTS = \
   \
   tests/unit/all.test \
   $(tests_unit_XPASS_TESTS) \
-  $(tests_unit_XFAIL_TESTS) \
   $(end)

@@ -5,8 +5,11 @@
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
 #divert <fpp>
 namespace tunitas::tarwater::member {
-  namespace package_load::body::interface { }
-  using namespace package_load::body::interface;
+  namespace package_load {
+    namespace body::exported { }
+    namespace interface = body::exported;
+  }
+  using namespace package_load::interface;
 }
 namespace boost { namespace property_tree { } } // [[FIXTHIS]] in lieu of a #forward system in the boost packaging
 namespace tunitas::tarwater::member::package_load {
@@ -25,7 +28,7 @@ namespace tunitas::tarwater::member::package_load {
 #import tunitas.tarwater.member.Storage
 #import tunitas.Outcome
 namespace tunitas::tarwater::member::package_load::body {
-  namespace interface {
+  namespace exported {
     //
     // Load the member secret database.
     //
@@ -50,7 +53,7 @@ namespace tunitas::tarwater::member::package_load::body {
 #import tunitas.tarwater.error.Code
 #import std.error_code
 namespace tunitas::tarwater::member::package_load {
-  auto body::interface::load(std::filesystem::path const &filepath) -> Outcome<Storage> try {
+  auto interface::load(std::filesystem::path const &filepath) -> Outcome<Storage> try {
 #warning boost-devel-1.66.0-14.fc29.x86_64 we find boost::property_tree::ptree is broken in C++2 GCC11
 #if 0
     pt::ptree tree;

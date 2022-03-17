@@ -117,9 +117,9 @@ auto app::service::options::Parser::parse(Args args) -> Result {
       cfg.drop_privileges = true;
       break;
     case oi::CHR_u:
-    case oi::UNPRIVILEGED_USER:
+    case oi::DAEMON_USER:
       cfg.drop_privileges = true;
-      cfg.unprivileged_user = tunitas::app::options::get_identifier<exception::Quitting>(cfg, step);
+      cfg.daemon_user = tunitas::app::options::get_identifier<exception::Quitting>(cfg, step);
       break;
     case oi::CHR_M:
     case oi::MEMBER_STORAGE:
