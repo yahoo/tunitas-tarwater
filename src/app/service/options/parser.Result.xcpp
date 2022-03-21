@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -28,7 +28,7 @@ namespace app::service::options::parser {
 #import tunitas.required.Iterator_Producing
 #import std.tuple
 class app::service::options::parser::Result : public std::tuple<bool, tunitas::app::words::Strings> {
-  using ancestor = std::tuple<bool, tunitas::app::words::Strings>;
+  using Ancestor = std::tuple<bool, tunitas::app::words::Strings>;
 public:
   using Value = tunitas::app::words::Strings;
   inline Result();
@@ -63,19 +63,19 @@ namespace app::service::options {
 #import std.move
 namespace app::service::options::parser {
   Result::Result()
-    : ancestor{true, Value{}}
+    : Ancestor{true, Value{}}
   { }
   Result::Result(bool success)
-    : ancestor{success, Value{}}
+    : Ancestor{success, Value{}}
   { }
   Result::Result(Value value)
-    : ancestor{true, std::move(value)}
+    : Ancestor{true, std::move(value)}
   { }
   Result::Result(bool success, Value value)
-    : ancestor{success, std::move(value)}
+    : Ancestor{success, std::move(value)}
   { }
   template<tunitas::required::Iterator_Producing<Result::Value::value_type> ITERATOR> Result::Result(bool success, ITERATOR start, ITERATOR finish)
-    : ancestor{success, Value{start, finish}}
+    : Ancestor{success, Value{start, finish}}
   { }
 }
 #endiv

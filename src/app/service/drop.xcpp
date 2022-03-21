@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -46,7 +46,7 @@ namespace app::service {
 auto app::service::drop(Configuration const &cfg) -> void {
   namespace sys = want::sys;
   debug(cfg) << "before uid=" << sys::posix::geteuid() << '\n';
-  auto user = cfg.unprivileged_user.value_or(defaults::UNPRIVILEGED_USER);
+  auto user = cfg.daemon_user.value_or(defaults::DAEMON_USER);
   sys::posix::Endent<::passwd> guard;
   auto got = sys::posix::getpwname(user);
   if (!ok(got)) {
@@ -55,7 +55,7 @@ auto app::service::drop(Configuration const &cfg) -> void {
   }
   auto uid = value(got)->pw_uid;
   if (0 == uid) {
-    error(cfg) << "the user " << user << " is not unprivileged\n";
+    error(cfg) << "the user " << user << " is not unprivileged (i.e. is still superuser)\n";
     throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
   }
   auto set = sys::posix::seteuid(uid);

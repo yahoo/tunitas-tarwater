@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -25,17 +25,17 @@ namespace app::service {
 #import std.optional
 #import std.filesystem.path
 class app::service::Optional_Pkgconfig_Filepath : public std::optional<std::filesystem::path> {
-  using ancestor = std::optional<std::filesystem::path>;
+  using Ancestor = std::optional<std::filesystem::path>;
 public:
   Optional_Pkgconfig_Filepath() = default;
-  using ancestor::optional;
-  using ancestor::value_or;
+  using Ancestor::optional;
+  using Ancestor::value_or;
   inline auto value_or(std::filesystem::path const &pkgconfigdir, std::string const &filename) const -> std::filesystem::path;
 };
 #endiv
 #divert <ipp>
 auto app::service::Optional_Pkgconfig_Filepath::value_or(std::filesystem::path const &pkgconfigdir, std::string const &filename) const -> std::filesystem::path {
-  ancestor const &self{*this};
+  Ancestor const &self{*this};
   if (self) {
     return *self;
   } else {

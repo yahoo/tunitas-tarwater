@@ -1,12 +1,12 @@
 # This is a -*- Makefile -*- which is processed by automake and included into the top-level Makefile.am
-# Copyright Yahoo Inc. 2021.
+# Copyright Yahoo Inc, 2021.
 # Licensed under the terms of the Apache-2.0 license.
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
 #
-tests_make_XFAIL_TESTS = \
-  $(end)
-tests_make_TESTS = \
+tests_make_TESTS = $(tests_make_XGOOD_TESTS) $(tests_make_XFAIL_TESTS)
+tests_make_XFAIL_TESTS = $(end)
+tests_make_XGOOD_TESTS = \
   tests/make/run.usages.test \
   tests/make/option.V.test \
   tests/make/option.d.test \
@@ -27,8 +27,6 @@ tests_make_TESTS = \
   tests/make/option.y.test \
   \
   tests/make/run.01.test \
-  \
-  $(tests_make_XFAIL_TESTS) \
   $(end)
 
 tests_make_TESTS_DECLARED = $(tests_make_TESTS)

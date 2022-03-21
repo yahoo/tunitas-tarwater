@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -11,14 +11,14 @@ namespace tunitas::tarwater::sha1::required::container {
   //
   // A continguous container (within sha1::Workbench) is a "dope vector" (of bytes).
   //
-  template<typename CONTAINER> concept bool Contiguous = requires(CONTAINER container) {
+  template<typename CONTAINER> concept Contiguous = requires(CONTAINER container) {
     // Only use the "new school" type scheme.
     typename traits::Dope<CONTAINER>::Data;
     typename traits::Dope<CONTAINER>::Value;
     typename traits::Dope<CONTAINER>::Size;
     requires dope::Element<typename traits::Dope<CONTAINER>::Value>;
-    { container.data() } -> typename traits::Dope<CONTAINER>::Data;
-    { container.size() } -> typename traits::Dope<CONTAINER>::Size;
+    { container.data() } -> convertible_to<typename traits::Dope<CONTAINER>::Data>;
+    { container.size() } -> convertible_to<typename traits::Dope<CONTAINER>::Size>;
   };
 }
 #endiv

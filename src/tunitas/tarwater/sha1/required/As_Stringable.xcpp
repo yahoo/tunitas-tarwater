@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -13,12 +13,12 @@ namespace tunitas::tarwater::sha1::required {
   // A type is "as stringable" if there is a to_string(...) converter for the type.
   // c.f. sha1::to_string(...)
   //
-  template<typename CONTAINER> concept bool As_Stringable = requires(CONTAINER container) {
+  template<typename CONTAINER> concept As_Stringable = requires(CONTAINER container) {
     // Look for an ADL-available version
-    { to_string(container) } -> std::string;
+    { to_string(container) } -> convertible_to<std::string>;
   } || requires(CONTAINER container) {
     // Look for the std-namespace version
-    { std::to_string(container) } -> std::string;
+    { std::to_string(container) } -> convertible_to<std::string>;
   };
 }
 #endiv

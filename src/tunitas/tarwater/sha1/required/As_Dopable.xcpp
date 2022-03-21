@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -11,6 +11,6 @@ namespace tunitas::tarwater::sha1::required {
   // A type is "as dopable" if it can fit into workbench::As_Dopable.
   // The types that can do that are the "dope vector" which are contiguous containers.
   //
-  template<typename CONTAINER> concept bool As_Dopable = container::Contiguous<CONTAINER>;
+  template<typename CONTAINER> concept As_Dopable = container::Contiguous<CONTAINER>;
 }
 #endiv

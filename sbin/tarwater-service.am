@@ -1,0 +1,23 @@
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright Yahoo Inc, 2022.
+# Licensed under the terms of the Apache-2.0 license.
+# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
+# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
+#
+sbin_tarwater_service = sbin/tarwater-service$(error REMOVE)
+sbin_tarwater_service_CPPFLAGS = $(PACKAGE_CPPFLAGS_SET)
+sbin_tarwater_service_CXXFLAGS = $(PACKAGE_CXXFLAGS_SET)
+sbin_tarwater_service_LDFLAGS = $(PACKAGE_LDFLAGS_SET)
+sbin_tarwater_service_LDADD = noinst/lib/libapp-service.la
+sbin_tarwater_service_SOURCES = noinst/obj/src/app/service/c.main.cpp
+$(sbin_tarwater_service_SOURCES) : disco_objdir=noinst/obj
+$(sbin_tarwater_service_SOURCES) : scold_objdir=$(disco_objdir)
+$(sbin_tarwater_service_SOURCES) : noinst/obj/src/%.cpp : src/%.xcpp
+	$(TF_V_DIS) $(call TF_XCPP2CPP, $<)
+	$(TF_V_DONE) test -e $@
+$(tf_noinst_mkdir)/tarwater-service.mk: $(sbin_tarwater_service_SOURCES)
+$(tf_noinst_mkdir)/tarwater-service.mk:
+	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)
+	$(TF_V_DONE) test -e $@
+include $(tf_noinst_mkdir)/tarwater-service.mk
+clean-dependencies:: ; rm -f $(tf_noinst_mkdir)/tarwater-service.mk

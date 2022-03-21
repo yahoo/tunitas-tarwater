@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -24,7 +24,7 @@ namespace tunitas::tarwater::exception {
 #import std.string
 #import std.runtime_error
 class tunitas::tarwater::exception::Configuration : public Generic, public std::runtime_error {
-  struct ancestors {
+  struct Ancestors {
     using Tunitas = Generic;
     using Exception = std::runtime_error;
   };
@@ -35,12 +35,12 @@ public:
 #endiv
 #divert <ipp>
 tunitas::tarwater::exception::Configuration::Configuration(std::string const &reason)
-  : ancestors::Tunitas{}
-  , ancestors::Exception{reason}
+  : Ancestors::Tunitas{}
+  , Ancestors::Exception{reason}
 { }
 #endiv
 #divert <cpp>
 auto tunitas::tarwater::exception::Configuration::what() const noexcept -> char const * {
-  return ancestors::Exception::what();
+  return Ancestors::Exception::what();
 }
 #endiv

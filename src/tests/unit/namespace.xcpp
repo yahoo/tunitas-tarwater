@@ -1,8 +1,27 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
 #divert <fpp>
-namespace tests::unit { }
+#import nonstd.string
+namespace tests::unit {
+  namespace string = nonstd::string;
+}
+#endiv
+#divert <hpp>
+// Because all test fixtures will need these
+#import tests.cppunit.Test // ............ the v1-series compatibility shims
+#import tests.cppunit.test.Fixture // .... ibidem.
+#import tests.cppunit.ASSERT // .......... ibidem.
+#endiv
+#divert <ipp>
+#import nonstd.string.literals
+namespace tests::unit {
+  using namespace nonstd::string::literals;
+}
+#import std.cerr
+#import std.clog
+#import std.cout
+#import rigging.suite.io // ... ibidem (the v1-series compatibility shim)
 #endiv

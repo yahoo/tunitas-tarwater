@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -24,10 +24,10 @@ namespace app::exception {
 #import std.exception
 #import std.string
 #import tunitas.tarwater.version.String
-class app::exception::Version : public tunitas::app::exception::Aspect,
-                                public tunitas::app::exception::feature::Version,
-                                public tunitas::exception::feature::Messaging,
-                                public std::exception {
+class app::exception::Version final : public tunitas::app::exception::Aspect,
+                                      public tunitas::app::exception::feature::Version,
+                                      public tunitas::exception::feature::Messaging,
+                                      public std::exception {
   struct Ancestors {
     using Aspect = tunitas::app::exception::Aspect;
     using Feature = tunitas::app::exception::feature::Version;
@@ -36,9 +36,10 @@ class app::exception::Version : public tunitas::app::exception::Aspect,
   };
 public:
   inline explicit Version(std::string NAME);
-  auto what() const noexcept -> char const * final;
-  auto code() const noexcept -> sys::exits::Code final;
-  auto stream() const noexcept -> std::ostream & final;
+  auto what() const noexcept -> char const * override;
+  auto stream() const noexcept -> std::ostream & override;
+  auto exit() const noexcept -> sys::exits::Code override;
+  [[deprecated("instead prefer Version::exit()")]] auto code() const noexcept -> sys::exits::Code override;
   using String = tunitas::tarwater::version::String;
   inline auto version() const -> String;
 protected:
@@ -56,9 +57,13 @@ auto app::exception::Version::version() const -> String {
 #endiv
 #divert <cpp>
 namespace app::exception {
-  auto Version::what() const noexcept -> char const * { return Ancestors::Messaging::what(); }
-  auto Version::code() const noexcept -> sys::exits::Code { return Ancestors::Feature::code(); }
+  auto Version::what() const noexcept -> char const *     { return Ancestors::Messaging::what(); }
   auto Version::stream() const noexcept -> std::ostream & { return Ancestors::Feature::stream(); }
+  auto Version::exit() const noexcept -> sys::exits::Code { return Ancestors::Feature::exit(); }
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  auto Version::code() const noexcept -> sys::exits::Code { return Ancestors::Feature::code(); }
+#pragma GCC diagnostic pop
 }
 #import std.ostringstream
 auto app::exception::Version::format(std::string const &NAME) -> std::string {

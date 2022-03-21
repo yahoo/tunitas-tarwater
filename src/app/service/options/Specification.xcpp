@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -19,7 +19,7 @@ namespace app::service::options {
 #divert <hpp>
 #import tunitas.app.options.Specification
 class app::service::options::Specification : public tunitas::app::options::Specification {
-  using ancestor = tunitas::app::options::Specification;
+  using Ancestor = tunitas::app::options::Specification;
 public:
   Specification();
 };
@@ -42,7 +42,7 @@ app::service::options::Specification::Specification()
   //          /------------------ this [read carefully getopt(3)]
   //          |
   //          v
-  : ancestor{":hVdvqwybfPp:Du:M:",
+  : Ancestor{":hVdvqwybfPp:Du:M:",
              {{"usage", oa::NO, oi::USAGE_SUBCOMMAND},
               {"help", oa::NO, oi::USAGE_SUBCOMMAND},
               {"version", oa::NO, oi::VERSION_SUBCOMMAND},
@@ -63,11 +63,12 @@ app::service::options::Specification::Specification()
 	      {"drop", oa::NO, oi::DROP_PRIVILEGES},
 	      {"drop-privilege", oa::NO, oi::DROP_PRIVILEGES},
 	      {"drop-privileges", oa::NO, oi::DROP_PRIVILEGES},
-	      {"user", oa::REQUIRED, oi::UNPRIVILEGED_USER},
-	      {"unprivileged-user", oa::REQUIRED, oi::UNPRIVILEGED_USER},
+	      {"user", oa::REQUIRED, oi::DAEMON_USER},
+	      {"unprivileged-user", oa::REQUIRED, oi::DAEMON_USER}, // ... support both
+	      {"daemon-user", oa::REQUIRED, oi::DAEMON_USER}, // ......... recall that the sense of "unprivileged" and "daemon" is ambiguous
 	      {"ms", oa::REQUIRED, oi::MEMBER_STORAGE},
 	      {"member-storage", oa::REQUIRED, oi::MEMBER_STORAGE},
-	      {"memberstoreage", oa::REQUIRED, oi::MEMBER_STORAGE},
+	      {"memberstorage", oa::REQUIRED, oi::MEMBER_STORAGE},
 	      {"member-store", oa::REQUIRED, oi::MEMBER_STORAGE},
 	      {"memberstore", oa::REQUIRED, oi::MEMBER_STORAGE}}}
 { }

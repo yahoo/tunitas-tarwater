@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -28,10 +28,10 @@ namespace tunitas::tarwater::sha1 {
 }
 #import std.array
 class tunitas::tarwater::sha1::Hexstring : public std::array<char, 40> {
-  using ancestor = std::array<char, 40>;
+  using Ancestor = std::array<char, 40>;
 public:
   Hexstring() = default;
-  using ancestor::array;
+  using Ancestor::array;
 };
 #endiv
 #divert <ipp>

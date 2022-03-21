@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -11,12 +11,12 @@ namespace tunitas::tarwater::sha1::required::container {
   // A container is minimally something which can be iterated (through).
   // An associative container, nearby, is a sequence that is not continguous
   //
-  template<typename CONTAINER> concept bool Sequence = requires(CONTAINER container) {
+  template<typename CONTAINER> concept Sequence = requires(CONTAINER container) {
     // Only use "new school" types only
     typename traits::Container<CONTAINER>::Iterator;
     typename traits::Container<CONTAINER>::Value;
-    { container.begin() } -> typename traits::Container<CONTAINER>::Iterator;
-    { container.end() } -> typename traits::Container<CONTAINER>::Iterator;
+    { container.begin() } -> convertible_to<typename traits::Container<CONTAINER>::Iterator>;
+    { container.end() } -> convertible_to<typename traits::Container<CONTAINER>::Iterator>;
   };
 }
 #endiv

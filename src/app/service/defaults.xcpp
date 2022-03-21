@@ -1,22 +1,50 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
-#divert <hpp>
-#import std.uint16_t
-#import std.string_literals
+#divert <fpp>
 namespace app::service::defaults {
-  inline namespace constants {
+  namespace package_defaults {
+    namespace body::exported { }
+    namespace interface = body::exported;
+  }
+  using namespace package_defaults::interface;
+}
+#import std.string_literals
+#import tunitas.file
+namespace app::service::defaults::package_defaults {
+  namespace body {
     using namespace std::literals;
+    namespace file = tunitas::file;
+  }
+}
+#import autotools.autoconf.Config.tunitas.tarwater.CONFIG
+namespace app::service::defaults::package_defaults {
+  namespace body {
+    using Config = autotools::autoconf::Config<tunitas::tarwater::CONFIG>;
+  }
+}
+#endiv
+#divert <hpp>
+#import microhttpd.ip.Port
+#import tunitas.file.Path
+namespace app::service::defaults::package_defaults::body {
+  namespace exported {
     inline auto const NAME = "tarwater-service"s;
     inline auto const FOREGROUND_MODE = true;
     inline auto const EMIT_PID = false;
     inline auto const DROP_PRIVILEGES = true;
-    inline auto const UNPRIVILEGED_USER = "nobody"s;
+    inline auto const DAEMON_USER = "tunitas"s; // [[FIXTHIS]] make these be configure-time parameters
+    inline auto const DAEMON_GROUP = "tunitas"s;
     // This is a cookie sync server, so the actual service port will be 80 or 443
-    inline auto const SERVICE_PORT = std::uint16_t{8080u};
-    inline auto const MEMBER_STORAGE = "member-secret.db"s;
+    inline auto const SERVICE_PORT = microhttpd::ip::Port{microhttpd::ip::Port::Representation::Native{8080}}; // [[FIXTIHS]] tie this to a --enable-service-port=NUMBER option in configure.ac
+    inline auto const MEMBER_STORAGE_FILENAME = "member-secret.db"s;
+    inline auto const MEMBER_STORAGE_FILEPATH = file::Path{Config::tunitas_tarwater_pkgconfdir()} / MEMBER_STORAGE_FILENAME;
   }
 }
+#endiv
+#divert <cpp>
+#warning [[FIXTHIS]] acquire the values of DAEMON_USER, DAEMON_GROUP, SERVICE_PORT from configure.ac
+#warning [[FIXTHIS]] module-sys is in the wrong here; ${with_worktrees}/sys/v2.PLUS/obj/include/module-sys/config.h:38: note: this is the location of the previous definition
 #endiv

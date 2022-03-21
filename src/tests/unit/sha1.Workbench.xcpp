@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -7,11 +7,8 @@
 namespace tests::unit::sha1 { class Workbench; }
 #endiv
 #divert <hpp>
-#import cppunit.Test
-#import cppunit.test.Fixture
 #import tunitas.tarwater.sha1.Workbench
-class tests::unit::sha1::Workbench : public cppunit::test::Fixture {
-public:
+struct tests::unit::sha1::Workbench : public cppunit::test::Fixture {
   using Subject = ::tunitas::tarwater::sha1::Workbench;
   auto test_constructor() -> void;
   auto test_bytes() -> void;
@@ -251,11 +248,8 @@ auto tests::unit::sha1::Workbench::test_operator_insert_As_Dope_vector_char() ->
   auto expected = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"s;   // echo -n "test" | sha1sum
   CPPUNIT_ASSERT(equal(expected, actual));
 }
-#import rigging.suite.Stream
-#import rigging.suite.call
-#import rigging.suite.add
 auto tests::unit::sha1::Workbench::suite() -> cppunit::Test * {
-  using namespace ::rigging::suite;
+  using namespace rigging::suite;
   Stream series("Workbench");
   series << call("constructor", &Workbench::test_constructor)
 	 << call("Bytes", &Workbench::test_bytes)
@@ -277,15 +271,15 @@ auto tests::unit::sha1::Workbench::suite() -> cppunit::Test * {
                        man << call("Element", &Workbench::test_operator_insert_manifest_array_Element)
                            << call("Dopable", &Workbench::test_operator_insert_manifest_array_Dopable)
                            << call("Container", &Workbench::test_operator_insert_manifest_array_Container)
-                         ;
-                       return move(man);
+                           << END;
+                       return man;
                      }()
                   << []() {
                        Stream ass("As_String");
                        ass << call("int", &Workbench::test_operator_insert_As_String_int)
                            << call("double", &Workbench::test_operator_insert_As_String_double)
-                         ;
-                       return move(ass);
+                           << END;
+                       return ass;
                      }()
                   << []() {
                        Stream asd("As_Dope");
@@ -293,13 +287,13 @@ auto tests::unit::sha1::Workbench::suite() -> cppunit::Test * {
                            << call("string_view", &Workbench::test_operator_insert_As_Dope_string_view)
                            << call("array<char,4>", &Workbench::test_operator_insert_As_Dope_array_char)
                            << call("vector<char>", &Workbench::test_operator_insert_As_Dope_vector_char)
-                         ;
-                       return move(asd);
+                           << END;
+                       return asd;
                      }()
-                ;
-              return move(det);
+                  << END;
+              return det;
             }()
-     ;
+         << END;
   return finalize(series);
 }
 #endiv

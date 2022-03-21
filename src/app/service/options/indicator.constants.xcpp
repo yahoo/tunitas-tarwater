@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -13,7 +13,7 @@ namespace app::service::options::indicator {
   inline constexpr auto EMIT_PID = Code::CODE_252;
   inline constexpr auto SERVICE_PORT = Code::CODE_251;
   inline constexpr auto DROP_PRIVILEGES = Code::CODE_250;
-  inline constexpr auto UNPRIVILEGED_USER = Code::CODE_249;
+  inline constexpr auto DAEMON_USER = Code::CODE_249;
   inline constexpr auto MEMBER_STORAGE = Code::CODE_248;
 }
 #endiv

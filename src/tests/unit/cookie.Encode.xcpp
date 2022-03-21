@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -7,10 +7,7 @@
 namespace tests::unit::cookie { class Encode; }
 #endiv
 #divert <hpp>
-#import cppunit.Test
-#import cppunit.test.Fixture
-class tests::unit::cookie::Encode : public cppunit::test::Fixture {
-public:
+struct tests::unit::cookie::Encode : public cppunit::test::Fixture {
   auto test_base64_encoding_1() -> void;
   auto test_base64_encoding_2() -> void;
   auto test_good_string_j2u() -> void;
@@ -152,9 +149,9 @@ auto tests::unit::cookie::Encode::test_good_object_o2u() -> void {
   // {"id":"jyEB2UHSjLo=","producer":"1CrsdUNAo6","privacy":{"optout":false},"version":2}
   //
   if constexpr (false) {
-    auto const &expected = R"urlsafe(wrong-wrong-wrong---eyJpZCI6Imp5RUIyVUhTakxvPSIsICJ2ZXJzaW9uIjogMiwgInByb2R1Y2VyIjogIjFDcnNkVU5BbzYiLCAicHJpdmFjeSI6IHsib3B0b3V0IjogZmFsc2V9fQ%3D%3D)urlsafe"s;
-    CPPUNIT_ASSERT_EQUAL(expected, actual);
-  } else {
+      auto const &expected = R"urlsafe(wrong-wrong-wrong---eyJpZCI6Imp5RUIyVUhTakxvPSIsICJ2ZXJzaW9uIjogMiwgInByb2R1Y2VyIjogIjFDcnNkVU5BbzYiLCAicHJpdmFjeSI6IHsib3B0b3V0IjogZmFsc2V9fQ%3D%3D)urlsafe"s;
+      CPPUNIT_ASSERT_EQUAL(expected, actual);
+    } else {
     // <lazy>WATCHOUT - this was not independently generated, it was copied from a previous run of the tester</lazy>
     auto const &expected = R"urlsafe(eyJpZCI6MTAzMTM1MjY2NTQyNzg5OTUxMzAsInByaXZhY3kiOnsib3B0b3V0IjpmYWxzZX0sInByb2R1Y2VyIjoiMUNyc2RVTkFvNiIsInZlcnNpb24iOjJ9)urlsafe"s;
     CPPUNIT_ASSERT_EQUAL(expected, actual);
@@ -219,18 +216,15 @@ auto tests::unit::cookie::Encode::test_bad_outcome_u2u() -> void {
   auto const encoded = encode(original);
   CPPUNIT_ASSERT(!ok(encoded));
 }
-#import rigging.suite.Stream
-#import rigging.suite.call
-#import rigging.suite.add
 auto tests::unit::cookie::Encode::suite() -> cppunit::Test * {
-  using namespace ::rigging::suite;
+  using namespace rigging::suite;
   Stream series("encode");
   series << []() {
               Stream beg{"base64-encoding"};
               beg << call("1", &Encode::test_base64_encoding_1)
                   << call("2", &Encode::test_base64_encoding_2)
-                ;
-              return move(beg);
+                  << END;
+              return beg;
             }()
          << []() {
               Stream good{"good"};
@@ -239,8 +233,8 @@ auto tests::unit::cookie::Encode::suite() -> cppunit::Test * {
                         str << call("JSON", &Encode::test_good_string_j2u)
                             << call("BASE64", &Encode::test_good_string_b2u)
                             << call("URLSAFE", &Encode::test_good_string_u2u)
-                          ;
-                        return move(str);
+                            << END;
+                        return str;
                       }()
                    << call("Object", &Encode::test_good_object_o2u)
                    << []() {
@@ -248,11 +242,11 @@ auto tests::unit::cookie::Encode::suite() -> cppunit::Test * {
                         out << call("JSON", &Encode::test_good_outcome_j2u)
                             << call("BASE64", &Encode::test_good_outcome_b2u)
                             << call("URLSAFE", &Encode::test_good_outcome_u2u)
-                          ;
-                        return move(out);
+                            << END;
+                        return out;
                       }()
-                ;
-              return move(good);
+                   << END;
+              return good;
             }()
          << []() {
               Stream bad{"bad"};
@@ -262,13 +256,13 @@ auto tests::unit::cookie::Encode::suite() -> cppunit::Test * {
                        out << call("JSON", &Encode::test_bad_outcome_j2u)
                            << call("BASE64", &Encode::test_bad_outcome_b2u)
                            << call("URLSAFE", &Encode::test_bad_outcome_u2u)
-                         ;
-                       return move(out);
+                           << END;
+                       return out;
                      }()
-                ;
-              return move(bad);
+                  << END;
+              return bad;
             }()
-    ;
+         << END;
   return finalize(series);
 }
 #endiv

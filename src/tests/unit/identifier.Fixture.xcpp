@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
@@ -7,10 +7,7 @@
 namespace tests::unit::identifier { class Fixture; }
 #endiv
 #divert <hpp>
-#import cppunit.Test
-#import cppunit.test.Fixture
-class tests::unit::identifier::Fixture : public cppunit::test::Fixture {
-public:
+struct tests::unit::identifier::Fixture : public cppunit::test::Fixture {
   auto test_Encoded() -> void;
   auto test_Integer() -> void;
   auto test_State() -> void;
@@ -81,11 +78,8 @@ auto tests::unit::identifier::Fixture::test_to_string_Integer() -> void {
   auto const expected = std::string{"jyEB2UHSjLo="};
   CPPUNIT_ASSERT_EQUAL(expected, actual);
 }
-#import rigging.suite.Stream
-#import rigging.suite.call
-#import rigging.suite.add
 auto tests::unit::identifier::Fixture::suite() -> cppunit::Test * {
-  using namespace ::rigging::suite;
+  using namespace rigging::suite;
   Stream series("identifier");
   series << call("Encoded", &Fixture::test_Encoded)
 	 << call("Integer", &Fixture::test_Integer)
@@ -96,10 +90,10 @@ auto tests::unit::identifier::Fixture::suite() -> cppunit::Test * {
               Stream tos("to_string");
               tos << call("Encoded", &Fixture::test_to_string_Encoded)
                   << call("Integer", &Fixture::test_to_string_Integer)
-                ;
-              return move(tos);
+                  << END;
+              return tos;
             }()
-    ;
+         << END;
   return finalize(series);
 }
 #endiv

@@ -1,7 +1,14 @@
+# This is a -*- Makefile -*- which is processed by automake and included into the top-level Makefile.am
+# Copyright Yahoo Inc, 2021.
+# Licensed under the terms of the Apache-2.0 license.
+# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
+# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
+#
+tests_service_TESTS = $(tests_service_XGOOD_TESTS) $(tests_service_XFAIL_TESTS)
 tests_service_XFAIL_TESTS = \
   tests/service/run.01.test \
   $(end)
-tests_service_TESTS = \
+tests_service_XGOOD_TESTS = \
   tests/service/run.usages.test \
   tests/service/option.D.test \
   tests/service/option.P.test \
@@ -49,8 +56,6 @@ tests_service_TESTS = \
   tests/service/error.missing.member-store.test \
   tests/service/error.missing.port.test \
   tests/service/error.missing.unprivileged-user.test \
-  \
-  $(tests_service_XFAIL_TESTS) \
   $(end)
 
 tests_service_TESTS_DECLARED = $(tests_service_TESTS)

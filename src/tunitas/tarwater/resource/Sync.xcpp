@@ -1,0 +1,117 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
+#divert <fpp>
+namespace tunitas::tarwater::resource {
+  //
+  // The code behind the /sync resource
+  //
+  // See https://github.com/digi-trust/dt-cdn/wiki/User-Sync-Service-(Draft)
+  //
+  // Scheme:
+  //
+  //   //usync.digitru.st/userid?member={member_id}&ts={timestamp}&next={next}&token={token}
+  //
+  // Example:
+  //
+  //   //usync.digitru.st/userid?member=nQjyizbdyF&ts=1528757444&next=http%3A%2F%2Fusync.example.com%2Fdigitrust%3Fid%3D%7Bid%7D%26status%3D%7Bstatus%7D&token=21944721d8f6279332ecc8beb61dbbc80edbb504
+  //
+  // Usage:
+  //
+  //   uss::resource::Sync sync;
+  //   ws.register_resource("/sync", &sync, true);
+  //   ws.register_resource("/userid", &sync, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Sync;
+}
+#endiv
+#divert <hpp>
+#import tunitas.tarwater.service.Core
+#import tunitas.tarwater.service.Aspect
+#import tunitas.tarwater.required.Storage
+#import tunitas.tarwater.endpoint.Locator
+#import tunitas.tarwater.endpoint.Registration
+class tunitas::tarwater::resource::Sync : public microhttpd::Resource, service::Aspect {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
+    using Service = service::Aspect;
+  };
+public:
+  inline explicit Sync(service::Core &);
+  auto GET(Request const &) -> Transport override;
+  inline static auto locator_primary() -> endpoint::Locator;
+  inline static auto locator_alternate() -> endpoint::Locator;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+};
+#endiv
+#divert <ipp>
+#import tunitas.tarwater.endpoint.make
+#import tunitas.tarwater.resources
+namespace tunitas::tarwater::resource {
+  Sync::Sync(service::Core &core) : Ancestors::Service{core} { resources::initialize_only_get(*this); }
+  auto Sync::locator_primary() -> endpoint::Locator   { return endpoint::Locator{"/sync"}; }
+  auto Sync::locator_alternate() -> endpoint::Locator { return endpoint::Locator{"/userid"}; }
+  template<required::Storage STORAGE> auto Sync::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Sync>(locator_primary(), storage); }
+}
+#endiv
+#divert <cpp>
+#import tunitas.Optional
+#import tunitas.tarwater.constants
+#import tunitas.server.responses
+#import std.exception
+#import tunitas.tarwater.filters
+#import tunitas.tarwater.identifier.to_string
+#import tunitas.tarwater.url.decode
+#import tunitas.tarwater.url.format
+#import tunitas.tarwater.url.formatting.Variables
+auto tunitas::tarwater::resource::Sync::GET(Request const &request) -> Transport try {
+  auto filled = Optional<Transport>{};
+  filters::enforce_no_query_arguments(request, filled);
+  if (!filled) {
+    auto specified = Ancestors::Service::get_redirect_specification(request);
+    if (!ok(specified)) {
+      filled = server::responses::bad_request(error_code(specified).message());
+    } else {
+      auto const specification = value(std::move(specified));
+      auto validated = core.validate(specification);
+      if (!ok(validated)) {
+        filled = server::responses::bad_request(error_code(validated).message());
+      } else {
+        auto decoded = url::decode(value(std::move(validated)));
+        if (!ok(decoded)) {
+          filled = server::responses::bad_request(error_code(decoded).message());
+        } else {
+          auto pattern = value(std::move(decoded));
+          auto identified = Ancestors::Service::get_identifier(request);
+          if (!ok(identified)) {
+            filled = server::responses::bad_request(error_code(identified).message());
+          } else {
+            auto s = [](string::View sv) -> string::Storage { return {sv.begin(), sv.end()}; };
+            auto [set_cookie, identifier, status] = core.finalize_identifier(std::move(identified));
+            url::formatting::Variables const variables{{"id", to_string(identifier)}, {"status", to_string(status)}};
+            auto redirect = url::format(pattern, variables);
+            auto const &content_body = R"text(move the identity pairing over there where they will log the co-occurrence)text"s;
+            auto const code = http::R302_FOUND;
+            auto const &content_type = mime::TEXT_PLAIN;
+            auto bob = microhttpd::render::Builder{};
+            bob.response(code).content_type(content_type).body(content_body);
+            bob.header(s(LOCATION), std::move(redirect));
+            if (set_cookie) {
+              bob.header(s(SET_COOKIE), core.format_cookie(identifier));
+            }
+            filled = bob.build();
+          }
+        }
+      }
+    }
+  }
+  return move(*filled);
+} catch (std::exception const &e) {
+  return server::responses::internal_server_error(e.what());
+} catch (...) {
+  return server::responses::internal_server_error();
+}
+#endiv
