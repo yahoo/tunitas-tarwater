@@ -1,7 +1,7 @@
 # Instructions
 
-These examples should be self-explanatory.  If further context is needed then the relevant
-pages of the [Digi-Trust Wiki](https://github.com/digi-trust/dt-cdn/wiki) should be consulted.
+These examples should be self-explanatory.  If further context is needed then the relevant pages of the <em>Digi-Trust Wiki</em> should be consulted.
+Note that the <b>digi-trust</b> work was sunset by IAB Tech Lab [2020-07](https://iabtechlab.com/blog/digitrust-the-final-chapter/).
 
 # Environment
 
@@ -32,5 +32,5 @@ Not all packages that you will need are listed. But the significant package subs
 
 # Provenance
 
-These examples are sourced from the pages of the [Digi-Trust Wiki](https://github.com/digi-trust/dt-cdn/wiki).
+These examples are sourced from the pages of the <em>Digi-Trust Wiki</em>.
 They are laid out in file form, made operational and proven (tested) to work as declared in the documentation.

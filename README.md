@@ -22,7 +22,7 @@ Current work with modern-generation tooling, <em>e.g.</em> circa Fedora 36+ and 
 
 ## Background
 
-The implementation herein follows the [User Sync Service](https://github.com/digi-trust/dt-cdn/wiki/User-Sync-Service-%28Draft%29) draft specification.
+The implementation herein follows the <em>User Sync Service</em> from the Digi-Trust infrastructure (which is no longer published).
 
 ## Dependencies
 
@@ -95,13 +95,13 @@ systemctl start tarwater-service
 
 ### Identity Synchronization Services
 
-* [User Sync Service](https://github.com/digi-trust/dt-cdn/wiki/User-Sync-Service-%28Draft%29) 
+* <em>User Sync Service</em> (no longer published)
 
 ### Digi-Trust
 
 * [Digi-Trust](http://www.digitru.st/), promotional site of the TechLab of the Interactive Advertising Bureau (IAB).
-* [digi-trust](https://github.com/digi-trust), organization, hosted at GitHub.
-* [[Digi-Trust, Java]](https://github.com/digi-trust/identity-core-java), hosted at GitHub.
+* The <b>digi-trust</b> organization was sunset at GitHub circa 2020-07.
+* Digi-Trust, Java
 
 ## Security
 
